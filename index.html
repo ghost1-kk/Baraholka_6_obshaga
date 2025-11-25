@@ -390,26 +390,6 @@
             font-size: 14px;
         }
 
-        .filters-row {
-            display: flex;
-            gap: var(--space-md);
-            margin-bottom: var(--space-xl);
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-
-        .filter-label {
-            font-weight: 600;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
-
         .products-grid-v3 {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -565,7 +545,7 @@
             color: var(--text-primary);
             margin-bottom: var(--space-sm);
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-amp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             min-height: 44px;
@@ -625,11 +605,6 @@
             
             .main-content {
                 padding: var(--space-md);
-            }
-
-            .filters-row {
-                flex-direction: column;
-                align-items: stretch;
             }
         }
 
@@ -834,6 +809,27 @@
             color: var(--primary);
             border-color: white;
         }
+
+        /* ИСПРАВЛЕНО: кнопки языка в настройках */
+        .settings-lang-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            color: var(--text-primary);
+        }
+        .settings-lang-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .settings-lang-btn:hover {
+            background: var(--bg-secondary);
+        }
     </style>
 </head>
 <body>
@@ -986,34 +982,7 @@
                 </select>
             </div>
 
-            <!-- ДОБАВЛЕНО: строка с фильтрами цены -->
-            <div class="filters-row">
-                <div class="filter-group">
-                    <span class="filter-label">Цена от:</span>
-                    <input type="number" class="price-input" style="width: 100px;" id="mainPriceMin" placeholder="0">
-                </div>
-                <div class="filter-group">
-                    <span class="filter-label">до:</span>
-                    <input type="number" class="price-input" style="width: 100px;" id="mainPriceMax" placeholder="9999">
-                </div>
-                <div class="filter-group">
-                    <span class="filter-label">Общежитие:</span>
-                    <select class="price-input" style="width: 150px;" id="mainDormFilter">
-                        <option value="">Все</option>
-                        <option value="1">Общежитие 1</option>
-                        <option value="2">Общежитие 2</option>
-                        <option value="3">Общежитие 3</option>
-                        <option value="4">Общежитие 4</option>
-                        <option value="5">Общежитие 5</option>
-                        <option value="6">Общежитие 6</option>
-                        <option value="7">Общежитие 7</option>
-                        <option value="8">Общежитие 8</option>
-                    </select>
-                </div>
-                <button class="apply-filters" onclick="applyMainFilters()" style="padding: 8px 16px;">
-                    Применить
-                </button>
-            </div>
+            <!-- УБРАНО: строка с фильтрами цены -->
 
             <div class="products-grid-v3" id="goodsGrid">
                 <div class="skeleton skeleton-card"></div>
@@ -1145,10 +1114,11 @@
             </div>
             <div class="settings-row" style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
                 <div data-lang="language">Язык</div>
+                <!-- ИСПРАВЛЕНО: кнопки языка в настройках -->
                 <div style="display:flex; gap:5px;">
-                    <button class="lang-btn active" onclick="setLanguage('ru')">RU</button>
-                    <button class="lang-btn" onclick="setLanguage('ua')">UA</button>
-                    <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+                    <button class="settings-lang-btn ${currentLang === 'ru' ? 'active' : ''}" onclick="setLanguage('ru')">RU</button>
+                    <button class="settings-lang-btn ${currentLang === 'ua' ? 'active' : ''}" onclick="setLanguage('ua')">UA</button>
+                    <button class="settings-lang-btn ${currentLang === 'en' ? 'active' : ''}" onclick="setLanguage('en')">EN</button>
                 </div>
             </div>
         </div>
@@ -1350,6 +1320,14 @@
                     btn.classList.add('active');
                 }
             });
+
+            // Обновляем кнопки в настройках
+            document.querySelectorAll('.settings-lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.settings-lang-btn').forEach(btn => {
+                if (btn.textContent === lang.toUpperCase()) {
+                    btn.classList.add('active');
+                }
+            });
         }
 
         function updateLanguage() {
@@ -1445,15 +1423,9 @@
             if (!g) return;
             
             const s=document.getElementById('searchInput').value.toLowerCase();
-            const priceMin = document.getElementById('mainPriceMin').value;
-            const priceMax = document.getElementById('mainPriceMax').value;
-            const dormFilter = document.getElementById('mainDormFilter').value;
             
             const f=products.filter(p=>{
                 if(!p.title.toLowerCase().includes(s))return false;
-                if(priceMin && p.price < parseInt(priceMin))return false;
-                if(priceMax && p.price > parseInt(priceMax))return false;
-                if(dormFilter && p.dorm !== dormFilter)return false;
                 if(filterMode==='admin')return p.status==='pending';
                 if(filterMode==='my')return currentUser&&p.userId===currentUser.uid;
                 if(filterMode==='fav')return favorites.includes(p.id)&&p.status==='active';
@@ -1764,11 +1736,6 @@
         }
 
         window.applyFilters = function() {
-            renderProducts();
-        }
-
-        // ДОБАВЛЕНО: функция для основных фильтров
-        window.applyMainFilters = function() {
             renderProducts();
         }
 
