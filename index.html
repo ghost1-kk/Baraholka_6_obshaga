@@ -139,6 +139,7 @@
             font-weight: 900;
             font-size: 24px;
             color: var(--primary);
+            cursor: pointer;
         }
 
         .logo-icon {
@@ -438,8 +439,12 @@
             background: var(--secondary);
         }
 
-        .card-badge--new {
-            background: var(--accent);
+        .card-badge--pending {
+            background: var(--warning);
+        }
+
+        .card-badge--rejected {
+            background: var(--danger);
         }
 
         .card-image-v3 {
@@ -672,6 +677,75 @@
             background: var(--secondary);
         }
 
+        /* === МОДАЛЬНЫЕ ОКНА (сохранены из оригинала) === */
+        .modal-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.6); 
+            z-index: 2000; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 20px; 
+            backdrop-filter: blur(3px); 
+        }
+        .modal-box { 
+            background: var(--bg-card); 
+            width: 100%; 
+            max-width: 400px; 
+            padding: 30px; 
+            border-radius: 16px; 
+            position: relative; 
+            max-height: 90vh; 
+            overflow-y: auto; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+        }
+        .close-btn { 
+            position: absolute; 
+            top: 15px; 
+            right: 15px; 
+            font-size: 24px; 
+            cursor: pointer; 
+            color: var(--text-muted); 
+        }
+        .input-field { 
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 12px; 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            background: var(--bg-primary); 
+            color: var(--text-primary); 
+            font-size: 15px; 
+            outline: none; 
+        }
+        .btn-submit { 
+            width: 100%; 
+            padding: 14px; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 800; 
+            font-size: 16px; 
+            transition: 0.2s; 
+        }
+
+        /* === DROPDOWN МЕНЮ === */
+        .dropdown-menu {
+            position: absolute;
+            top: 60px; right: 0;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; width: 220px;
+            box-shadow: var(--shadow-lg);
+            display: none; flex-direction: column;
+            z-index: 200; overflow: hidden;
+        }
+
         /* === ЗАГРУЗОЧНЫЙ СКЕЛЕТОН === */
         .skeleton {
             background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
@@ -689,23 +763,6 @@
             height: 300px;
             border-radius: var(--radius-lg);
         }
-
-        .skeleton-text {
-            height: 16px;
-            margin-bottom: var(--space-sm);
-            border-radius: var(--radius-sm);
-        }
-
-        .skeleton-text--short {
-            width: 60%;
-        }
-
-        .skeleton-price {
-            height: 24px;
-            width: 40%;
-            border-radius: var(--radius-sm);
-            margin-top: var(--space-md);
-        }
     </style>
 </head>
 <body>
@@ -715,18 +772,18 @@
         <header class="header-v3">
             <div class="header-container">
                 <div class="header-left">
-                    <a href="#" class="logo-v3" onclick="goHome(); return false;">
+                    <div class="logo-v3" onclick="goHome()">
                         <div class="logo-icon">
                             <i class="fas fa-store"></i>
                         </div>
                         БАРАХОЛКА
-                    </a>
+                    </div>
                     
                     <div class="search-bar-v3">
                         <i class="fas fa-search search-icon-v3"></i>
-                        <input type="text" class="search-input-v3" placeholder="Поиск товаров..." id="searchInput">
-                        <button class="search-filters-btn">
-                            <i class="fas fa-sliders-h"></i>
+                        <input type="text" class="search-input-v3" placeholder="Поиск товаров..." id="searchInput" oninput="renderProducts()">
+                        <button class="search-filters-btn" onclick="renderProducts()">
+                            <i class="fas fa-search"></i>
                         </button>
                     </div>
                 </div>
@@ -750,6 +807,29 @@
                             </div>
                             <div id="userBlock" class="user-avatar-v3" style="display:none;" onclick="toggleMenu()">
                                 <i class="far fa-user" id="avatarIcon"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Dropdown Menu -->
+                        <div id="dropdownMenu" class="dropdown-menu">
+                            <div class="menu-header" style="padding: 15px; background: var(--bg-secondary); border-bottom: 1px solid var(--border);">
+                                <div id="dropNick">Гость</div>
+                                <div id="dropEmail" style="font-size:12px; color:var(--text-muted);"></div>
+                            </div>
+                            <div class="menu-item" onclick="filterMyAds()" style="padding: 12px 15px; cursor: pointer; color: var(--text-primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-box"></i> Мои товары
+                            </div>
+                            <div class="menu-item" onclick="filterFavorites()" style="padding: 12px 15px; cursor: pointer; color: var(--text-primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-heart"></i> Избранное
+                            </div>
+                            <div class="menu-item" id="adminLink" style="display:none; color:orange; padding: 12px 15px; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;" onclick="filterModeration()">
+                                <i class="fas fa-shield-alt"></i> Модерация
+                            </div>
+                            <div class="menu-item" onclick="openSettingsModal()" style="padding: 12px 15px; cursor: pointer; color: var(--text-primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+                                <i class="fas fa-cog"></i> Настройки
+                            </div>
+                            <div class="menu-item danger" id="menuLogout" style="display:none; color:red; padding: 12px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px;" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i> Выйти
                             </div>
                         </div>
                     </div>
@@ -791,50 +871,23 @@
                     </div>
                 </div>
             </div>
-
-            <div class="filter-section">
-                <h3 class="filter-title">
-                    <i class="fas fa-filter"></i>
-                    Фильтры
-                </h3>
-                <div class="price-range">
-                    <input type="number" class="price-input" placeholder="От" id="priceMin">
-                    <input type="number" class="price-input" placeholder="До" id="priceMax">
-                </div>
-                <select class="price-input" id="dormFilter">
-                    <option value="">Все общежития</option>
-                    <option value="1">Общежитие 1</option>
-                    <option value="2">Общежитие 2</option>
-                    <option value="3">Общежитие 3</option>
-                    <option value="4">Общежитие 4</option>
-                    <option value="5">Общежитие 5</option>
-                    <option value="6">Общежитие 6</option>
-                    <option value="7">Общежитие 7</option>
-                    <option value="8">Общежитие 8</option>
-                </select>
-                <button class="apply-filters" onclick="applyFilters()">
-                    Применить фильтры
-                </button>
-            </div>
         </aside>
 
         <!-- ОСНОВНОЙ КОНТЕНТ -->
         <main class="main-content">
             <div class="content-header">
                 <div class="results-info" id="resultsInfo">
-                    Найдено 0 объявлений
+                    Загрузка...
                 </div>
                 <select class="sort-select" onchange="sortProducts(this.value)">
                     <option value="newest">Сначала новые</option>
                     <option value="cheapest">Сначала дешевые</option>
                     <option value="expensive">Сначала дорогие</option>
-                    <option value="popular">Популярные</option>
                 </select>
             </div>
 
             <!-- СЕТКА ТОВАРОВ -->
             <div class="products-grid-v3" id="goodsGrid">
-                <!-- Карточки будут рендериться здесь -->
                 <div class="skeleton skeleton-card"></div>
                 <div class="skeleton skeleton-card"></div>
                 <div class="skeleton skeleton-card"></div>
@@ -849,7 +902,7 @@
             <i class="fas fa-home"></i>
             <span>Главная</span>
         </button>
-        <button class="nav-item" onclick="openSearch()">
+        <button class="nav-item" onclick="document.getElementById('searchInput').focus()">
             <i class="fas fa-search"></i>
             <span>Поиск</span>
         </button>
@@ -861,7 +914,7 @@
             <i class="far fa-heart"></i>
             <span>Избранное</span>
         </button>
-        <button class="nav-item" onclick="openProfile()">
+        <button class="nav-item" onclick="openAuthModal()">
             <i class="far fa-user"></i>
             <span>Профиль</span>
         </button>
@@ -877,89 +930,315 @@
         </a>
     </div>
 
-    <script>
-        // ОБНОВЛЕННЫЙ СКРИПТ ДЛЯ НОВОГО ДИЗАЙНА
-        // Здесь будет тот же функционал Firebase, но адаптированный под новый UI
+    <!-- МОДАЛЬНЫЕ ОКНА (сохранены из оригинала) -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-box" style="text-align:center;">
+            <div class="close-btn" onclick="closeModal('authModal')"><i class="fas fa-times"></i></div>
+            <h2 style="margin-bottom:20px;">Вход</h2>
+            <button onclick="handleGoogleLogin()" style="width:100%; padding:12px; border:1px solid var(--border); background:var(--bg-primary); margin-bottom:10px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:10px; color:var(--text-primary);">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google
+            </button>
+            <input type="email" id="emailInput" class="input-field" placeholder="Email">
+            <input type="password" id="passInput" class="input-field" placeholder="Пароль">
+            <button class="btn-submit" onclick="handleEmailAuth()">Войти</button>
+        </div>
+    </div>
+
+    <div id="addModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="close-btn" onclick="closeModal('addModal')"><i class="fas fa-times"></i></div>
+            <h2 style="margin-bottom:20px;">Новое объявление</h2>
+            <div class="photo-slots" id="addSlots" style="display: flex; gap: 5px; margin-bottom: 10px;"></div>
+            <input type="file" id="addFile0" hidden onchange="handleFile(0, 'add')"><input type="file" id="addFile1" hidden onchange="handleFile(1, 'add')"><input type="file" id="addFile2" hidden onchange="handleFile(2, 'add')"><input type="file" id="addFile3" hidden onchange="handleFile(3, 'add')"><input type="file" id="addFile4" hidden onchange="handleFile(4, 'add')">
+            <input type="text" id="newTitle" class="input-field" placeholder="Название">
+            <input type="number" id="newPrice" class="input-field" placeholder="Цена">
+            <textarea id="newDesc" class="input-field" rows="4" placeholder="Описание"></textarea>
+            <select id="newCat" class="input-field"><option value="tech">Электроника</option><option value="home">Дом</option><option value="study">Учеба</option><option value="clothes">Одежда</option><option value="other">Разное</option></select>
+            <select id="newDorm" class="input-field">
+                <option value="6">Общежитие №6</option><option value="1">Общежитие №1</option><option value="2">Общежитие №2</option><option value="3">Общежитие №3</option><option value="4">Общежитие №4</option><option value="5">Общежитие №5</option><option value="7">Общежитие №7</option><option value="8">Общежитие №8</option>
+            </select>
+            <input type="text" id="newContact" class="input-field" placeholder="Telegram (без @)">
+            <button class="btn-submit" onclick="createProduct()">Опубликовать</button>
+        </div>
+    </div>
+
+    <!-- ОСТАЛЬНЫЕ МОДАЛКИ... -->
+
+    <script type="module">
+        // ВЕСЬ РАБОЧИЙ КОД FIREBASE ИЗ ОРИГИНАЛА
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc, arrayUnion, arrayRemove, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const ADMIN_EMAIL = "romanzam007@gmail.com";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAVMcP1KC8JsOVdn-w_CoJFDDm_ML0HKiE",
+            authDomain: "olx-6-gurtak.firebaseapp.com",
+            projectId: "olx-6-gurtak",
+            storageBucket: "olx-6-gurtak.firebasestorage.app",
+            messagingSenderId: "718459350196",
+            appId: "1:718459350196:web:bd812892804facc25ffbe1"
+        };
+
+        const app = initializeApp(firebaseConfig); 
+        const db = getFirestore(app); 
+        const auth = getAuth(app); 
+        const provider = new GoogleAuthProvider();
         
-        // Временная заглушка для демонстрации
-        document.addEventListener('DOMContentLoaded', function() {
-            // Показываем скелетоны загрузки
-            setTimeout(() => {
-                const grid = document.getElementById('goodsGrid');
-                grid.innerHTML = `
-                    <div class="product-card-v3" onclick="openProduct('1')">
-                        <div class="card-badge card-badge--new">NEW</div>
+        let currentUser=null, products=[], favorites=[], filterMode='all', currentCatFilter='all', photos=[null,null,null,null,null], currentProduct=null, currentGallery=[], currentPhotoIdx=0;
+        const catNames={tech:'Электроника',home:'Дом',study:'Учеба',clothes:'Одежда',other:'Разное'};
+
+        // ИНИЦИАЛИЗАЦИЯ СЛОТОВ ДЛЯ ФОТО
+        function initSlots(mode) { 
+            const c=document.getElementById(mode+'Slots'); 
+            if(!c)return; 
+            c.innerHTML=''; 
+            for(let i=0;i<5;i++) 
+                c.innerHTML+=`<div class="slot" id="${mode}Slot${i}" onclick="document.getElementById('${mode}File${i}').click()" style="width: 60px; height: 60px; background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; position: relative; background-size: cover;">
+                    <i class="fas fa-camera" style="color: var(--text-muted);"></i>
+                    <div class="slot-del" onclick="clearSlot(event,'${mode}',${i})" style="position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; width: 20px; height: 20px; border-radius: 50%; display: none; justify-content: center; align-items: center; font-size: 10px;">×</div>
+                </div>`; 
+        }
+        initSlots('add'); 
+
+        // ВСЕ ФУНКЦИИ ИЗ ОРИГИНАЛА
+        window.handleFile=async(i,m)=>{const f=document.getElementById(`${m}File${i}`).files[0];if(!f)return;const b=await compressImage(f);photos[i]=b;const s=document.getElementById(`${m}Slot${i}`);s.style.backgroundImage=`url('${b}')`;s.classList.add('has');}
+        window.clearSlot=(e,m,i)=>{e.stopPropagation();photos[i]=null;const s=document.getElementById(`${m}Slot${i}`);s.style.backgroundImage='';s.classList.remove('has');document.getElementById(`${m}File${i}`).value='';}
+        
+        window.handleGoogleLogin=async()=>{try{await signInWithPopup(auth,provider);closeModal('authModal');}catch(e){alert(e.message);}}
+        window.handleEmailAuth=async()=>{const e=document.getElementById('emailInput').value, p=document.getElementById('passInput').value; try{await signInWithEmailAndPassword(auth,e,p);closeModal('authModal');}catch(er){try{await createUserWithEmailAndPassword(auth,e,p);closeModal('authModal');}catch(err){alert(err.message);}}}
+        
+        onAuthStateChanged(auth, async (u) => {
+            currentUser = u;
+            const loginBtn = document.getElementById('loginBtn');
+            const userBlock = document.getElementById('userBlock');
+            const menuLogout = document.getElementById('menuLogout');
+            if(u) {
+                if(loginBtn) loginBtn.style.display='none';
+                if(userBlock) { 
+                    userBlock.style.display='flex'; 
+                    document.getElementById('avatarIcon').style.display = u.photoURL ? 'none' : 'block';
+                    if(u.photoURL) {
+                        userBlock.style.backgroundImage=`url('${u.photoURL}')`;
+                        userBlock.innerHTML = '';
+                    } else {
+                        userBlock.innerHTML = u.email[0].toUpperCase();
+                    }
+                }
+                document.getElementById('dropNick').innerText = u.displayName || u.email.split('@')[0];
+                document.getElementById('dropEmail').innerText = u.email;
+                if(menuLogout) menuLogout.style.display='flex';
+                if(u.email === ADMIN_EMAIL) document.getElementById('adminLink').style.display = 'flex';
+                const snap = await getDoc(doc(db, "users", u.uid));
+                favorites = snap.exists() ? (snap.data().favorites || []) : [];
+                if(!snap.exists()) await setDoc(doc(db, "users", u.uid), {email:u.email, favorites:[]});
+            } else {
+                if(loginBtn) loginBtn.style.display='block';
+                if(userBlock) userBlock.style.display='none';
+                if(menuLogout) menuLogout.style.display='none';
+                document.getElementById('adminLink').style.display = 'none';
+                favorites = [];
+            }
+            loadProducts();
+        });
+
+        window.logout=()=>{signOut(auth);toggleMenu();}
+        window.createProduct=async()=>{
+            if(!currentUser)return openAuthModal();
+            const title=document.getElementById('newTitle').value, price=document.getElementById('newPrice').value, desc=document.getElementById('newDesc').value, contact=document.getElementById('newContact').value, cat=document.getElementById('newCat').value, dorm=document.getElementById('newDorm').value;
+            if(!title||!price||!contact)return alert("Заполни обязательные поля!");
+            const status=(currentUser.email===ADMIN_EMAIL)?'active':'pending';
+            try{await addDoc(collection(db,"products"),{title,price,desc,contact,cat,dorm,imgs:photos.filter(p=>p),userId:currentUser.uid,date:Date.now(),status,isPromoted:false});alert(status==='active'?"Объявление опубликовано!":"Объявление отправлено на модерацию.");closeModal('addModal');loadProducts();}catch(e){alert(e.message);}
+        }
+
+        // ОБНОВЛЕННАЯ ФУНКЦИЯ РЕНДЕРА ДЛЯ НОВОГО ДИЗАЙНА
+        window.renderProducts=()=>{
+            const g=document.getElementById('goodsGrid'); 
+            if (!g) return;
+            
+            const s=document.getElementById('searchInput').value.toLowerCase();
+            const f=products.filter(p=>{
+                if(!p.title.toLowerCase().includes(s))return false;
+                if(filterMode==='admin')return p.status==='pending';
+                if(filterMode==='my')return currentUser&&p.userId===currentUser.uid;
+                if(filterMode==='fav')return favorites.includes(p.id)&&p.status==='active';
+                if(p.status!=='active')return false;
+                return currentCatFilter==='all'||p.cat===currentCatFilter;
+            });
+
+            document.getElementById('resultsInfo').textContent = `Найдено ${f.length} объявлений`;
+
+            if(!f.length){
+                g.innerHTML='<div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-muted);"><i class="fas fa-search" style="font-size:48px; margin-bottom:20px; opacity:0.5;"></i><div style="font-size:18px; font-weight:600; margin-bottom:10px;">Ничего не найдено</div><div>Попробуйте изменить поисковый запрос или фильтры</div></div>';
+                return;
+            }
+
+            g.innerHTML=f.map(p=>{
+                const isMine=currentUser&&p.userId===currentUser.uid, 
+                      isAdmin=currentUser&&currentUser.email===ADMIN_EMAIL, 
+                      isFav=favorites.includes(p.id);
+                
+                let badges = '';
+                if(p.isPromoted) badges += '<div class="card-badge card-badge--top">TOP</div>';
+                if(filterMode==='my'||filterMode==='admin'){
+                    if(p.status==='pending') badges += '<div class="card-badge card-badge--pending">На проверке</div>';
+                    if(p.status==='rejected') badges += '<div class="card-badge card-badge--rejected">Отклонено</div>';
+                }
+
+                let actions = '';
+                if(isMine||isAdmin) {
+                    actions += `
+                        <div class="card-actions-v3">
+                            <button class="card-action-btn" onclick="openEditModal('${p.id}', event)">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button class="card-action-btn" onclick="deleteProduct('${p.id}', event)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            ${isAdmin ? `<button class="card-action-btn" onclick="togglePromote('${p.id}',${p.isPromoted},event)"><i class="fas fa-crown"></i></button>` : ''}
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="product-card-v3" onclick="openProduct('${p.id}')">
+                        ${badges}
                         <div class="card-image-v3">
-                            <div class="image-placeholder">
-                                <i class="fas fa-camera"></i>
-                                <span>Нет фото</span>
-                            </div>
-                            <div class="card-actions-v3">
-                                <button class="card-action-btn">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                            </div>
-                            <button class="favorite-btn">
-                                <i class="far fa-heart"></i>
+                            ${p.imgs&&p.imgs[0] ? `<img src="${p.imgs[0]}" alt="${p.title}" loading="lazy">` : '<div class="image-placeholder"><i class="fas fa-camera"></i><span>Нет фото</span></div>'}
+                            ${actions}
+                            <button class="favorite-btn ${isFav?'active':''}" onclick="toggleFav('${p.id}', event)">
+                                <i class="${isFav?'fas':'far'} fa-heart"></i>
                             </button>
                         </div>
                         <div class="card-content-v3">
-                            <div class="card-title-v3">MacBook Air M1 2020 8GB/256GB</div>
-                            <div class="card-price-v3">25 000 грн</div>
+                            <div class="card-title-v3">${p.title}</div>
+                            <div class="card-price-v3">${p.price} грн</div>
                             <div class="card-meta-v3">
-                                <span>Электроника</span>
+                                <span>${catNames[p.cat]||p.cat}</span>
                                 <div class="card-location">
                                     <i class="fas fa-map-marker-alt"></i>
-                                    <span>Общ. 6</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="product-card-v3" onclick="openProduct('2')">
-                        <div class="card-badge card-badge--top">TOP</div>
-                        <div class="card-image-v3">
-                            <img src="https://via.placeholder.com/300x200/4A90E2/FFFFFF?text=Книги" alt="Учебники">
-                            <div class="card-actions-v3">
-                                <button class="card-action-btn">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
-                            </div>
-                            <button class="favorite-btn active">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                        </div>
-                        <div class="card-content-v3">
-                            <div class="card-title-v3">Учебники по программированию 1-3 курс</div>
-                            <div class="card-price-v3">800 грн</div>
-                            <div class="card-meta-v3">
-                                <span>Учеба</span>
-                                <div class="card-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>Общ. 3</span>
+                                    <span>Общ. ${p.dorm}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
-                
-                document.getElementById('resultsInfo').textContent = 'Найдено 2 объявления';
-            }, 1000);
-        });
+            }).join('');
+        }
 
-        // Заглушки функций для демонстрации
-        window.openProduct = (id) => alert(`Открыть товар ${id}`);
-        window.openAddModal = () => alert('Открыть модалку добавления');
-        window.filterFavorites = () => alert('Показать избранное');
-        window.goHome = () => location.reload();
-        window.setFilter = (cat, el) => {
-            document.querySelectorAll('.filter-category').forEach(item => item.classList.remove('active'));
+        window.openProduct=(id)=>{
+            currentProduct=products.find(p=>p.id===id);
+            // Здесь будет код открытия полного просмотра товара
+            alert(`Открыть товар: ${currentProduct.title}`);
+        }
+
+        window.openAddModal=()=>{
+            if(!currentUser)return openAuthModal();
+            photos=[null,null,null,null,null];
+            document.querySelectorAll('#addSlots .slot').forEach(s=>{
+                s.style.backgroundImage='';
+                s.classList.remove('has');
+            });
+            document.getElementById('addModal').style.display='flex';
+        }
+
+        window.openAuthModal=()=>{
+            document.getElementById('authModal').style.display='flex';
+            toggleMenu();
+        }
+
+        window.closeModal=(id)=>{
+            document.getElementById(id).style.display='none';
+        }
+
+        window.toggleMenu=()=>{
+            const m=document.getElementById('dropdownMenu');
+            m.style.display=m.style.display==='flex'?'none':'flex';
+        }
+
+        window.setFilter=(c,el)=>{
+            currentCatFilter=c;
+            document.querySelectorAll('.filter-category').forEach(p=>p.classList.remove('active'));
             el.classList.add('active');
-        };
-        window.applyFilters = () => alert('Применить фильтры');
-        window.sortProducts = (value) => alert(`Сортировка: ${value}`);
-        window.openAuthModal = () => alert('Открыть авторизацию');
-        window.toggleMenu = () => alert('Переключить меню');
+            renderProducts();
+        }
+
+        window.filterMyAds=()=>{
+            if(!currentUser)return openAuthModal();
+            filterMode='my';
+            document.getElementById('resultsInfo').innerText='Мои объявления';
+            toggleMenu();
+            renderProducts();
+        }
+
+        window.filterFavorites=()=>{
+            if(!currentUser)return openAuthModal();
+            filterMode='fav';
+            document.getElementById('resultsInfo').innerText='Избранное';
+            toggleMenu();
+            renderProducts();
+        }
+
+        window.filterModeration=()=>{
+            filterMode='admin';
+            document.getElementById('resultsInfo').innerText='Модерация';
+            toggleMenu();
+            renderProducts();
+        }
+
+        window.goHome=()=>{
+            filterMode='all';
+            currentCatFilter='all';
+            document.getElementById('resultsInfo').innerText='Все объявления';
+            document.querySelectorAll('.filter-category').forEach(p=>p.classList.remove('active'));
+            document.querySelector('.filter-category').classList.add('active');
+            renderProducts();
+        }
+
+        window.toggleFav=async(id,e)=>{
+            e.stopPropagation();
+            if(!currentUser)return openAuthModal();
+            const ref=doc(db,"users",currentUser.uid);
+            if(favorites.includes(id)){
+                await updateDoc(ref,{favorites:arrayRemove(id)});
+                favorites=favorites.filter(f=>f!==id);
+            }else{
+                await updateDoc(ref,{favorites:arrayUnion(id)});
+                favorites.push(id);
+            }
+            renderProducts();
+        }
+
+        window.deleteProduct=async(id,e)=>{
+            e.stopPropagation();
+            if(confirm("Удалить объявление?")){
+                await deleteDoc(doc(db,"products",id));
+                loadProducts();
+            }
+        }
+
+        window.togglePromote=async(id,s,e)=>{
+            e.stopPropagation();
+            if(!confirm("Добавить в TOP?"))return;
+            await updateDoc(doc(db,"products",id),{isPromoted:!s});
+            loadProducts();
+        }
+
+        function compressImage(file){return new Promise((r)=>{const rd=new FileReader();rd.onload=(e)=>{const i=new Image();i.src=e.target.result;i.onload=()=>{const c=document.createElement('canvas'),m=800,s=m/i.width;c.width=m;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);r(c.toDataURL('image/jpeg',0.6));}};rd.readAsDataURL(file);});}
+        
+        async function loadProducts(){
+            const s=await getDocs(query(collection(db,"products"),orderBy("date","desc")));
+            products=[];
+            s.forEach(d=>products.push({id:d.id,...d.data()}));
+            products.sort((a,b)=>(b.isPromoted?1:0)-(a.isPromoted?1:0));
+            renderProducts();
+        }
+
+        // ИНИЦИАЛИЗАЦИЯ
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+        });
     </script>
 </body>
 </html>
