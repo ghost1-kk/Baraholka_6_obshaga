@@ -12,6 +12,7 @@
         })();
     </script>
     <style>
+        /* Все CSS стили остаются как в вашем коде */
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -782,6 +783,27 @@
         .slot.has .slot-del { 
             display: flex; 
         }
+
+        .lang-switcher {
+            display: flex;
+            gap: 5px;
+            margin-left: 10px;
+        }
+        .lang-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .lang-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -793,12 +815,12 @@
                         <div class="logo-icon">
                             <i class="fas fa-store"></i>
                         </div>
-                        БАРАХОЛКА
+                        <span data-lang="logo">БАРАХОЛКА</span>
                     </div>
                     
                     <div class="search-bar-v3">
                         <i class="fas fa-search search-icon-v3"></i>
-                        <input type="text" class="search-input-v3" placeholder="Поиск товаров..." id="searchInput" oninput="renderProducts()">
+                        <input type="text" class="search-input-v3" data-lang-placeholder="search_placeholder" id="searchInput" oninput="renderProducts()">
                         <button class="search-filters-btn" onclick="renderProducts()">
                             <i class="fas fa-search"></i>
                         </button>
@@ -806,21 +828,27 @@
                 </div>
 
                 <div class="header-right">
+                    <div class="lang-switcher">
+                        <button class="lang-btn active" onclick="setLanguage('ru')">RU</button>
+                        <button class="lang-btn" onclick="setLanguage('ua')">UA</button>
+                        <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+                    </div>
+
                     <button class="header-btn" onclick="openAddModal()">
                         <i class="fas fa-plus"></i>
-                        <span>Подать объявление</span>
+                        <span data-lang="add_ad">Подать объявление</span>
                     </button>
                     
                     <button class="header-btn" onclick="filterFavorites()">
                         <i class="far fa-heart"></i>
-                        <span>Избранное</span>
+                        <span data-lang="favorites">Избранное</span>
                     </button>
 
                     <div class="user-menu">
                         <div id="authSection">
                             <div id="loginBtn" class="header-btn header-btn--primary" onclick="openAuthModal()">
                                 <i class="fas fa-sign-in-alt"></i>
-                                <span>Войти</span>
+                                <span data-lang="login">Войти</span>
                             </div>
                             <div id="userBlock" class="user-avatar-v3" style="display:none;" onclick="toggleMenu()">
                                 <i class="far fa-user" id="avatarIcon"></i>
@@ -833,19 +861,19 @@
                                 <div id="dropEmail" style="font-size:12px; color:var(--text-muted);"></div>
                             </div>
                             <div class="menu-item" onclick="filterMyAds()" style="padding: 12px 15px; cursor: pointer; color: var(--text-primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
-                                <i class="fas fa-box"></i> Мои товары
+                                <i class="fas fa-box"></i> <span data-lang="my_ads">Мои товары</span>
                             </div>
                             <div class="menu-item" onclick="filterFavorites()" style="padding: 12px 15px; cursor: pointer; color: var(--text-primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
-                                <i class="fas fa-heart"></i> Избранное
+                                <i class="fas fa-heart"></i> <span data-lang="favorites">Избранное</span>
                             </div>
                             <div class="menu-item" id="adminLink" style="display:none; color:orange; padding: 12px 15px; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;" onclick="filterModeration()">
-                                <i class="fas fa-shield-alt"></i> Модерация
+                                <i class="fas fa-shield-alt"></i> <span data-lang="moderation">Модерация</span>
                             </div>
                             <div class="menu-item" onclick="openSettingsModal()" style="padding: 12px 15px; cursor: pointer; color: var(--text-primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
-                                <i class="fas fa-cog"></i> Настройки
+                                <i class="fas fa-cog"></i> <span data-lang="settings">Настройки</span>
                             </div>
                             <div class="menu-item danger" id="menuLogout" style="display:none; color:red; padding: 12px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px;" onclick="logout()">
-                                <i class="fas fa-sign-out-alt"></i> Выйти
+                                <i class="fas fa-sign-out-alt"></i> <span data-lang="logout">Выйти</span>
                             </div>
                         </div>
                     </div>
@@ -857,32 +885,32 @@
             <div class="filter-section">
                 <h3 class="filter-title">
                     <i class="fas fa-list"></i>
-                    Категории
+                    <span data-lang="categories">Категории</span>
                 </h3>
                 <div class="filter-categories">
                     <div class="filter-category active" onclick="setFilter('all', this)">
                         <i class="fas fa-th-large"></i>
-                        Все товары
+                        <span data-lang="all">Все товары</span>
                     </div>
                     <div class="filter-category" onclick="setFilter('tech', this)">
                         <i class="fas fa-laptop"></i>
-                        Электроника
+                        <span data-lang="electronics">Электроника</span>
                     </div>
                     <div class="filter-category" onclick="setFilter('home', this)">
                         <i class="fas fa-home"></i>
-                        Для дома
+                        <span data-lang="home">Для дома</span>
                     </div>
                     <div class="filter-category" onclick="setFilter('study', this)">
                         <i class="fas fa-book"></i>
-                        Учеба
+                        <span data-lang="study">Учеба</span>
                     </div>
                     <div class="filter-category" onclick="setFilter('clothes', this)">
                         <i class="fas fa-tshirt"></i>
-                        Одежда
+                        <span data-lang="clothes">Одежда</span>
                     </div>
                     <div class="filter-category" onclick="setFilter('other', this)">
                         <i class="fas fa-ellipsis-h"></i>
-                        Разное
+                        <span data-lang="other">Разное</span>
                     </div>
                 </div>
             </div>
@@ -890,14 +918,14 @@
             <div class="filter-section">
                 <h3 class="filter-title">
                     <i class="fas fa-filter"></i>
-                    Фильтры
+                    <span data-lang="filters">Фильтры</span>
                 </h3>
                 <div class="price-range">
-                    <input type="number" class="price-input" placeholder="От" id="priceMin">
-                    <input type="number" class="price-input" placeholder="До" id="priceMax">
+                    <input type="number" class="price-input" data-lang-placeholder="price_from" id="priceMin">
+                    <input type="number" class="price-input" data-lang-placeholder="price_to" id="priceMax">
                 </div>
                 <select class="price-input" id="dormFilter">
-                    <option value="">Все общежития</option>
+                    <option value="" data-lang="all_dorms">Все общежития</option>
                     <option value="1">Общежитие 1</option>
                     <option value="2">Общежитие 2</option>
                     <option value="3">Общежитие 3</option>
@@ -907,7 +935,7 @@
                     <option value="7">Общежитие 7</option>
                     <option value="8">Общежитие 8</option>
                 </select>
-                <button class="apply-filters" onclick="applyFilters()">
+                <button class="apply-filters" onclick="applyFilters()" data-lang="apply_filters">
                     Применить фильтры
                 </button>
             </div>
@@ -919,9 +947,9 @@
                     Загрузка...
                 </div>
                 <select class="sort-select" onchange="sortProducts(this.value)">
-                    <option value="newest">Сначала новые</option>
-                    <option value="cheapest">Сначала дешевые</option>
-                    <option value="expensive">Сначала дорогие</option>
+                    <option value="newest" data-lang="newest">Сначала новые</option>
+                    <option value="cheapest" data-lang="cheapest">Сначала дешевые</option>
+                    <option value="expensive" data-lang="expensive">Сначала дорогие</option>
                 </select>
             </div>
 
@@ -937,23 +965,23 @@
     <nav class="mobile-nav">
         <button class="nav-item active" onclick="goHome()">
             <i class="fas fa-home"></i>
-            <span>Главная</span>
+            <span data-lang="home">Главная</span>
         </button>
         <button class="nav-item" onclick="document.getElementById('searchInput').focus()">
             <i class="fas fa-search"></i>
-            <span>Поиск</span>
+            <span data-lang="search">Поиск</span>
         </button>
         <button class="nav-item" onclick="openAddModal()">
             <i class="fas fa-plus"></i>
-            <span>Добавить</span>
+            <span data-lang="add">Добавить</span>
         </button>
         <button class="nav-item" onclick="filterFavorites()">
             <i class="far fa-heart"></i>
-            <span>Избранное</span>
+            <span data-lang="favorites">Избранное</span>
         </button>
         <button class="nav-item" onclick="openAuthModal()">
             <i class="far fa-user"></i>
-            <span>Профиль</span>
+            <span data-lang="profile">Профиль</span>
         </button>
     </nav>
 
@@ -969,35 +997,31 @@
     <div id="authModal" class="modal-overlay">
         <div class="modal-box" style="text-align:center;">
             <div class="close-btn" onclick="closeModal('authModal')"><i class="fas fa-times"></i></div>
-            <h2 style="margin-bottom:20px;">Вход</h2>
+            <h2 style="margin-bottom:20px;" data-lang="login">Вход</h2>
             <button onclick="handleGoogleLogin()" style="width:100%; padding:12px; border:1px solid var(--border); background:var(--bg-primary); margin-bottom:10px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:10px; color:var(--text-primary);">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google
             </button>
-            <input type="email" id="emailInput" class="input-field" placeholder="Email">
-            <input type="password" id="passInput" class="input-field" placeholder="Пароль">
-            <button class="btn-submit" onclick="handleEmailAuth()">Войти</button>
+            <input type="email" id="emailInput" class="input-field" data-lang-placeholder="email" >
+            <input type="password" id="passInput" class="input-field" data-lang-placeholder="password">
+            <button class="btn-submit" onclick="handleEmailAuth()" data-lang="login">Войти</button>
         </div>
     </div>
 
     <div id="addModal" class="modal-overlay">
         <div class="modal-box">
             <div class="close-btn" onclick="closeModal('addModal')"><i class="fas fa-times"></i></div>
-            <h2 style="margin-bottom:20px;">Новое объявление</h2>
+            <h2 style="margin-bottom:20px;" data-lang="new_ad">Новое объявление</h2>
             <div class="photo-slots" id="addSlots" style="display: flex; gap: 5px; margin-bottom: 10px;"></div>
-            <input type="file" id="addFile0" hidden onchange="handleFile(0, 'add')">
-            <input type="file" id="addFile1" hidden onchange="handleFile(1, 'add')">
-            <input type="file" id="addFile2" hidden onchange="handleFile(2, 'add')">
-            <input type="file" id="addFile3" hidden onchange="handleFile(3, 'add')">
-            <input type="file" id="addFile4" hidden onchange="handleFile(4, 'add')">
-            <input type="text" id="newTitle" class="input-field" placeholder="Название">
-            <input type="number" id="newPrice" class="input-field" placeholder="Цена">
-            <textarea id="newDesc" class="input-field" rows="4" placeholder="Описание"></textarea>
+            <input type="file" id="addFile0" hidden onchange="handleFile(0, 'add')"><input type="file" id="addFile1" hidden onchange="handleFile(1, 'add')"><input type="file" id="addFile2" hidden onchange="handleFile(2, 'add')"><input type="file" id="addFile3" hidden onchange="handleFile(3, 'add')"><input type="file" id="addFile4" hidden onchange="handleFile(4, 'add')">
+            <input type="text" id="newTitle" class="input-field" data-lang-placeholder="title">
+            <input type="number" id="newPrice" class="input-field" data-lang-placeholder="price">
+            <textarea id="newDesc" class="input-field" rows="4" data-lang-placeholder="description"></textarea>
             <select id="newCat" class="input-field">
-                <option value="tech">Электроника</option>
-                <option value="home">Дом</option>
-                <option value="study">Учеба</option>
-                <option value="clothes">Одежда</option>
-                <option value="other">Разное</option>
+                <option value="tech" data-lang="electronics">Электроника</option>
+                <option value="home" data-lang="home">Дом</option>
+                <option value="study" data-lang="study">Учеба</option>
+                <option value="clothes" data-lang="clothes">Одежда</option>
+                <option value="other" data-lang="other">Разное</option>
             </select>
             <select id="newDorm" class="input-field">
                 <option value="1">Общежитие №1</option>
@@ -1009,39 +1033,60 @@
                 <option value="7">Общежитие №7</option>
                 <option value="8">Общежитие №8</option>
             </select>
-            <input type="text" id="newContact" class="input-field" placeholder="Telegram (без @)">
-            <button class="btn-submit" onclick="createProduct()">Опубликовать</button>
+            <input type="text" id="newContact" class="input-field" data-lang-placeholder="telegram_contact">
+            <button class="btn-submit" onclick="createProduct()" data-lang="publish">Опубликовать</button>
         </div>
     </div>
 
     <div id="editModal" class="modal-overlay">
         <div class="modal-box">
             <div class="close-btn" onclick="closeModal('editModal')"><i class="fas fa-times"></i></div>
-            <h2>Редактировать</h2>
+            <h2 data-lang="edit">Редактировать</h2>
             <input type="hidden" id="editId">
             <div class="photo-slots" id="editSlots" style="display: flex; gap: 5px; margin-bottom: 10px;"></div>
-            <input type="file" id="editFile0" hidden onchange="handleFile(0, 'edit')">
-            <input type="file" id="editFile1" hidden onchange="handleFile(1, 'edit')">
-            <input type="file" id="editFile2" hidden onchange="handleFile(2, 'edit')">
-            <input type="file" id="editFile3" hidden onchange="handleFile(3, 'edit')">
-            <input type="file" id="editFile4" hidden onchange="handleFile(4, 'edit')">
-            <input type="text" id="editTitle" class="input-field" placeholder="Название">
-            <input type="number" id="editPrice" class="input-field" placeholder="Цена">
-            <textarea id="editDesc" class="input-field" rows="4" placeholder="Описание"></textarea>
-            <input type="text" id="editContact" class="input-field" placeholder="Telegram">
-            <button class="btn-submit" onclick="saveEdit()">Сохранить</button>
+            <input type="file" id="editFile0" hidden onchange="handleFile(0, 'edit')"><input type="file" id="editFile1" hidden onchange="handleFile(1, 'edit')"><input type="file" id="editFile2" hidden onchange="handleFile(2, 'edit')"><input type="file" id="editFile3" hidden onchange="handleFile(3, 'edit')"><input type="file" id="editFile4" hidden onchange="handleFile(4, 'edit')">
+            <input type="text" id="editTitle" class="input-field" data-lang-placeholder="title">
+            <input type="number" id="editPrice" class="input-field" data-lang-placeholder="price">
+            <textarea id="editDesc" class="input-field" rows="4" data-lang-placeholder="description"></textarea>
+            <select id="editCat" class="input-field">
+                <option value="tech" data-lang="electronics">Электроника</option>
+                <option value="home" data-lang="home">Дом</option>
+                <option value="study" data-lang="study">Учеба</option>
+                <option value="clothes" data-lang="clothes">Одежда</option>
+                <option value="other" data-lang="other">Разное</option>
+            </select>
+            <select id="editDorm" class="input-field">
+                <option value="1">Общежитие №1</option>
+                <option value="2">Общежитие №2</option>
+                <option value="3">Общежитие №3</option>
+                <option value="4">Общежитие №4</option>
+                <option value="5">Общежитие №5</option>
+                <option value="6">Общежитие №6</option>
+                <option value="7">Общежитие №7</option>
+                <option value="8">Общежитие №8</option>
+            </select>
+            <input type="text" id="editContact" class="input-field" data-lang-placeholder="telegram">
+            <button class="btn-submit" onclick="saveEdit()" data-lang="save">Сохранить</button>
         </div>
     </div>
 
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-box">
             <div class="close-btn" onclick="closeModal('settingsModal')"><i class="fas fa-times"></i></div>
-            <h2>Настройки</h2>
+            <h2 data-lang="settings">Настройки</h2>
             <div class="settings-row" style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
-                <div>Тема</div>
+                <div data-lang="theme">Тема</div>
                 <div style="display:flex; gap:5px;">
                     <button class="opt-btn active" id="themeLight" onclick="setTheme('light')" style="padding: 8px 15px; border: 2px solid var(--border); background: var(--bg-primary); cursor: pointer; color: var(--text-primary); border-radius: 5px;">☀️</button>
                     <button class="opt-btn" id="themeDark" onclick="setTheme('dark')" style="padding: 8px 15px; border: 2px solid var(--border); background: var(--bg-primary); cursor: pointer; color: var(--text-primary); border-radius: 5px;">🌙</button>
+                </div>
+            </div>
+            <div class="settings-row" style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+                <div data-lang="language">Язык</div>
+                <div style="display:flex; gap:5px;">
+                    <button class="lang-btn ${currentLang === 'ru' ? 'active' : ''}" onclick="setLanguage('ru')">RU</button>
+                    <button class="lang-btn ${currentLang === 'ua' ? 'active' : ''}" onclick="setLanguage('ua')">UA</button>
+                    <button class="lang-btn ${currentLang === 'en' ? 'active' : ''}" onclick="setLanguage('en')">EN</button>
                 </div>
             </div>
         </div>
@@ -1071,6 +1116,199 @@
         let currentUser=null, products=[], favorites=[], filterMode='all', currentCatFilter='all', photos=[null,null,null,null,null], currentProduct=null;
         const catNames={tech:'Электроника',home:'Дом',study:'Учеба',clothes:'Одежда',other:'Разное'};
 
+        // СИСТЕМА ЯЗЫКОВ
+        const translations = {
+            ru: {
+                logo: "БАРАХОЛКА",
+                search_placeholder: "Поиск товаров...",
+                add_ad: "Подать объявление",
+                favorites: "Избранное",
+                login: "Войти",
+                my_ads: "Мои товары",
+                moderation: "Модерация",
+                settings: "Настройки",
+                logout: "Выйти",
+                categories: "Категории",
+                all: "Все товары",
+                electronics: "Электроника",
+                home: "Для дома",
+                study: "Учеба",
+                clothes: "Одежда",
+                other: "Разное",
+                filters: "Фильтры",
+                price_from: "От",
+                price_to: "До",
+                all_dorms: "Все общежития",
+                apply_filters: "Применить фильтры",
+                newest: "Сначала новые",
+                cheapest: "Сначала дешевые",
+                expensive: "Сначала дорогие",
+                search: "Поиск",
+                add: "Добавить",
+                profile: "Профиль",
+                new_ad: "Новое объявление",
+                title: "Название",
+                price: "Цена",
+                description: "Описание",
+                telegram_contact: "Telegram (без @)",
+                publish: "Опубликовать",
+                edit: "Редактировать",
+                save: "Сохранить",
+                theme: "Тема",
+                language: "Язык",
+                email: "Email",
+                password: "Пароль",
+                contact_seller: "Написать продавцу",
+                approve: "Одобрить",
+                reject: "Отклонить",
+                no_description: "Нет описания",
+                no_photo: "Нет фото",
+                found_ads: "Найдено",
+                ads: "объявлений",
+                nothing_found: "Ничего не найдено",
+                try_filters: "Попробуйте изменить поисковый запрос или фильтры"
+            },
+            ua: {
+                logo: "БАРАХОЛКА",
+                search_placeholder: "Пошук товарів...",
+                add_ad: "Подати оголошення",
+                favorites: "Обране",
+                login: "Увійти",
+                my_ads: "Мої товари",
+                moderation: "Модерація",
+                settings: "Налаштування",
+                logout: "Вийти",
+                categories: "Категорії",
+                all: "Всі товари",
+                electronics: "Електроніка",
+                home: "Для дому",
+                study: "Навчання",
+                clothes: "Одяг",
+                other: "Різне",
+                filters: "Фільтри",
+                price_from: "Від",
+                price_to: "До",
+                all_dorms: "Всі гуртожитки",
+                apply_filters: "Застосувати фільтри",
+                newest: "Спочатку нові",
+                cheapest: "Спочатку дешеві",
+                expensive: "Спочатку дорогі",
+                search: "Пошук",
+                add: "Додати",
+                profile: "Профіль",
+                new_ad: "Нове оголошення",
+                title: "Назва",
+                price: "Ціна",
+                description: "Опис",
+                telegram_contact: "Telegram (без @)",
+                publish: "Опублікувати",
+                edit: "Редагувати",
+                save: "Зберегти",
+                theme: "Тема",
+                language: "Мова",
+                email: "Email",
+                password: "Пароль",
+                contact_seller: "Написати продавцю",
+                approve: "Схвалити",
+                reject: "Відхилити",
+                no_description: "Немає опису",
+                no_photo: "Немає фото",
+                found_ads: "Знайдено",
+                ads: "оголошень",
+                nothing_found: "Нічого не знайдено",
+                try_filters: "Спробуйте змінити пошуковий запит або фільтри"
+            },
+            en: {
+                logo: "MARKETPLACE",
+                search_placeholder: "Search products...",
+                add_ad: "Post ad",
+                favorites: "Favorites",
+                login: "Login",
+                my_ads: "My ads",
+                moderation: "Moderation",
+                settings: "Settings",
+                logout: "Logout",
+                categories: "Categories",
+                all: "All products",
+                electronics: "Electronics",
+                home: "Home",
+                study: "Study",
+                clothes: "Clothes",
+                other: "Other",
+                filters: "Filters",
+                price_from: "From",
+                price_to: "To",
+                all_dorms: "All dorms",
+                apply_filters: "Apply filters",
+                newest: "Newest first",
+                cheapest: "Cheapest first",
+                expensive: "Expensive first",
+                search: "Search",
+                add: "Add",
+                profile: "Profile",
+                new_ad: "New ad",
+                title: "Title",
+                price: "Price",
+                description: "Description",
+                telegram_contact: "Telegram (without @)",
+                publish: "Publish",
+                edit: "Edit",
+                save: "Save",
+                theme: "Theme",
+                language: "Language",
+                email: "Email",
+                password: "Password",
+                contact_seller: "Contact seller",
+                approve: "Approve",
+                reject: "Reject",
+                no_description: "No description",
+                no_photo: "No photo",
+                found_ads: "Found",
+                ads: "ads",
+                nothing_found: "Nothing found",
+                try_filters: "Try changing search query or filters"
+            }
+        };
+
+        let currentLang = localStorage.getItem('siteLang') || 'ru';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('siteLang', lang);
+            updateLanguage();
+            
+            // Обновляем активные кнопки языка
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                if (btn.textContent === lang.toUpperCase()) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLang];
+            
+            // Обновляем тексты с data-lang
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                const key = el.getAttribute('data-lang');
+                if (t[key]) el.textContent = t[key];
+            });
+            
+            // Обновляем placeholder'ы
+            document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-lang-placeholder');
+                if (t[key]) el.placeholder = t[key];
+            });
+            
+            // Обновляем опции select'ов
+            document.querySelectorAll('option[data-lang]').forEach(el => {
+                const key = el.getAttribute('data-lang');
+                if (t[key]) el.textContent = t[key];
+            });
+        }
+
+        // ИНИЦИАЛИЗАЦИЯ СЛОТОВ
         function initSlots(mode) { 
             const c=document.getElementById(mode+'Slots'); 
             if(!c)return; 
@@ -1147,10 +1385,11 @@
                 return currentCatFilter==='all'||p.cat===currentCatFilter;
             });
 
-            document.getElementById('resultsInfo').textContent = `Найдено ${f.length} объявлений`;
+            const t = translations[currentLang];
+            document.getElementById('resultsInfo').textContent = `${t.found_ads} ${f.length} ${t.ads}`;
 
             if(!f.length){
-                g.innerHTML='<div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-muted);"><i class="fas fa-search" style="font-size:48px; margin-bottom:20px; opacity:0.5;"></i><div style="font-size:18px; font-weight:600; margin-bottom:10px;">Ничего не найдено</div><div>Попробуйте изменить поисковый запрос или фильтры</div></div>';
+                g.innerHTML=`<div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-muted);"><i class="fas fa-search" style="font-size:48px; margin-bottom:20px; opacity:0.5;"></i><div style="font-size:18px; font-weight:600; margin-bottom:10px;">${t.nothing_found}</div><div>${t.try_filters}</div></div>`;
                 return;
             }
 
@@ -1162,8 +1401,8 @@
                 let badges = '';
                 if(p.isPromoted) badges += '<div class="card-badge card-badge--top">TOP</div>';
                 if(filterMode==='my'||filterMode==='admin'){
-                    if(p.status==='pending') badges += '<div class="card-badge card-badge--pending">На проверке</div>';
-                    if(p.status==='rejected') badges += '<div class="card-badge card-badge--rejected">Отклонено</div>';
+                    if(p.status==='pending') badges += '<div class="card-badge card-badge--pending">'+t.pending+'</div>';
+                    if(p.status==='rejected') badges += '<div class="card-badge card-badge--rejected">'+t.rejected+'</div>';
                 }
 
                 let actions = '';
@@ -1185,7 +1424,7 @@
                     <div class="product-card-v3" onclick="openProduct('${p.id}')">
                         ${badges}
                         <div class="card-image-v3">
-                            ${p.imgs&&p.imgs[0] ? `<img src="${p.imgs[0]}" alt="${p.title}" loading="lazy">` : '<div class="image-placeholder"><i class="fas fa-camera"></i><span>Нет фото</span></div>'}
+                            ${p.imgs&&p.imgs[0] ? `<img src="${p.imgs[0]}" alt="${p.title}" loading="lazy">` : `<div class="image-placeholder"><i class="fas fa-camera"></i><span>${t.no_photo}</span></div>`}
                             ${actions}
                             <button class="favorite-btn ${isFav?'active':''}" onclick="toggleFav('${p.id}', event)">
                                 <i class="${isFav?'fas':'far'} fa-heart"></i>
@@ -1198,7 +1437,7 @@
                                 <span>${catNames[p.cat]||p.cat}</span>
                                 <div class="card-location">
                                     <i class="fas fa-map-marker-alt"></i>
-                                    <span>Общ. ${p.dorm}</span>
+                                    <span>${t.dorm} ${p.dorm}</span>
                                 </div>
                             </div>
                         </div>
@@ -1211,6 +1450,7 @@
             currentProduct=products.find(p=>p.id===id);
             if (!currentProduct) return;
             
+            const t = translations[currentLang];
             const productModal = document.createElement('div');
             productModal.className = 'modal-overlay';
             productModal.style.display = 'flex';
@@ -1227,31 +1467,31 @@
                         <div>
                             <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">${catNames[currentProduct.cat] || currentProduct.cat}</div>
                             <div style="background: var(--bg-secondary); padding: 4px 12px; border-radius: var(--radius-sm); display: inline-block; font-size: 12px; font-weight: bold; color: var(--text-primary); margin-bottom: 10px;">
-                                Общежитие №${currentProduct.dorm}
+                                ${t.dorm} ${currentProduct.dorm}
                             </div>
                             <h1 style="font-size: 24px; font-weight: 800; margin: 10px 0; line-height: 1.2;">${currentProduct.title}</h1>
                             <div style="font-size: 32px; font-weight: 900; color: var(--primary); margin-bottom: 20px;">${currentProduct.price} грн</div>
                             
                             <div style="margin-bottom: 20px;">
-                                <div style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">Описание:</div>
+                                <div style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">${t.description}:</div>
                                 <div style="background: var(--bg-secondary); padding: 15px; border-radius: var(--radius-md); border: 1px solid var(--border); line-height: 1.6; white-space: pre-wrap;">
-                                    ${currentProduct.desc || 'Нет описания'}
+                                    ${currentProduct.desc || t.no_description}
                                 </div>
                             </div>
 
                             <div style="display: flex; flex-direction: column; gap: 10px;">
                                 <a href="https://t.me/${currentProduct.contact.replace('@', '')}" target="_blank" 
                                    style="display: block; padding: 15px; background: var(--primary); color: white; text-align: center; border-radius: var(--radius-md); font-weight: bold; text-decoration: none;">
-                                    📞 Написать в Telegram
+                                    📞 ${t.contact_seller}
                                 </a>
                                 
                                 ${currentUser && currentUser.email === ADMIN_EMAIL && currentProduct.status === 'pending' ? `
                                     <div style="display: flex; gap: 10px;">
                                         <button onclick="adminAction('approve')" style="flex: 1; padding: 14px; background: var(--success); color: white; border: none; border-radius: var(--radius-md); font-weight: 800; cursor: pointer;">
-                                            Одобрить
+                                            ${t.approve}
                                         </button>
                                         <button onclick="adminAction('reject')" style="flex: 1; padding: 14px; background: var(--danger); color: white; border: none; border-radius: var(--radius-md); font-weight: 800; cursor: pointer;">
-                                            Отклонить
+                                            ${t.reject}
                                         </button>
                                     </div>
                                 ` : ''}
@@ -1300,6 +1540,8 @@
             document.getElementById('editPrice').value=p.price;
             document.getElementById('editDesc').value=p.desc||'';
             document.getElementById('editContact').value=p.contact;
+            document.getElementById('editCat').value=p.cat;
+            document.getElementById('editDorm').value=p.dorm;
             
             photos=[null,null,null,null,null];
             
@@ -1322,6 +1564,8 @@
             const price=document.getElementById('editPrice').value;
             const desc=document.getElementById('editDesc').value;
             const contact=document.getElementById('editContact').value;
+            const cat=document.getElementById('editCat').value;
+            const dorm=document.getElementById('editDorm').value;
             
             if(!title||!price||!contact){
                 alert("Заполните обязательные поля!");
@@ -1329,7 +1573,7 @@
             }
             
             try{
-                await updateDoc(doc(db,"products",id),{title,price,desc,contact,imgs:photos.filter(p=>p)});
+                await updateDoc(doc(db,"products",id),{title,price,desc,contact,cat,dorm,imgs:photos.filter(p=>p)});
                 alert("Изменения сохранены!");
                 closeModal('editModal');
                 loadProducts();
@@ -1367,7 +1611,7 @@
         window.filterMyAds=()=>{
             if(!currentUser)return openAuthModal();
             filterMode='my';
-            document.getElementById('resultsInfo').innerText='Мои объявления';
+            document.getElementById('resultsInfo').innerText=translations[currentLang].my_ads;
             toggleMenu();
             renderProducts();
         }
@@ -1375,14 +1619,14 @@
         window.filterFavorites=()=>{
             if(!currentUser)return openAuthModal();
             filterMode='fav';
-            document.getElementById('resultsInfo').innerText='Избранное';
+            document.getElementById('resultsInfo').innerText=translations[currentLang].favorites;
             toggleMenu();
             renderProducts();
         }
 
         window.filterModeration=()=>{
             filterMode='admin';
-            document.getElementById('resultsInfo').innerText='Модерация';
+            document.getElementById('resultsInfo').innerText=translations[currentLang].moderation;
             toggleMenu();
             renderProducts();
         }
@@ -1390,7 +1634,7 @@
         window.goHome=()=>{
             filterMode='all';
             currentCatFilter='all';
-            document.getElementById('resultsInfo').innerText='Все объявления';
+            document.getElementById('resultsInfo').innerText=translations[currentLang].all;
             document.querySelectorAll('.filter-category').forEach(p=>p.classList.remove('active'));
             document.querySelector('.filter-category').classList.add('active');
             renderProducts();
@@ -1477,6 +1721,9 @@
                 document.getElementById('themeLight').classList.add('active');
                 document.getElementById('themeDark').classList.remove('active');
             }
+            
+            // Инициализация языка
+            updateLanguage();
             loadProducts();
         });
     </script>
