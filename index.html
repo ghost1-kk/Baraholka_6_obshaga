@@ -376,8 +376,9 @@
         }
 
         .results-info {
-            font-size: 14px;
-            color: var(--text-muted);
+            font-size: 24px; /* УВЕЛИЧЕН РАЗМЕР */
+            font-weight: 800; /* ЖИРНЫЙ ШРИФТ */
+            color: var(--primary); /* ЗОЛОТОЙ ЦВЕТ */
         }
 
         .sort-select {
@@ -387,6 +388,26 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             font-size: 14px;
+        }
+
+        .filters-row {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
         }
 
         .products-grid-v3 {
@@ -604,6 +625,11 @@
             
             .main-content {
                 padding: var(--space-md);
+            }
+
+            .filters-row {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
 
@@ -843,6 +869,7 @@
                         <span data-lang="add_ad">Подать объявление</span>
                     </button>
                     
+                    <!-- ИЗМЕНЕНО: убрано toggleMenu из кнопки избранного -->
                     <button class="header-btn" onclick="filterFavorites()">
                         <i class="far fa-heart"></i>
                         <span data-lang="favorites">Избранное</span>
@@ -947,14 +974,45 @@
 
         <main class="main-content">
             <div class="content-header">
+                <!-- ИЗМЕНЕНО: заголовок стал больше и жирнее -->
                 <div class="results-info" id="resultsInfo">
-                    Загрузка...
+                    Все объявления
                 </div>
+                <!-- ПЕРЕМЕЩЕНО: фильтр сортировки теперь вверху -->
                 <select class="sort-select" onchange="sortProducts(this.value)">
                     <option value="newest" data-lang="newest">Сначала новые</option>
                     <option value="cheapest" data-lang="cheapest">Сначала дешевые</option>
                     <option value="expensive" data-lang="expensive">Сначала дорогие</option>
                 </select>
+            </div>
+
+            <!-- ДОБАВЛЕНО: строка с фильтрами цены -->
+            <div class="filters-row">
+                <div class="filter-group">
+                    <span class="filter-label">Цена от:</span>
+                    <input type="number" class="price-input" style="width: 100px;" id="mainPriceMin" placeholder="0">
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">до:</span>
+                    <input type="number" class="price-input" style="width: 100px;" id="mainPriceMax" placeholder="9999">
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Общежитие:</span>
+                    <select class="price-input" style="width: 150px;" id="mainDormFilter">
+                        <option value="">Все</option>
+                        <option value="1">Общежитие 1</option>
+                        <option value="2">Общежитие 2</option>
+                        <option value="3">Общежитие 3</option>
+                        <option value="4">Общежитие 4</option>
+                        <option value="5">Общежитие 5</option>
+                        <option value="6">Общежитие 6</option>
+                        <option value="7">Общежитие 7</option>
+                        <option value="8">Общежитие 8</option>
+                    </select>
+                </div>
+                <button class="apply-filters" onclick="applyMainFilters()" style="padding: 8px 16px;">
+                    Применить
+                </button>
             </div>
 
             <div class="products-grid-v3" id="goodsGrid">
@@ -1167,8 +1225,8 @@
                 reject: "Отклонить",
                 no_description: "Нет описания",
                 no_photo: "Нет фото",
-                found_ads: "Найдено",
-                ads: "объявлений",
+                found_ads: "Все объявления",
+                ads: "",
                 nothing_found: "Ничего не найдено",
                 try_filters: "Попробуйте изменить поисковый запрос или фильтры",
                 dorm: "Общежитие"
@@ -1218,8 +1276,8 @@
                 reject: "Відхилити",
                 no_description: "Немає опису",
                 no_photo: "Немає фото",
-                found_ads: "Знайдено",
-                ads: "оголошень",
+                found_ads: "Всі оголошення",
+                ads: "",
                 nothing_found: "Нічого не знайдено",
                 try_filters: "Спробуйте змінити пошуковий запит або фільтри",
                 dorm: "Гуртожиток"
@@ -1269,8 +1327,8 @@
                 reject: "Reject",
                 no_description: "No description",
                 no_photo: "No photo",
-                found_ads: "Found",
-                ads: "ads",
+                found_ads: "All ads",
+                ads: "",
                 nothing_found: "Nothing found",
                 try_filters: "Try changing search query or filters",
                 dorm: "Dorm"
@@ -1387,8 +1445,15 @@
             if (!g) return;
             
             const s=document.getElementById('searchInput').value.toLowerCase();
+            const priceMin = document.getElementById('mainPriceMin').value;
+            const priceMax = document.getElementById('mainPriceMax').value;
+            const dormFilter = document.getElementById('mainDormFilter').value;
+            
             const f=products.filter(p=>{
                 if(!p.title.toLowerCase().includes(s))return false;
+                if(priceMin && p.price < parseInt(priceMin))return false;
+                if(priceMax && p.price > parseInt(priceMax))return false;
+                if(dormFilter && p.dorm !== dormFilter)return false;
                 if(filterMode==='admin')return p.status==='pending';
                 if(filterMode==='my')return currentUser&&p.userId===currentUser.uid;
                 if(filterMode==='fav')return favorites.includes(p.id)&&p.status==='active';
@@ -1397,7 +1462,14 @@
             });
 
             const t = translations[currentLang];
-            document.getElementById('resultsInfo').textContent = `${t.found_ads} ${f.length} ${t.ads}`;
+            
+            // ИЗМЕНЕНО: заголовки для разных режимов
+            let titleText = t.found_ads;
+            if (filterMode === 'fav') titleText = t.favorites;
+            else if (filterMode === 'my') titleText = t.my_ads;
+            else if (filterMode === 'admin') titleText = t.moderation;
+            
+            document.getElementById('resultsInfo').textContent = titleText;
 
             if(!f.length){
                 g.innerHTML=`<div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-muted);"><i class="fas fa-search" style="font-size:48px; margin-bottom:20px; opacity:0.5;"></i><div style="font-size:18px; font-weight:600; margin-bottom:10px;">${t.nothing_found}</div><div>${t.try_filters}</div></div>`;
@@ -1622,22 +1694,19 @@
         window.filterMyAds=()=>{
             if(!currentUser)return openAuthModal();
             filterMode='my';
-            document.getElementById('resultsInfo').innerText=translations[currentLang].my_ads;
-            toggleMenu();
+            toggleMenu(); // закрываем меню
             renderProducts();
         }
 
+        // ИЗМЕНЕНО: убрано toggleMenu из функции избранного
         window.filterFavorites=()=>{
             if(!currentUser)return openAuthModal();
             filterMode='fav';
-            document.getElementById('resultsInfo').innerText=translations[currentLang].favorites;
-            toggleMenu();
             renderProducts();
         }
 
         window.filterModeration=()=>{
             filterMode='admin';
-            document.getElementById('resultsInfo').innerText=translations[currentLang].moderation;
             toggleMenu();
             renderProducts();
         }
@@ -1645,7 +1714,6 @@
         window.goHome=()=>{
             filterMode='all';
             currentCatFilter='all';
-            document.getElementById('resultsInfo').innerText=translations[currentLang].all;
             document.querySelectorAll('.filter-category').forEach(p=>p.classList.remove('active'));
             document.querySelector('.filter-category').classList.add('active');
             renderProducts();
@@ -1696,6 +1764,11 @@
         }
 
         window.applyFilters = function() {
+            renderProducts();
+        }
+
+        // ДОБАВЛЕНО: функция для основных фильтров
+        window.applyMainFilters = function() {
             renderProducts();
         }
 
