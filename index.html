@@ -25,6 +25,9 @@
             color: var(--text-primary);
             line-height: 1.5;
             transition: all 0.3s ease;
+            overflow-x: hidden;
+            max-width: 100%;
+            width: 100%;
         }
 
         :root {
@@ -86,6 +89,7 @@
             grid-template-columns: 280px 1fr;
             grid-template-rows: 70px 1fr;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         @media (max-width: 1024px) {
@@ -367,6 +371,7 @@
             grid-area: main;
             padding: var(--space-xl);
             background: var(--bg-primary);
+            overflow-x: hidden;
         }
 
         .content-header {
@@ -607,6 +612,33 @@
             .main-content {
                 padding: var(--space-md);
             }
+
+            /* ИСПРАВЛЕНИЕ: поиск на мобильных */
+            .mobile-search-bar {
+                display: block !important;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: var(--bg-card);
+                padding: 10px;
+                border-bottom: 1px solid var(--border-light);
+                z-index: 999;
+            }
+            
+            .mobile-search-input {
+                width: 100%;
+                padding: 12px 40px 12px 40px;
+                background: var(--bg-primary);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-md);
+                font-size: 16px;
+            }
+            
+            /* Прячем поиск в мобильной навигации */
+            .mobile-nav .nav-item:nth-child(2) {
+                display: none;
+            }
         }
 
         .nav-item {
@@ -831,6 +863,94 @@
         .settings-lang-btn:hover {
             background: var(--bg-secondary);
         }
+
+        /* ИСПРАВЛЕНИЯ ПРОБЛЕМ */
+
+        /* 1. Убираем горизонтальную прокрутку на всех устройствах */
+        html, body {
+            overflow-x: hidden;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        /* 2. Поиск на мобильных - исправлено */
+        .mobile-search-bar {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-search-bar {
+                display: block;
+            }
+        }
+
+        /* 3. Галерея фото в объявлениях */
+        .photo-gallery {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .photo-gallery img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .photo-gallery img.active {
+            border-color: var(--primary);
+        }
+
+        .main-photo {
+            width: 100%;
+            height: 300px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .main-photo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* 4. Исправляем текст описания - убираем центрирование */
+        .description-text {
+            text-align: left;
+            background: var(--bg-secondary);
+            padding: 15px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+        }
+
+        /* Дополнительные исправления для мобильной версии */
+        @media (max-width: 768px) {
+            .modal-box {
+                max-width: 95%;
+                padding: 20px;
+            }
+            
+            .photo-gallery {
+                gap: 5px;
+            }
+            
+            .photo-gallery img {
+                width: 60px;
+                height: 60px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -908,6 +1028,11 @@
                 </div>
             </div>
         </header>
+
+        <!-- ДОБАВЛЕНО: мобильная поисковая строка -->
+        <div class="mobile-search-bar" style="display: none;">
+            <input type="text" class="mobile-search-input" data-lang-placeholder="search_placeholder" id="mobileSearchInput" oninput="renderProducts()">
+        </div>
 
         <aside class="sidebar">
             <div class="filter-section">
@@ -999,7 +1124,7 @@
             <i class="fas fa-home"></i>
             <span data-lang="home">Главная</span>
         </button>
-        <button class="nav-item" onclick="document.getElementById('searchInput').focus()">
+        <button class="nav-item" onclick="toggleMobileSearch()">
             <i class="fas fa-search"></i>
             <span data-lang="search">Поиск</span>
         </button>
@@ -1424,9 +1549,11 @@
             if (!g) return;
             
             const s=document.getElementById('searchInput').value.toLowerCase();
+            const mobileS = document.getElementById('mobileSearchInput') ? document.getElementById('mobileSearchInput').value.toLowerCase() : '';
+            const searchTerm = s || mobileS;
             
             const f=products.filter(p=>{
-                if(!p.title.toLowerCase().includes(s))return false;
+                if(!p.title.toLowerCase().includes(searchTerm))return false;
                 if(filterMode==='admin')return p.status==='pending';
                 if(filterMode==='my')return currentUser&&p.userId===currentUser.uid;
                 if(filterMode==='fav')return favorites.includes(p.id)&&p.status==='active';
@@ -1510,13 +1637,26 @@
             const productModal = document.createElement('div');
             productModal.className = 'modal-overlay';
             productModal.style.display = 'flex';
+            
+            let galleryHTML = '';
+            if (currentProduct.imgs && currentProduct.imgs.length > 1) {
+                galleryHTML = `
+                    <div class="photo-gallery">
+                        ${currentProduct.imgs.map((img, index) => `
+                            <img src="${img}" onclick="changeMainPhoto(${index})" class="${index === 0 ? 'active' : ''}">
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
             productModal.innerHTML = `
                 <div class="modal-box" style="max-width: 600px;">
                     <div class="close-btn" onclick="this.closest('.modal-overlay').remove()">×</div>
                     <div style="display: flex; gap: 20px; flex-direction: column;">
-                        <div style="width: 100%; height: 300px; background: var(--bg-secondary); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+                        ${galleryHTML}
+                        <div class="main-photo" id="mainPhotoContainer">
                             ${currentProduct.imgs && currentProduct.imgs[0] 
-                                ? `<img src="${currentProduct.imgs[0]}" style="max-width: 100%; max-height: 100%; object-fit: contain;">`
+                                ? `<img src="${currentProduct.imgs[0]}" id="mainPhoto" style="max-width: 100%; max-height: 100%; object-fit: contain;">`
                                 : '<i class="fas fa-camera" style="font-size: 48px; color: var(--text-muted);"></i>'
                             }
                         </div>
@@ -1530,7 +1670,7 @@
                             
                             <div style="margin-bottom: 20px;">
                                 <div style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">${t.description}:</div>
-                                <div style="background: var(--bg-secondary); padding: 15px; border-radius: var(--radius-md); border: 1px solid var(--border); line-height: 1.6; white-space: pre-wrap;">
+                                <div class="description-text">
                                     ${currentProduct.desc || t.no_description}
                                 </div>
                             </div>
@@ -1558,6 +1698,19 @@
             `;
             
             document.body.appendChild(productModal);
+        }
+
+        window.changeMainPhoto = function(index) {
+            const mainPhoto = document.getElementById('mainPhoto');
+            const galleryImages = document.querySelectorAll('.photo-gallery img');
+            
+            if (mainPhoto && currentProduct.imgs[index]) {
+                mainPhoto.src = currentProduct.imgs[index];
+            }
+            
+            galleryImages.forEach((img, i) => {
+                img.classList.toggle('active', i === index);
+            });
         }
 
         window.adminAction = async function(action) {
@@ -1655,6 +1808,17 @@
         window.toggleMenu=()=>{
             const m=document.getElementById('dropdownMenu');
             m.style.display=m.style.display==='flex'?'none':'flex';
+        }
+
+        // ДОБАВЛЕНО: переключение мобильного поиска
+        window.toggleMobileSearch=()=>{
+            const searchBar = document.querySelector('.mobile-search-bar');
+            if (searchBar.style.display === 'block') {
+                searchBar.style.display = 'none';
+            } else {
+                searchBar.style.display = 'block';
+                document.getElementById('mobileSearchInput').focus();
+            }
         }
 
         window.setFilter=(c,el)=>{
