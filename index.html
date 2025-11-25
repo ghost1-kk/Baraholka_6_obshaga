@@ -12,7 +12,6 @@
         })();
     </script>
     <style>
-        /* Все CSS стили остаются как в вашем коде */
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -28,26 +27,26 @@
         }
 
         :root {
-            --primary: #0056FF;
-            --primary-hover: #004ADD;
-            --secondary: #FF6B00;
-            --accent: #00C853;
-            --danger: #FF3B30;
-            --warning: #FF9500;
-            --success: #27ae60;
+            --primary: #D4AF37; /* золотой */
+            --primary-hover: #B8941F; /* темно-золотой */
+            --secondary: #FFD700; /* желтый */
+            --accent: #FFA500; /* оранжевый */
+            --danger: #DC143C;
+            --warning: #FF8C00;
+            --success: #228B22;
             
             --bg-primary: #FFFFFF;
-            --bg-secondary: #F8F9FA;
-            --bg-tertiary: #F1F3F4;
+            --bg-secondary: #FFF8DC; /* светлый горчичный */
+            --bg-tertiary: #F5F5DC;
             --bg-card: #FFFFFF;
             --text-primary: #1A1A1A;
             --text-secondary: #5F6368;
             --text-muted: #9AA0A6;
-            --border: #DADCE0;
-            --border-light: #E8EAED;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.2);
+            --border: #E6D7A8; /* светлый золотой */
+            --border-light: #F0E6C3;
+            --shadow-sm: 0 1px 3px rgba(212, 175, 55, 0.2);
+            --shadow-md: 0 4px 12px rgba(212, 175, 55, 0.3);
+            --shadow-lg: 0 8px 24px rgba(212, 175, 55, 0.4);
             
             --radius-sm: 8px;
             --radius-md: 12px;
@@ -69,13 +68,13 @@
             --bg-tertiary: #262626;
             --bg-card: #1A1A1A;
             --text-primary: #FFFFFF;
-            --text-secondary: #B3B3B3;
-            --text-muted: #808080;
-            --border: #404040;
-            --border-light: #333333;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+            --text-secondary: #D4AF37; /* золотой */
+            --text-muted: #B8941F; /* темно-золотой */
+            --border: #333333;
+            --border-light: #404040;
+            --shadow-sm: 0 1px 3px rgba(212, 175, 55, 0.3);
+            --shadow-md: 0 4px 12px rgba(212, 175, 55, 0.4);
+            --shadow-lg: 0 8px 24px rgba(212, 175, 55, 0.5);
         }
 
         .app-container {
@@ -105,6 +104,7 @@
             top: 0;
             z-index: 1000;
             backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
         }
 
         .header-container {
@@ -132,19 +132,19 @@
             text-decoration: none;
             font-weight: 900;
             font-size: 24px;
-            color: var(--primary);
+            color: white;
             cursor: pointer;
         }
 
         .logo-icon {
             width: 32px;
             height: 32px;
-            background: var(--primary);
+            background: white;
             border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--primary);
             font-size: 16px;
         }
 
@@ -157,7 +157,7 @@
         .search-input-v3 {
             width: 100%;
             padding: 12px 48px 12px 44px;
-            background: var(--bg-secondary);
+            background: rgba(255, 255, 255, 0.9);
             border: 2px solid transparent;
             border-radius: var(--radius-lg);
             font-size: 16px;
@@ -166,9 +166,9 @@
         }
 
         .search-input-v3:focus {
-            background: var(--bg-primary);
+            background: white;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 86, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
         }
 
         .search-icon-v3 {
@@ -176,7 +176,7 @@
             left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-muted);
+            color: var(--primary);
             font-size: 16px;
         }
 
@@ -185,9 +185,9 @@
             right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            background: none;
+            background: var(--primary);
             border: none;
-            color: var(--text-muted);
+            color: white;
             cursor: pointer;
             padding: 6px;
             border-radius: var(--radius-sm);
@@ -195,8 +195,8 @@
         }
 
         .search-filters-btn:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
+            background: var(--primary-hover);
+            transform: scale(1.05);
         }
 
         .header-right {
@@ -210,29 +210,30 @@
             align-items: center;
             gap: var(--space-sm);
             padding: 10px 16px;
-            background: none;
+            background: rgba(255, 255, 255, 0.2);
             border: none;
             border-radius: var(--radius-lg);
-            color: var(--text-secondary);
+            color: white;
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
             text-decoration: none;
+            backdrop-filter: blur(10px);
         }
 
         .header-btn:hover {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
         }
 
         .header-btn--primary {
-            background: var(--primary);
-            color: white;
+            background: white;
+            color: var(--primary);
         }
 
         .header-btn--primary:hover {
-            background: var(--primary-hover);
+            background: white;
             transform: translateY(-1px);
             box-shadow: var(--shadow-md);
         }
@@ -245,22 +246,22 @@
             width: 40px;
             height: 40px;
             border-radius: var(--radius-full);
-            background: var(--primary);
-            color: white;
+            background: white;
+            color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
             font-size: 16px;
             cursor: pointer;
-            border: 2px solid var(--border-light);
+            border: 2px solid white;
             transition: all 0.2s;
             background-size: cover;
             background-position: center;
         }
 
         .user-avatar-v3:hover {
-            border-color: var(--primary);
+            border-color: var(--secondary);
             transform: scale(1.05);
         }
 
@@ -428,6 +429,7 @@
 
         .card-badge--top {
             background: var(--secondary);
+            color: #1A1A1A;
         }
 
         .card-badge--pending {
@@ -664,6 +666,7 @@
 
         .fab-btn--secondary {
             background: var(--secondary);
+            color: #1A1A1A;
         }
 
         .modal-overlay { 
@@ -791,18 +794,19 @@
         }
         .lang-btn {
             padding: 6px 12px;
-            border: 1px solid var(--border);
-            background: var(--bg-primary);
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.2);
             border-radius: var(--radius-sm);
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
             transition: all 0.2s;
+            color: white;
         }
         .lang-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
+            background: white;
+            color: var(--primary);
+            border-color: white;
         }
     </style>
 </head>
@@ -815,7 +819,7 @@
                         <div class="logo-icon">
                             <i class="fas fa-store"></i>
                         </div>
-                        <span data-lang="logo">БАРАХОЛКА</span>
+                        <span data-lang="logo">БАРАХОЛКА KNUBA</span>
                     </div>
                     
                     <div class="search-bar-v3">
@@ -1084,9 +1088,9 @@
             <div class="settings-row" style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
                 <div data-lang="language">Язык</div>
                 <div style="display:flex; gap:5px;">
-                    <button class="lang-btn ${currentLang === 'ru' ? 'active' : ''}" onclick="setLanguage('ru')">RU</button>
-                    <button class="lang-btn ${currentLang === 'ua' ? 'active' : ''}" onclick="setLanguage('ua')">UA</button>
-                    <button class="lang-btn ${currentLang === 'en' ? 'active' : ''}" onclick="setLanguage('en')">EN</button>
+                    <button class="lang-btn active" onclick="setLanguage('ru')">RU</button>
+                    <button class="lang-btn" onclick="setLanguage('ua')">UA</button>
+                    <button class="lang-btn" onclick="setLanguage('en')">EN</button>
                 </div>
             </div>
         </div>
@@ -1119,7 +1123,7 @@
         // СИСТЕМА ЯЗЫКОВ
         const translations = {
             ru: {
-                logo: "БАРАХОЛКА",
+                logo: "БАРАХОЛКА KNUBA",
                 search_placeholder: "Поиск товаров...",
                 add_ad: "Подать объявление",
                 favorites: "Избранное",
@@ -1166,10 +1170,11 @@
                 found_ads: "Найдено",
                 ads: "объявлений",
                 nothing_found: "Ничего не найдено",
-                try_filters: "Попробуйте изменить поисковый запрос или фильтры"
+                try_filters: "Попробуйте изменить поисковый запрос или фильтры",
+                dorm: "Общежитие"
             },
             ua: {
-                logo: "БАРАХОЛКА",
+                logo: "БАРАХОЛКА KNUBA",
                 search_placeholder: "Пошук товарів...",
                 add_ad: "Подати оголошення",
                 favorites: "Обране",
@@ -1216,10 +1221,11 @@
                 found_ads: "Знайдено",
                 ads: "оголошень",
                 nothing_found: "Нічого не знайдено",
-                try_filters: "Спробуйте змінити пошуковий запит або фільтри"
+                try_filters: "Спробуйте змінити пошуковий запит або фільтри",
+                dorm: "Гуртожиток"
             },
             en: {
-                logo: "MARKETPLACE",
+                logo: "KNUBA MARKETPLACE",
                 search_placeholder: "Search products...",
                 add_ad: "Post ad",
                 favorites: "Favorites",
@@ -1266,13 +1272,15 @@
                 found_ads: "Found",
                 ads: "ads",
                 nothing_found: "Nothing found",
-                try_filters: "Try changing search query or filters"
+                try_filters: "Try changing search query or filters",
+                dorm: "Dorm"
             }
         };
 
         let currentLang = localStorage.getItem('siteLang') || 'ru';
 
-        function setLanguage(lang) {
+        // ВЫНОСИМ ФУНКЦИИ В ГЛОБАЛЬНУЮ ОБЛАСТЬ ВИДИМОСТИ
+        window.setLanguage = function(lang) {
             currentLang = lang;
             localStorage.setItem('siteLang', lang);
             updateLanguage();
@@ -1306,6 +1314,9 @@
                 const key = el.getAttribute('data-lang');
                 if (t[key]) el.textContent = t[key];
             });
+            
+            // Перерисовываем продукты для обновления текста
+            renderProducts();
         }
 
         // ИНИЦИАЛИЗАЦИЯ СЛОТОВ
