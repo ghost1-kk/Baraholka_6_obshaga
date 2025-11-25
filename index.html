@@ -2,755 +2,665 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>БАРАХОЛКА 6 Общага</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Барахолка - 6 общага</title>
     <style>
-        /* --- ЦВЕТА --- */
         :root {
-            --primary: #006d77;
-            --accent: #83c5be;
+            --primary: #008B8B; /* Темно-бирюзовый */
             --bg: #f4f6f8;
-            --card-bg: #ffffff;
-            --text: #2d3436;
-            --text-sec: #636e72;
-            --danger: #e76f51;
-            --success: #2ecc71;
-            --gold: #f1c40f;
-            --border: #e0e0e0;
-            --chip-bg: #ececec;
+            --white: #ffffff;
+            --text: #333333;
+            --gray: #888888;
+            --danger: #e74c3c;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        body.dark-mode {
-            --primary: #4db6ac; 
-            --bg: #121212;
-            --card-bg: #1e1e1e;
-            --text: #e0e0e0;
-            --text-sec: #b0b0b0;
-            --border: #333;
-            --chip-bg: #333;
-        }
-
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg); 
-            margin: 0; 
-            color: var(--text); 
-            padding-bottom: 90px; 
-            transition: 0.3s;
-            -webkit-tap-highlight-color: transparent;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding-bottom: 80px;
+            color: var(--text);
         }
 
         /* ШАПКА */
         header {
-            background: #006d77; 
+            background-color: var(--primary);
+            color: var(--white);
             padding: 15px 20px;
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            position: sticky; top: 0; z-index: 100;
+        }
+
+        .header-title {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .header-title span {
+            display: block;
+            font-size: 11px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .header-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* КАТЕГОРИИ */
+        .categories-wrapper {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 15px;
+            background: var(--white);
+            border-bottom: 1px solid #eee;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .category-pill {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-right: 10px;
+            background: #f0f2f5;
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .category-pill.active {
+            background: var(--primary);
             color: white;
         }
 
-        .logo { font-size: 20px; font-weight: bold; display: flex; align-items: center; gap: 10px; justify-self: start; cursor: pointer;}
-        .header-center { text-align: center; display: flex; flex-direction: column; justify-content: center; cursor: pointer; user-select: none; }
-        .main-title { font-size: 22px; font-weight: 900; margin: 0; letter-spacing: 1px; text-transform: uppercase;}
-        .sub-title { font-size: 12px; margin: 0; opacity: 0.8; font-weight: 400; margin-top: 2px;}
-        .header-right { justify-self: end; display: flex; align-items: center; gap: 15px; }
-
-        .auth-btn { cursor: pointer; font-weight: bold; color: #006d77; background: white; padding: 8px 15px; border-radius: 20px; font-size: 13px; border: 2px solid white;}
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; background-color: var(--accent); cursor: pointer; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;}
-        
-        .dropdown-menu { position: absolute; top: 65px; right: 10px; background: var(--card-bg); border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); width: 190px; display: none; overflow: hidden; z-index: 101; border: 1px solid var(--border);}
-        .dropdown-item { padding: 14px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: var(--text); font-size: 14px; transition: 0.2s;}
-        .dropdown-item:hover { background: var(--chip-bg); }
-        
-        /* КОНТЕНТ */
-        .main-container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
-        .section-title { font-size: 20px; font-weight: 800; color: var(--text); }
-        .section-back-btn { display: none; cursor: pointer; color: var(--text-sec); font-weight: bold; font-size: 14px;}
-
-        .controls-panel { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 25px; }
-        .search-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;}
-        #searchInput { flex-grow: 1; padding: 14px; border: 2px solid var(--border); background: var(--bg); color: var(--text); border-radius: 12px; outline: none; font-size: 16px; min-width: 150px; transition: 0.3s;}
-        #searchInput:focus { border-color: var(--primary); }
-        .btn-primary { background: var(--primary); color: white; padding: 14px 20px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 14px; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,109,119,0.2);}
-        
-        .categories-filter { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-        .cat-chip { padding: 10px 18px; background: var(--chip-bg); border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: 600; user-select: none; color: var(--text-sec); border: 2px solid transparent; transition: 0.2s;}
-        .cat-chip.active { background: var(--card-bg); color: var(--primary); border: 2px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-
-        /* СЕТКА */
-        .goods-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .empty-message { grid-column: 1 / -1; text-align: center; font-size: 20px; font-weight: bold; color: var(--text-sec); margin-top: 60px; }
-
-        .card { background: var(--card-bg); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.04); position: relative; border: 1px solid transparent; transition: 0.3s;}
-        .card:active { transform: scale(0.98); }
-        .card.promoted { border: 2px solid var(--gold); box-shadow: 0 5px 15px rgba(241, 196, 15, 0.2); }
-        .promoted-badge { position: absolute; top: 10px; left: 10px; background: var(--gold); color: #000; padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: 800; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-
-        .card-img-container { height: 170px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;}
-        .card-img { width: 100%; height: 100%; object-fit: cover; }
-        .no-photo { color: #ccc; font-size: 14px; font-weight: bold;}
-        .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
-        .action-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; z-index: 10; color: #333; font-size: 14px; backdrop-filter: blur(2px);}
-        .fav-active { color: var(--danger); }
-        
-        .card-content { padding: 15px; }
-        .title { font-size: 15px; font-weight: 600; margin: 0 0 6px 0; color: var(--text); line-height: 1.3; height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;}
-        .price { font-size: 18px; font-weight: 800; color: var(--primary); }
-
-        /* FAB */
-        .support-fab { position: fixed; bottom: 25px; right: 25px; width: 55px; height: 55px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 8px 20px rgba(0, 109, 119, 0.3); cursor: pointer; z-index: 900; text-decoration: none; transition: 0.3s; }
-        .support-fab:active { transform: scale(0.9); }
-
-        /* МОДАЛКИ */
-        .modal-overlay { 
-            display: none; 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.6); 
-            z-index: 2000; 
-            /* ЦЕНТРИРОВАНИЕ ВСЕГО */
-            justify-content: center; 
-            align-items: center; 
-            backdrop-filter: blur(5px); 
-            padding: 20px; 
-            box-sizing: border-box;
+        /* СЕТКА ТОВАРОВ */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            padding: 15px;
         }
-        
-        .modal-box { 
-            background: var(--card-bg); color: var(--text); 
-            width: 100%; max-width: 500px; 
-            border-radius: 24px; padding: 25px; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2); 
-            position: relative; 
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            max-height: 85vh; overflow-y: auto;
-        }
-        
-        @keyframes popIn { from {transform: scale(0.9); opacity: 0;} to {transform: scale(1); opacity: 1;} }
-        
-        .form-input, textarea, select { width: 100%; padding: 14px; margin: 8px 0; border: 2px solid var(--border); background: var(--bg); color: var(--text); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 16px;}
-        .btn-full { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px;}
-        .btn-secondary { width: 100%; padding: 16px; background: var(--chip-bg); color: var(--text-sec); border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;}
-        
-        .google-btn { width: 100%; padding: 12px; background: white; color: #333; border: 2px solid #eee; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        
-        /* --- НОВОЕ ОКНО ПРОСМОТРА (КРАСИВОЕ) --- */
-        .product-modal-box { 
-            background: var(--card-bg); 
-            width: 100%; max-width: 500px; 
-            height: 85vh; /* Фикс высота */
-            border-radius: 24px; 
-            overflow: hidden; 
-            display: flex; flex-direction: column;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
             position: relative;
-            margin: auto; /* Центрирование */
+            cursor: pointer;
+            transition: transform 0.1s;
         }
 
-        .pm-scroll-area {
-            overflow-y: auto; /* Скроллим содержимое */
-            flex-grow: 1;
-            display: flex; flex-direction: column;
+        .card:active {
+            transform: scale(0.98);
         }
 
-        .pm-img-area { 
-            width: 100%; height: 350px; 
-            background: #000; 
-            display: flex; align-items: center; justify-content: center; 
-            position: relative; flex-shrink: 0;
+        .card-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background-color: #eee;
         }
-        .pm-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .card-body {
+            padding: 10px;
+        }
+
+        .card-price {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .card-title {
+            font-size: 13px;
+            color: var(--gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ЛАЙК И РЕДАКТИРОВАНИЕ НА КАРТОЧКЕ */
+        .like-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 2;
+        }
+
+        .edit-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 10px;
+            z-index: 2;
+        }
+
+        /* ПУСТОЕ СОСТОЯНИЕ */
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--gray);
+            font-size: 18px;
+            display: none; /* Скрыто по умолчанию */
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* МОДАЛЬНЫЕ ОКНА */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            width: 90%;
+            max-width: 400px;
+            max-height: 90vh;
+            border-radius: var(--radius);
+            padding: 20px;
+            position: relative;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        /* ФОРМЫ */
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
         
-        .pm-content { padding: 25px; }
-        
-        .pm-cat { color: var(--text-sec); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .pm-title { font-size: 24px; font-weight: 800; margin: 0 0 10px 0; line-height: 1.2; }
-        .pm-price { font-size: 28px; font-weight: 900; color: var(--primary); margin: 0 0 20px 0; }
-        
-        .pm-desc-label { font-weight: bold; margin-bottom: 5px; color: var(--text); }
-        /* КРАСИВОЕ ОПИСАНИЕ (БЕЗ СЕРОГО ФОНА) */
-        .pm-desc-text { 
-            font-size: 16px; 
-            line-height: 1.6; 
-            color: var(--text); 
-            white-space: pre-wrap; 
+        .btn-secondary {
+            background: #eee;
+            color: #333;
+        }
+
+        /* ЛОГИН */
+        .login-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .login-btn-option {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* ПРОФИЛЬ */
+        .profile-header {
+            display: flex;
+            align-items: center;
             margin-bottom: 20px;
         }
 
-        /* КНОПКА НАПИСАТЬ (ВНИЗУ, ПО ЦЕНТРУ) */
-        .pm-footer {
-            padding: 20px;
-            background: var(--card-bg);
-            border-top: 1px solid var(--border);
-            display: flex; justify-content: center;
-        }
-        #pmBtn {
-            display: block;
-            width: 100%; max-width: 280px;
-            padding: 14px; 
-            background: var(--primary); color: white; 
-            text-align: center; text-decoration: none;
-            font-weight: bold; font-size: 16px;
-            border-radius: 50px; /* Овальная кнопка */
-            box-shadow: 0 5px 15px rgba(0, 109, 119, 0.3);
+        .avatar-container {
+            position: relative;
+            margin-right: 15px;
         }
 
-        .close-modal-btn { 
-            position: absolute; top: 15px; right: 15px; 
-            width: 35px; height: 35px; 
-            background: rgba(255,255,255,0.2); 
-            backdrop-filter: blur(5px);
-            border-radius: 50%; 
-            display: flex; justify-content: center; align-items: center; 
-            cursor: pointer; font-size: 20px; color: white; z-index: 20;
+        .avatar {
+            width: 60px;
+            height: 60px;
+            background: #ddd;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
         }
-        .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); color: white; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 50%; cursor: pointer; z-index: 10; backdrop-filter: blur(3px); }
-        .gallery-prev { left: 15px; } .gallery-next { right: 15px; }
 
-        /* Фото слоты */
-        .photo-upload-label { display: block; margin-bottom: 10px; font-weight: bold; }
-        .photo-slots-container { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .photo-slot { width: 60px; height: 60px; background: var(--chip-bg); border: 2px dashed var(--border); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 20px; color: var(--text-sec); cursor: pointer; position: relative; background-size: cover; background-position: center; }
-        .photo-slot.has-photo { border-style: solid; }
-        .photo-slot.has-photo i { display: none; }
-        .slot-remove { position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; background: var(--danger); color: white; border-radius: 50%; font-size: 10px; display: none; justify-content: center; align-items: center; cursor: pointer; }
-        .photo-slot.has-photo .slot-remove { display: flex; }
-
-        @media (min-width: 768px) {
-            .product-modal-box { max-width: 900px; width: 90%; height: 80vh; flex-direction: row; }
-            .pm-scroll-area { flex-direction: row; width: 100%; }
-            .pm-img-area { width: 50%; height: 100%; }
-            .pm-content { width: 50%; overflow-y: auto; padding-bottom: 80px;}
-            .pm-footer { position: absolute; bottom: 0; right: 0; width: 50%; border-top: none; box-sizing: border-box;}
-            .close-modal-btn { color: #333; background: rgba(0,0,0,0.1); }
+        /* КОРОНКА АДМИНА - ТЕПЕРЬ НА АВАТАРКЕ */
+        .admin-crown {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            font-size: 20px;
+            background: var(--white);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
+
+        .menu-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+        .menu-item:last-child { border-bottom: none; }
+
+        /* Детальный просмотр объявления (PC FIX) */
+        .detail-img {
+            width: 100%;
+            height: 300px;
+            object-fit: contain;
+            background: #000;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        
+        .detail-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        /* Кнопка выхода в создании объявления */
+        .modal-header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo" onclick="goHome()"><i class="fas fa-store"></i></div>
-        <div class="header-center" onclick="goHome()" title="На главную">
-            <div class="main-title">БАРАХОЛКА</div>
-            <div class="sub-title">6 общага</div>
+        <button class="header-btn" onclick="openSettings()">⚙️</button>
+
+        <div class="header-title">
+            <h1>Барахолка</h1>
+            <span>6 общага</span>
         </div>
-        <div class="header-right">
-            <div id="loginBtn" class="auth-btn" onclick="openAuthModal()" data-lang="login">Войти</div>
-            <div id="userProfile" class="user-avatar" style="display: none;" onclick="toggleMenu()"></div>
-        </div>
-        <div id="profileMenu" class="dropdown-menu">
-            <div class="dropdown-item" onclick="filterMyAds()"><i class="fas fa-box"></i> <span data-lang="my_ads">Мои товары</span></div>
-            <div class="dropdown-item" onclick="filterFavorites()"><i class="fas fa-heart"></i> <span data-lang="favorites">Избранное</span></div>
-            <div class="dropdown-item" id="adminBtn" style="display:none; color: var(--gold);" onclick="filterModeration()"><i class="fas fa-shield-alt"></i> Модерация</div>
-            <div class="dropdown-item" onclick="openSettingsModal()"><i class="fas fa-cog"></i> <span data-lang="settings">Настройки</span></div>
-            <div class="dropdown-item" style="color:var(--danger);" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span data-lang="logout">Выйти</span></div>
+
+        <div id="authBtnContainer">
+            <button class="header-btn" style="font-size: 14px; font-weight: bold;" onclick="openLogin()">Войти</button>
         </div>
     </header>
 
-    <div class="main-container">
-        <div class="section-header">
-            <div class="section-title" id="pageTitle" data-lang="all_goods">Все объявления</div>
-            <div class="section-back-btn" id="backBtn" onclick="goHome()">← <span data-lang="back_home">На главную</span></div>
+    <div class="categories-wrapper" id="categoriesBar">
+        <div class="category-pill active" onclick="filterCat('all')">Все</div>
+        <div class="category-pill" onclick="filterCat('tech')">Техника</div>
+        <div class="category-pill" onclick="filterCat('clothes')">Одежда</div>
+        <div class="category-pill" onclick="filterCat('books')">Учеба</div>
+        <div class="category-pill" onclick="filterCat('food')">Еда</div>
+        <div class="category-pill" onclick="filterCat('services')">Услуги</div>
+    </div>
+
+    <div class="grid" id="adsGrid">
         </div>
 
-        <div class="controls-panel" id="controlsPanel">
-            <div class="search-row">
-                <input type="text" id="searchInput" placeholder="Поиск товаров..." oninput="applyFilters()">
-                <button class="btn-primary" onclick="openAddModal()">+ <span data-lang="sell_btn">Подать</span></button>
+    <div class="empty-state" id="emptyState">
+        <span class="empty-icon">;)</span>
+        Пока нет объявлений
+    </div>
+
+    <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 90;">
+        <button onclick="openCreateAd()" style="background: var(--text); color: white; border: none; padding: 12px 24px; border-radius: 30px; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">+</span> Разместить
+        </button>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('loginModal')">&times;</button>
+            <h2 style="text-align: center;">Вход</h2>
+            <div class="login-methods">
+                <div class="login-btn-option" onclick="loginUser('Google')">Войти через Google</div>
+                <div class="login-btn-option" onclick="loginUser('Telegram')">Войти через Telegram</div>
+                <div class="login-btn-option" onclick="loginUser('Email')">Войти через Почту</div>
             </div>
-            <div class="categories-filter">
-                <div class="cat-chip active" onclick="setFilter('all', this)" data-lang="cat_all">Все</div>
-                <div class="cat-chip" onclick="setFilter('tech', this)" data-lang="cat_tech">Электроника</div>
-                <div class="cat-chip" onclick="setFilter('home', this)" data-lang="cat_home">Дом</div>
-                <div class="cat-chip" onclick="setFilter('study', this)" data-lang="cat_study">Учеба</div>
-                <div class="cat-chip" onclick="setFilter('clothes', this)" data-lang="cat_clothes">Одежда</div>
-                <div class="cat-chip" onclick="setFilter('other', this)" data-lang="cat_other">Разное</div>
-            </div>
-        </div>
-        
-        <div id="goods-container" class="goods-grid">
-            <p>Загрузка...</p>
+            <p onclick="loginAdmin()" style="text-align: center; margin-top: 20px; opacity: 0.1; font-size: 10px;">Войти как Админ</p>
         </div>
     </div>
 
-    <a href="https://t.me/ghost1_kk" target="_blank" class="support-fab"><i class="fas fa-comments"></i></a>
-
-    <div id="productModal" class="modal-overlay" onclick="closeModal('productModal')">
-        <div class="modal-box product-modal-box" onclick="event.stopPropagation()">
-            <div class="close-modal-btn" onclick="closeModal('productModal')">×</div>
-            
-            <div class="pm-scroll-area">
-                <div class="pm-img-area">
-                    <div class="gallery-nav gallery-prev" onclick="prevPhoto(event)">&#10094;</div>
-                    <img id="pmImg" class="pm-img" src="">
-                    <div class="gallery-nav gallery-next" onclick="nextPhoto(event)">&#10095;</div>
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('profileModal')">&times;</button>
+            <div class="profile-header">
+                <div class="avatar-container">
+                    <div class="avatar" id="profileAvatar"></div>
+                    <div id="adminCrownPlace"></div>
                 </div>
-                <div class="pm-content">
-                    <div id="pmCat" class="pm-cat">Категория</div>
-                    <h2 id="pmTitle" class="pm-title">Название</h2>
-                    <div id="pmPrice" class="pm-price">0 грн</div>
-                    <div class="pm-desc-label">Описание:</div>
-                    <div id="pmDesc" class="pm-desc-text">Текст...</div>
+                <div>
+                    <h3 id="profileName" style="margin: 0;">Имя</h3>
+                    <span id="profileRole" style="color: gray; font-size: 12px;">Студент</span>
                 </div>
             </div>
             
-            <div class="pm-footer">
-                <a id="pmBtn" href="#" target="_blank">Написать продавцу</a>
+            <div id="profileMenu">
+                <div class="menu-item" onclick="alert('Настройки открыты')">Настройки <span>⚙️</span></div>
+                <div class="menu-item" onclick="filterMyAds()">Мои товары <span>📦</span></div>
+                <div class="menu-item" onclick="alert('Избранное')">Избранные <span>❤️</span></div>
+                <div class="menu-item" onclick="logout()" style="color: var(--danger);">Выйти <span>🚪</span></div>
             </div>
         </div>
     </div>
 
-    <div id="addModal" class="modal-overlay">
-        <div class="modal-box">
-            <div class="close-modal-btn" onclick="closeModal('addModal')" style="position:absolute; top:15px; right:15px; cursor:pointer; color:#333; background:none;">×</div>
-            <h2 style="margin-top:0;">Новое объявление</h2>
-            <label class="photo-upload-label">Фотографии (до 5 шт):</label>
-            <div class="photo-slots-container" id="addPhotoSlots"></div>
-            <input type="file" id="addFile1" hidden accept="image/*" onchange="handleFileSelect(event, 0, 'add')">
-            <input type="file" id="addFile2" hidden accept="image/*" onchange="handleFileSelect(event, 1, 'add')">
-            <input type="file" id="addFile3" hidden accept="image/*" onchange="handleFileSelect(event, 2, 'add')">
-            <input type="file" id="addFile4" hidden accept="image/*" onchange="handleFileSelect(event, 3, 'add')">
-            <input type="file" id="addFile5" hidden accept="image/*" onchange="handleFileSelect(event, 4, 'add')">
-            <input type="text" id="newTitle" class="form-input" placeholder="Название товара">
-            <select id="newCat" class="form-input">
-                <option value="tech">Электроника</option>
-                <option value="home">Дом, Кухня</option>
-                <option value="study">Учеба, Канцелярия</option>
-                <option value="clothes">Одежда, Обувь</option>
-                <option value="other">Разное</option>
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('settingsModal')">&times;</button>
+            <h2>Настройки</h2>
+            <div class="menu-item">Язык: Русский <span>🌍</span></div>
+            <div class="menu-item">Тема: Светлая <span>🌗</span></div>
+        </div>
+    </div>
+
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <div class="modal-header-nav">
+                <h3>Новое объявление</h3>
+                <button onclick="closeModal('createModal')" style="border: none; background: #eee; padding: 5px 10px; border-radius: 5px;">Закрыть</button>
+            </div>
+            
+            <input type="text" id="newTitle" placeholder="Название товара">
+            <input type="number" id="newPrice" placeholder="Цена (грн)">
+            <select id="newCat">
+                <option value="tech">Техника</option>
+                <option value="clothes">Одежда</option>
+                <option value="books">Учеба</option>
+                <option value="food">Еда</option>
+                <option value="services">Услуги</option>
             </select>
-            <input type="number" id="newPrice" class="form-input" placeholder="Цена (грн)">
-            <textarea id="newDesc" class="form-input" rows="3" placeholder="Описание"></textarea>
-            <input type="text" id="newContact" class="form-input" placeholder="Telegram ник (без @)">
-            <button id="createBtn" class="btn-full" onclick="createProduct()">Опубликовать</button>
+            <textarea id="newDesc" rows="4" placeholder="Описание..."></textarea>
+            
+            <button class="btn-primary" onclick="publishAd()">Опубликовать</button>
         </div>
     </div>
 
-    <div id="editModal" class="modal-overlay">
-        <div class="modal-box">
-            <div class="close-modal-btn" onclick="closeModal('editModal')" style="position:absolute; top:15px; right:15px; cursor:pointer; color:#333; background:none;">×</div>
-            <h2 style="margin-top:0;">Редактировать</h2>
-            <input type="hidden" id="editId">
-            <div class="photo-slots-container" id="editPhotoSlots"></div>
-            <input type="file" id="editFile1" hidden accept="image/*" onchange="handleFileSelect(event, 0, 'edit')">
-            <input type="file" id="editFile2" hidden accept="image/*" onchange="handleFileSelect(event, 1, 'edit')">
-            <input type="file" id="editFile3" hidden accept="image/*" onchange="handleFileSelect(event, 2, 'edit')">
-            <input type="file" id="editFile4" hidden accept="image/*" onchange="handleFileSelect(event, 3, 'edit')">
-            <input type="file" id="editFile5" hidden accept="image/*" onchange="handleFileSelect(event, 4, 'edit')">
-            <label>Название:</label><input type="text" id="editTitle" class="form-input">
-            <label>Цена:</label><input type="number" id="editPrice" class="form-input">
-            <label>Описание:</label><textarea id="editDesc" class="form-input" rows="4"></textarea>
-            <label>Telegram ник:</label><input type="text" id="editContact" class="form-input">
-            <button class="btn-full" onclick="saveEdit()">Сохранить</button>
+    <div class="modal" id="viewModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="close-modal" onclick="closeModal('viewModal')">&times;</button>
+            <img src="" id="viewImg" class="detail-img">
+            <div class="detail-price" id="viewPrice"></div>
+            <h2 id="viewTitle" style="margin-top: 0;"></h2>
+            <p id="viewDesc" style="line-height: 1.5; color: #555;"></p>
+            <div id="viewControls" style="margin-top: 20px;"></div>
         </div>
     </div>
 
-    <div id="settingsModal" class="modal-overlay">
-        <div class="modal-box">
-            <div class="close-modal-btn" onclick="closeModal('settingsModal')" style="position:absolute; top:15px; right:15px; cursor:pointer; color:#333; background:none;">×</div>
-            <h2 data-lang="settings">Настройки</h2>
-            <div class="settings-row">
-                <div class="setting-label" data-lang="theme">Тема</div>
-                <div class="setting-opts">
-                    <button class="opt-btn active" id="themeLight" onclick="setTheme('light')">☀️</button>
-                    <button class="opt-btn" id="themeDark" onclick="setTheme('dark')">🌙</button>
-                </div>
-            </div>
-            <div class="settings-row">
-                <div class="setting-label" data-lang="lang">Язык</div>
-                <div class="setting-opts">
-                    <button class="opt-btn" id="langRU" onclick="setLang('ru')">RU</button>
-                    <button class="opt-btn" id="langUA" onclick="setLang('ua')">UA</button>
-                    <button class="opt-btn" id="langEN" onclick="setLang('en')">EN</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <script>
+        // СОСТОЯНИЕ
+        let currentUser = null; // null или {id, name, isAdmin, avatar}
+        let ads = [
+            {id: 1, userId: 101, title: "Ноутбук HP", price: 15000, cat: "tech", img: "https://via.placeholder.com/300?text=Laptop"},
+            {id: 2, userId: 102, title: "Учебник Физика", price: 200, cat: "books", img: "https://via.placeholder.com/300?text=Book"}
+        ];
 
-    <div id="authModal" class="modal-overlay">
-        <div class="modal-box">
-            <div class="close-modal-btn" onclick="closeModal('authModal')" style="position:absolute; top:15px; right:15px; cursor:pointer; color:#333; background:none;">×</div>
-            <h2 id="authTitle" style="text-align: center; margin-top: 0;">Вход</h2>
-            <button class="google-btn" onclick="handleGoogleLogin()">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google
-            </button>
-            <div class="auth-separator">ИЛИ</div>
-            <input type="email" id="authEmail" class="form-input" placeholder="Email">
-            <input type="password" id="authPass" class="form-input" placeholder="Пароль">
-            <button id="authActionBtn" class="btn-full" onclick="handleEmailAuth()">Войти</button>
-            <div id="authToggle" class="toggle-link" onclick="toggleAuthMode()">Нет аккаунта? Зарегистрироваться</div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc, arrayUnion, arrayRemove, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        // ========================================
-        // ADMIN EMAIL
-        // ========================================
-        const ADMIN_EMAIL = "romanzam007@gmail.com"; 
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAVMcP1KC8JsOVdn-w_CoJFDDm_ML0HKiE",
-            authDomain: "olx-6-gurtak.firebaseapp.com",
-            projectId: "olx-6-gurtak",
-            storageBucket: "olx-6-gurtak.firebasestorage.app",
-            messagingSenderId: "718459350196",
-            appId: "1:718459350196:web:bd812892804facc25ffbe1",
-            measurementId: "G-DSC2LMRYRY"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const googleProvider = new GoogleAuthProvider();
-
-        let currentUser = null;
-        let products = [];
-        let favorites = []; 
-        let filterMode = 'all'; 
-        let currentCatFilter = 'all';
-        let isRegMode = false;
-        
-        let newPhotos = [null, null, null, null, null];
-        let editPhotos = [null, null, null, null, null];
-        let currentGalleryPhotos = [];
-        let currentPhotoIndex = 0;
-
-        // --- ФОТО ---
-        function generatePhotoSlots(mode) {
-            const container = document.getElementById(`${mode}PhotoSlots`);
-            container.innerHTML = '';
-            for(let i=0; i<5; i++) {
-                container.innerHTML += `
-                    <div class="photo-slot" id="${mode}Slot${i}" onclick="triggerFileSelect('${mode}', ${i})">
-                        <i class="fas fa-plus"></i>
-                        <div class="slot-remove" onclick="removePhoto(event, '${mode}', ${i})"><i class="fas fa-times"></i></div>
-                    </div>
-                `;
-            }
+        // ИНИЦИАЛИЗАЦИЯ
+        function init() {
+            renderAds(ads);
+            checkAuthUI();
         }
-        generatePhotoSlots('add');
-        generatePhotoSlots('edit');
 
-        window.triggerFileSelect = (mode, index) => { document.getElementById(`${mode}File${index+1}`).click(); }
-        window.handleFileSelect = async (event, index, mode) => {
-            const file = event.target.files[0];
-            if (!file) return;
-            const img64 = await compressImage(file);
-            if(mode === 'add') newPhotos[index] = img64;
-            else editPhotos[index] = img64;
-            updateSlotVisual(mode, index, img64);
-        }
-        window.removePhoto = (event, mode, index) => {
-            event.stopPropagation();
-            if(mode === 'add') newPhotos[index] = null;
-            else editPhotos[index] = null;
-            updateSlotVisual(mode, index, null);
-            document.getElementById(`${mode}File${index+1}`).value = "";
-        }
-        function updateSlotVisual(mode, index, imgData) {
-            const slot = document.getElementById(`${mode}Slot${index}`);
-            if(imgData) {
-                slot.classList.add('has-photo');
-                slot.style.backgroundImage = `url('${imgData}')`;
+        // РЕНДЕР ОБЪЯВЛЕНИЙ
+        function renderAds(list) {
+            const grid = document.getElementById('adsGrid');
+            const empty = document.getElementById('emptyState');
+            grid.innerHTML = '';
+
+            if (list.length === 0) {
+                empty.style.display = 'block';
             } else {
-                slot.classList.remove('has-photo');
-                slot.style.backgroundImage = 'none';
+                empty.style.display = 'none';
+                list.forEach(ad => {
+                    // ЛОГИКА РЕДАКТИРОВАНИЯ: Если Админ ИЛИ Владелец
+                    let canEdit = false;
+                    if (currentUser) {
+                        if (currentUser.isAdmin || currentUser.id === ad.userId) {
+                            canEdit = true;
+                        }
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.onclick = (e) => {
+                        if(!e.target.classList.contains('like-btn')) openView(ad.id);
+                    };
+
+                    card.innerHTML = `
+                        <div class="card-img" style="background-image: url('${ad.img}')"></div>
+                        <button class="like-btn" onclick="toggleLike(this)">❤️</button>
+                        ${canEdit ? '<span class="edit-badge">✎ Ред.</span>' : ''}
+                        <div class="card-body">
+                            <div class="card-price">${ad.price} грн</div>
+                            <div class="card-title">${ad.title}</div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
             }
         }
 
-        // --- AUTH ---
-        getRedirectResult(auth).then((result) => {
-            if (result) { checkAndCreateUser(result.user); }
-        }).catch((error) => { console.error(error); });
-
-        window.handleGoogleLogin = async () => { 
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            if (isMobile) signInWithRedirect(auth, googleProvider);
-            else {
-                try {
-                    const result = await signInWithPopup(auth, googleProvider);
-                    await checkAndCreateUser(result.user);
-                    closeModal('authModal');
-                } catch (error) { alert("Ошибка входа: " + error.message); }
-            }
+        // ФИЛЬТР
+        function filterCat(cat) {
+            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (cat === 'all') renderAds(ads);
+            else renderAds(ads.filter(a => a.cat === cat));
         }
 
-        window.handleEmailAuth = async () => {
-            const email = document.getElementById('authEmail').value;
-            const pass = document.getElementById('authPass').value;
-            if(!email || !pass) return alert("Заполни поля");
-            try {
-                let result;
-                if (isRegMode) result = await createUserWithEmailAndPassword(auth, email, pass);
-                else result = await signInWithEmailAndPassword(auth, email, pass);
-                await checkAndCreateUser(result.user);
-                closeModal('authModal');
-            } catch (e) { alert("Ошибка: " + e.message); }
+        // АВТОРИЗАЦИЯ
+        function openLogin() {
+            document.getElementById('loginModal').classList.add('active');
         }
 
-        async function checkAndCreateUser(user) {
-            const userRef = doc(db, "users", user.uid);
-            const snap = await getDoc(userRef);
-            if (!snap.exists()) await setDoc(userRef, { email: user.email, favorites: [] });
+        function loginUser(method) {
+            // Обычный юзер
+            currentUser = { id: 101, name: "Роман", isAdmin: false, avatar: "https://via.placeholder.com/100?text=R" };
+            closeModal('loginModal');
+            checkAuthUI();
+            renderAds(ads); // перерисовать чтобы появились права
         }
 
-        window.toggleAuthMode = () => {
-            isRegMode = !isRegMode;
-            document.getElementById('authTitle').innerText = isRegMode ? "Регистрация" : "Вход";
-            document.getElementById('authActionBtn').innerText = isRegMode ? "Создать аккаунт" : "Войти";
-            document.getElementById('authToggle').innerText = isRegMode ? "Уже есть? Войти" : "Нет аккаунта? Регистрация";
+        function loginAdmin() {
+            // Админ
+            currentUser = { id: 999, name: "Админ", isAdmin: true, avatar: "https://via.placeholder.com/100?text=A" };
+            closeModal('loginModal');
+            checkAuthUI();
+            renderAds(ads);
         }
 
-        onAuthStateChanged(auth, async (user) => {
-            currentUser = user;
-            if (user) {
-                document.getElementById('loginBtn').style.display = 'none';
-                const profile = document.getElementById('userProfile');
-                profile.style.display = 'flex';
-                if(user.photoURL) {
-                    profile.style.backgroundImage = `url('${user.photoURL}')`;
-                    profile.innerText = "";
-                } else {
-                    profile.style.backgroundImage = "none";
-                    profile.innerText = user.email[0].toUpperCase();
-                }
+        function logout() {
+            currentUser = null;
+            closeModal('profileModal');
+            checkAuthUI();
+            renderAds(ads);
+        }
+
+        function checkAuthUI() {
+            const container = document.getElementById('authBtnContainer');
+            if (currentUser) {
+                // Если вошел - показываем аватарку
+                container.innerHTML = `<div class="avatar" style="width: 35px; height: 35px; background-image: url('${currentUser.avatar}'); cursor: pointer; border: 2px solid white;" onclick="openProfile()"></div>`;
                 
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists()) favorites = userDoc.data().favorites || [];
-                
-                // ПОКАЗАТЬ КНОПКУ АДМИНА
-                if (user.email === ADMIN_EMAIL) {
-                    document.getElementById('adminBtn').style.display = 'flex';
+                // Если админ - добавим маленькую точку или что-то в шапке, но основная коронка в профиле
+                if(currentUser.isAdmin) {
+                    container.innerHTML += `<div style="position: absolute; bottom: 15px; right: 15px; background: gold; width: 10px; height: 10px; border-radius: 50%;"></div>`;
                 }
             } else {
-                document.getElementById('loginBtn').style.display = 'flex';
-                document.getElementById('userProfile').style.display = 'none';
-                document.getElementById('adminBtn').style.display = 'none';
-                favorites = [];
+                // Если не вошел - кнопка Войти
+                container.innerHTML = `<button class="header-btn" style="font-size: 14px; font-weight: bold;" onclick="openLogin()">Войти</button>`;
             }
-            renderProducts();
-        });
-
-        // --- ФУНКЦИИ ---
-        window.logout = () => { signOut(auth); document.getElementById('profileMenu').style.display = 'none'; goHome(); }
-        window.goHome = () => { filterMode = 'all'; currentCatFilter = 'all'; document.getElementById('searchInput').value = ""; document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); document.querySelector('.cat-chip[onclick*="all"]').classList.add('active'); document.getElementById('controlsPanel').style.display = 'block'; document.getElementById('backBtn').style.display = 'none'; applyLanguage(); renderProducts(); }
-        window.filterMyAds = () => { if(!currentUser) return alert("Войдите!"); filterMode = 'my'; document.getElementById('controlsPanel').style.display = 'none'; document.getElementById('backBtn').style.display = 'block'; applyLanguage(); toggleMenu(); renderProducts(); }
-        window.filterFavorites = () => { if(!currentUser) return alert("Войдите!"); filterMode = 'fav'; document.getElementById('controlsPanel').style.display = 'none'; document.getElementById('backBtn').style.display = 'block'; applyLanguage(); toggleMenu(); renderProducts(); }
-        
-        // ФИЛЬТР МОДЕРАЦИИ
-        window.filterModeration = () => {
-            filterMode = 'admin';
-            document.getElementById('controlsPanel').style.display = 'none'; 
-            document.getElementById('backBtn').style.display = 'block'; 
-            document.getElementById('pageTitle').innerText = "🛡️ Модерация";
-            toggleMenu(); renderProducts();
         }
 
-        // CRUD
-        window.createProduct = async () => {
-            if (!currentUser) return alert("Войдите!");
+        // ПРОФИЛЬ
+        function openProfile() {
+            document.getElementById('profileName').innerText = currentUser.name;
+            document.getElementById('profileAvatar').style.backgroundImage = `url('${currentUser.avatar}')`;
+            
+            const crownPlace = document.getElementById('adminCrownPlace');
+            if (currentUser.isAdmin) {
+                // Коронка поверх аватарки, а не вместо неё
+                crownPlace.className = 'admin-crown';
+                crownPlace.innerText = '👑';
+            } else {
+                crownPlace.className = '';
+                crownPlace.innerText = '';
+            }
+
+            document.getElementById('profileModal').classList.add('active');
+        }
+
+        // НАСТРОЙКИ (ДЛЯ ВСЕХ)
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        // СОЗДАНИЕ
+        function openCreateAd() {
+            if (!currentUser) {
+                openLogin();
+                return;
+            }
+            document.getElementById('createModal').classList.add('active');
+        }
+
+        function publishAd() {
             const title = document.getElementById('newTitle').value;
             const price = document.getElementById('newPrice').value;
             const cat = document.getElementById('newCat').value;
-            const desc = document.getElementById('newDesc').value;
-            const contact = document.getElementById('newContact').value;
-            const btn = document.getElementById('createBtn');
-            if (!title || !price || !cat || !contact) return alert("Заполни поля!");
-            const imgs = newPhotos.filter(p => p !== null);
-            btn.disabled = true; btn.innerText = "...";
-            
-            const initStatus = (currentUser.email === ADMIN_EMAIL) ? 'active' : 'pending';
 
-            try {
-                await addDoc(collection(db, "products"), { 
-                    title, price, desc, contact, cat, imgs, 
-                    userId: currentUser.uid, date: Date.now(), 
-                    status: initStatus,
-                    isPromoted: false
+            if(title && price) {
+                ads.unshift({
+                    id: Date.now(),
+                    userId: currentUser.id,
+                    title: title,
+                    price: price,
+                    cat: cat,
+                    img: "https://via.placeholder.com/300?text=New"
                 });
-                alert(initStatus === 'active' ? "Опубликовано!" : "Отправлено на проверку!"); 
-                closeModal('addModal'); loadProducts();
-                newPhotos=[null,null,null,null,null]; for(let i=0;i<5;i++) updateSlotVisual('add',i,null);
-                document.getElementById('newTitle').value=""; document.getElementById('newPrice').value=""; document.getElementById('newDesc').value=""; document.getElementById('newContact').value="";
-            } catch (e) { alert(e.message); } finally { btn.disabled = false; btn.innerText = "Опубликовать"; }
+                renderAds(ads);
+                closeModal('createModal');
+                // Очистка
+                document.getElementById('newTitle').value = '';
+                document.getElementById('newPrice').value = '';
+            }
         }
 
-        window.openEditModal = (id, e) => {
-            e.stopPropagation();
-            const p = products.find(x => x.id === id);
-            document.getElementById('editId').value = p.id;
-            document.getElementById('editTitle').value = p.title;
-            document.getElementById('editPrice').value = p.price;
-            document.getElementById('editDesc').value = p.desc;
-            document.getElementById('editContact').value = p.contact;
-            editPhotos = [null, null, null, null, null];
-            if(p.imgs && Array.isArray(p.imgs)) { p.imgs.forEach((img, i) => { if(i < 5) editPhotos[i] = img; }); } else if (p.img) { editPhotos[0] = p.img; }
-            for(let i=0; i<5; i++) updateSlotVisual('edit', i, editPhotos[i]);
-            document.getElementById('editModal').style.display = 'flex';
-        }
-        window.saveEdit = async () => {
-            const id = document.getElementById('editId').value;
-            const finalPhotos = editPhotos.filter(p => p !== null);
-            try {
-                await updateDoc(doc(db, "products", id), {
-                    title: document.getElementById('editTitle').value,
-                    price: document.getElementById('editPrice').value,
-                    desc: document.getElementById('editDesc').value,
-                    contact: document.getElementById('editContact').value,
-                    imgs: finalPhotos
-                });
-                alert("Сохранено!"); closeModal('editModal'); loadProducts();
-            } catch (e) { alert(e.message); }
-        }
-        window.deleteProduct = async (id, e) => { e.stopPropagation(); if (!confirm("Удалить?")) return; await deleteDoc(doc(db, "products", id)); loadProducts(); }
-
-        // --- ADMIN ACTIONS ---
-        window.approveProduct = async (id, e) => {
-            e.stopPropagation();
-            if(!confirm("Одобрить?")) return;
-            await updateDoc(doc(db, "products", id), { status: 'active' });
-            renderProducts();
-        }
-
-        window.rejectProduct = async (id, e) => {
-            e.stopPropagation();
-            if(!confirm("Отклонить?")) return;
-            await updateDoc(doc(db, "products", id), { status: 'rejected' });
-            renderProducts();
-        }
-
-        window.togglePromote = async (id, currentStatus, e) => {
-            e.stopPropagation();
-            if(!confirm(currentStatus ? "Снять ТОП?" : "Сделать ТОП?")) return;
-            try {
-                await updateDoc(doc(db, "products", id), { isPromoted: !currentStatus });
-                renderProducts();
-            } catch (e) { alert("Ошибка: " + e.message); }
-        }
-
-        async function loadProducts() { const cont = document.getElementById('goods-container'); cont.innerHTML = "<p>...</p>"; const q = query(collection(db, "products"), orderBy("date", "desc")); const snap = await getDocs(q); products = []; snap.forEach(d => products.push({id: d.id, ...d.data()})); renderProducts(); }
-        
-        window.renderProducts = () => {
-            const cont = document.getElementById('goods-container');
-            cont.innerHTML = "";
-            const search = document.getElementById('searchInput').value.toLowerCase();
+        // ПРОСМОТР (PC И МОБИЛКА)
+        function openView(id) {
+            const ad = ads.find(a => a.id === id);
+            document.getElementById('viewImg').src = ad.img;
+            document.getElementById('viewTitle').innerText = ad.title;
+            document.getElementById('viewPrice').innerText = ad.price + ' грн'; // без точки
+            document.getElementById('viewDesc').innerText = "Описание товара... Продаю потому что не нужно.";
             
-            let filtered = products.filter(p => {
-                if (!p.title.toLowerCase().includes(search)) return false;
+            const controls = document.getElementById('viewControls');
+            controls.innerHTML = `<button class="btn-primary">Написать продавцу</button>`;
 
-                if (filterMode === 'all') {
-                    if (p.status !== 'active') return false;
-                    if (currentCatFilter !== 'all' && p.cat !== currentCatFilter) return false;
-                    return true;
-                } 
-                else if (filterMode === 'my') {
-                    if (!currentUser || p.userId !== currentUser.uid) return false;
-                    return true;
-                }
-                else if (filterMode === 'fav') {
-                    if (!favorites.includes(p.id)) return false;
-                    if (p.status !== 'active') return false;
-                    return true;
-                }
-                else if (filterMode === 'admin') {
-                    if (p.status !== 'pending') return false;
-                    return true;
-                }
-                return false;
-            });
-            
-            filtered.sort((a, b) => (b.isPromoted ? 1 : 0) - (a.isPromoted ? 1 : 0));
+            // Если Админ или владелец - кнопка удалить/редактировать
+            if (currentUser && (currentUser.isAdmin || currentUser.id === ad.userId)) {
+                 controls.innerHTML += `<button class="btn-primary" style="background: var(--danger); margin-top: 10px;" onclick="deleteAd(${ad.id})">Удалить объявление</button>`;
+            }
 
-            if(filtered.length === 0) { cont.innerHTML = `<div class="empty-message">${translations[currentLang].empty}</div>`; return; }
-            
-            const isAdmin = currentUser && currentUser.email === ADMIN_EMAIL;
-
-            filtered.forEach(p => {
-                const isMine = currentUser && p.userId === currentUser.uid;
-                const isFav = favorites.includes(p.id);
-                
-                let buttonsHtml = "";
-                
-                if (filterMode === 'admin') {
-                    // ADMIN MODERATION BUTTONS
-                    buttonsHtml = `
-                        <div class="action-icon" onclick="approveProduct('${p.id}', event)" style="color:green"><i class="fas fa-check"></i></div>
-                        <div class="action-icon" onclick="rejectProduct('${p.id}', event)" style="color:red"><i class="fas fa-times"></i></div>
-                    `;
-                } else {
-                    // NORMAL BUTTONS
-                    if (isMine || isAdmin) {
-                        buttonsHtml = `<div class="action-icon" onclick="openEditModal('${p.id}', event)"><i class="fas fa-pen" style="color:var(--primary);"></i></div><div class="action-icon" onclick="deleteProduct('${p.id}', event)"><i class="fas fa-trash" style="color:var(--danger);"></i></div>`;
-                    } else {
-                        buttonsHtml = `<div class="action-icon ${isFav ? 'fav-active' : ''}" onclick="toggleFav('${p.id}', event)"><i class="fas fa-heart"></i></div>`;
-                    }
-                    if (isAdmin) {
-                        buttonsHtml += `<div class="action-icon" onclick="togglePromote('${p.id}', ${p.isPromoted}, event)" style="color:${p.isPromoted ? 'gold' : '#ccc'}"><i class="fas fa-crown"></i></div>`;
-                    }
-                }
-
-                let mainImg = (p.imgs && p.imgs.length > 0) ? p.imgs[0] : (p.img || null);
-                let imgHtml = mainImg ? `<img src="${mainImg}" class="card-img">` : `<span class="no-photo">Нет фото</span>`;
-                let badge = p.isPromoted ? `<div class="promoted-badge"><i class="fas fa-crown"></i> TOP</div>` : "";
-                
-                cont.innerHTML += `<div class="card ${p.isPromoted?'promoted':''}" onclick="openProduct('${p.id}')">${badge}<div class="card-img-container"><div class="card-actions">${buttonsHtml}</div>${imgHtml}</div><div class="card-content"><div class="title">${p.title}</div><div class="price">${p.price} грн</div></div></div>`;
-            });
-        }
-        window.toggleFav = async (id, e) => { e.stopPropagation(); if (!currentUser) return alert("Войдите!"); const userRef = doc(db, "users", currentUser.uid); if (favorites.includes(id)) { await updateDoc(userRef, { favorites: arrayRemove(id) }); favorites = favorites.filter(pid => pid !== id); } else { await updateDoc(userRef, { favorites: arrayUnion(id) }); favorites.push(id); } renderProducts(); }
-        
-        const catNames = {tech:'Электроника', home:'Дом', study:'Учеба', clothes:'Одежда', other:'Разное'};
-        window.openProduct = (id) => {
-            const p = products.find(x => x.id === id);
-            currentGalleryPhotos = [];
-            if(p.imgs && Array.isArray(p.imgs) && p.imgs.length > 0) currentGalleryPhotos = p.imgs; else if (p.img) currentGalleryPhotos = [p.img];
-            currentPhotoIndex = 0; updateGalleryImage();
-            const hasMultiple = currentGalleryPhotos.length > 1;
-            document.querySelector('.gallery-prev').style.display = hasMultiple ? 'flex' : 'none';
-            document.querySelector('.gallery-next').style.display = hasMultiple ? 'flex' : 'none';
-            document.getElementById('pmCat').innerText = catNames[p.cat] || 'Разное';
-            document.getElementById('pmTitle').innerText = p.title; document.getElementById('pmPrice').innerText = p.price + " грн";
-            document.getElementById('pmDesc').innerText = p.desc || "Без описания";
-            document.getElementById('pmBtn').href = `https://t.me/${p.contact.replace('@','')}`;
-            document.getElementById('productModal').style.display = 'flex';
-            // LOCK SCROLL
-            document.body.style.overflow = 'hidden';
-        }
-        window.closeModal = (id) => { 
-            document.getElementById(id).style.display = 'none'; 
-            document.body.style.overflow = 'auto'; // UNLOCK
+            document.getElementById('viewModal').classList.add('active');
         }
 
-        function updateGalleryImage() { const imgEl = document.getElementById('pmImg'); if(currentGalleryPhotos.length > 0) { imgEl.src = currentGalleryPhotos[currentPhotoIndex]; imgEl.style.display = 'block'; } else { imgEl.src = ''; imgEl.style.display = 'none'; } }
-        window.prevPhoto = (e) => { e.stopPropagation(); if(currentGalleryPhotos.length <= 1) return; currentPhotoIndex--; if(currentPhotoIndex < 0) currentPhotoIndex = currentGalleryPhotos.length - 1; updateGalleryImage(); }
-        window.nextPhoto = (e) => { e.stopPropagation(); if(currentGalleryPhotos.length <= 1) return; currentPhotoIndex++; if(currentPhotoIndex >= currentGalleryPhotos.length) currentPhotoIndex = 0; updateGalleryImage(); }
+        function deleteAd(id) {
+            ads = ads.filter(a => a.id !== id);
+            renderAds(ads);
+            closeModal('viewModal');
+        }
 
-        const translations = { ru: { login: "Войти", logout: "Выйти", settings: "Настройки", my_ads: "Мои товары", favorites: "Избранное", all_goods: "Все объявления", my_goods_title: "📦 Мои объявления", fav_goods_title: "❤️ Избранное", back_home: "На главную", sell_btn: "Подать объявление", cat_all: "Все", cat_tech: "Электроника", cat_home: "Дом", cat_study: "Учеба", cat_clothes: "Одежда", cat_other: "Разное", theme: "Тема", lang: "Язык", close: "Закрыть", empty: "Пока нет объявлений ;-)" }, ua: { login: "Увійти", logout: "Вийти", settings: "Налаштування", my_ads: "Мої товари", favorites: "Обране", all_goods: "Всі оголошення", my_goods_title: "📦 Мої оголошення", fav_goods_title: "❤️ Обране", back_home: "На головну", sell_btn: "Продати", cat_all: "Всі", cat_tech: "Електроніка", cat_home: "Дім", cat_study: "Навчання", cat_clothes: "Одяг", cat_other: "Різне", theme: "Тема", lang: "Мова", close: "Закрити", empty: "Поки немає оголошень ;-)" }, en: { login: "Login", logout: "Logout", settings: "Settings", my_ads: "My Listings", favorites: "Favorites", all_goods: "All Products", my_goods_title: "📦 My Listings", fav_goods_title: "❤️ Favorites", back_home: "Home", sell_btn: "Sell Item", cat_all: "All", cat_tech: "Tech", cat_home: "Home", cat_study: "Study", cat_clothes: "Clothes", cat_other: "Other", theme: "Theme", lang: "Language", close: "Close", empty: "No listings yet ;-)" } };
-        let currentLang = localStorage.getItem('siteLang') || 'ru';
-        window.setTheme = (theme) => { if(theme === 'dark') document.body.classList.add('dark-mode'); else document.body.classList.remove('dark-mode'); localStorage.setItem('siteTheme', theme); updateSettingsUI(); }
-        window.setLang = (lang) => { currentLang = lang; localStorage.setItem('siteLang', lang); applyLanguage(); updateSettingsUI(); renderProducts(); }
-        function updateSettingsUI() { const theme = localStorage.getItem('siteTheme') || 'light'; document.getElementById('themeLight').className = `opt-btn ${theme==='light'?'active':''}`; document.getElementById('themeDark').className = `opt-btn ${theme==='dark'?'active':''}`; document.getElementById('langRU').className = `opt-btn ${currentLang==='ru'?'active':''}`; document.getElementById('langUA').className = `opt-btn ${currentLang==='ua'?'active':''}`; document.getElementById('langEN').className = `opt-btn ${currentLang==='en'?'active':''}`; }
-        function applyLanguage() { const t = translations[currentLang]; document.querySelectorAll('[data-lang]').forEach(el => { const key = el.getAttribute('data-lang'); if(t[key]) el.innerText = t[key]; }); document.getElementById('searchInput').placeholder = currentLang === 'en' ? "Search..." : (currentLang === 'ua' ? "Пошук..." : "Поиск..."); if (filterMode === 'my') document.getElementById('pageTitle').innerText = t.my_goods_title; else if (filterMode === 'fav') document.getElementById('pageTitle').innerText = t.fav_goods_title; else document.getElementById('pageTitle').innerText = t.all_goods; }
-        if(localStorage.getItem('siteTheme') === 'dark') document.body.classList.add('dark-mode'); applyLanguage(); updateSettingsUI();
+        // ОБЩИЕ
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
 
-        window.openSettingsModal = () => { document.getElementById('settingsModal').style.display = 'flex'; toggleMenu(); }
-        window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
-        window.openAddModal = () => { if(!currentUser) return openAuthModal(); newPhotos=[null,null,null,null,null]; for(let i=0;i<5;i++)updateSlotVisual('add',i,null); document.getElementById('addModal').style.display = 'flex'; }
-        
-        window.toggleMenu = () => { const m = document.getElementById('profileMenu'); m.style.display = m.style.display === 'block' ? 'none' : 'block'; }
-        window.applyFilters = () => renderProducts();
-        window.setFilter = (cat, el) => { currentCatFilter = cat; document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); renderProducts(); }
-        window.setTheme = (t) => { if(t==='dark') document.body.classList.add('dark-mode'); else document.body.classList.remove('dark-mode'); closeModal('settingsModal'); }
-        
-        function compressImage(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.src = e.target.result; img.onload = () => { const cvs = document.createElement('canvas'); const maxWidth = 800; const scale = maxWidth / img.width; cvs.width = maxWidth; cvs.height = img.height * scale; cvs.getContext('2d').drawImage(img,0,0,cvs.width,cvs.height); resolve(cvs.toDataURL('image/jpeg', 0.6)); } }; reader.readAsDataURL(file); }); }
-        loadProducts();
+        function toggleLike(btn) {
+            if(btn.innerText === '❤️') btn.innerText = '🤍';
+            else btn.innerText = '❤️';
+            // Чтобы клик не открывал товар
+            event.stopPropagation();
+        }
+
+        // Запуск
+        init();
     </script>
 </body>
 </html>
