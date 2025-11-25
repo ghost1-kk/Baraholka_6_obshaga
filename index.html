@@ -6,6 +6,7 @@
     <title>БАРАХОЛКА 6 Общага</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
+        // Применяем тему мгновенно, чтобы не моргало
         (function() {
             const theme = localStorage.getItem('siteTheme');
             if (theme === 'dark') document.documentElement.classList.add('dark-mode');
@@ -84,6 +85,14 @@
             align-items: center; justify-content: center; 
             font-weight: bold; color: #fff; margin-right: 5px;
         }
+        
+        .admin-badge { 
+            position: absolute; bottom: -2px; right: -2px; 
+            background: var(--gold); border-radius: 50%; 
+            width: 14px; height: 14px; font-size: 9px; color: black; 
+            display: flex; justify-content: center; align-items: center; 
+            border: 1px solid white; 
+        }
 
         .dropdown-menu { 
             position: fixed; top: 60px; right: 10px; 
@@ -113,6 +122,11 @@
         .categories-filter::-webkit-scrollbar { display: none; }
         .cat-chip { padding: 10px 18px; background: var(--chip-bg); border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-sec); white-space: nowrap; transition: 0.2s; border: 2px solid transparent;}
         .cat-chip.active { background: var(--card-bg); color: var(--primary); border: 2px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        
+        /* ВКЛАДКИ СТАТУСА */
+        .status-tabs { display: none; gap: 5px; justify-content: center; margin-bottom: 15px; flex-wrap: wrap; }
+        .status-tab { padding: 6px 12px; font-size: 12px; border-radius: 15px; background: var(--chip-bg); cursor: pointer; color: var(--text-sec); border: 1px solid var(--border); }
+        .status-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         /* СЕТКА */
         .goods-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -172,6 +186,7 @@
         .pf-price { font-size: 32px; font-weight: 900; color: var(--primary); margin-bottom: 20px; }
         
         .pf-desc-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; color: var(--text); }
+        
         /* ОПИСАНИЕ С ФОНОМ */
         .pf-desc { 
             font-size: 16px; line-height: 1.6; color: var(--text); 
@@ -204,9 +219,10 @@
         .btn-full { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;}
         .btn-secondary { width: 100%; padding: 15px; background: var(--chip-bg); color: var(--text-sec); border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;}
         
-        /* СТАРЫЕ НАСТРОЙКИ */
+        /* СТАРЫЕ НАСТРОЙКИ С ОБВОДКОЙ */
         .settings-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
         .opt-btn { padding: 8px 15px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; color: var(--text); font-size: 14px;}
+        /* Активная кнопка - цвет шапки */
         .opt-btn.active { border-color: var(--primary); color: var(--primary); background: var(--card-bg); font-weight: bold; box-shadow: 0 0 0 1px var(--primary); }
         
         .google-btn { width: 100%; padding: 12px; background: white; color: #333; border: 2px solid #eee; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -252,7 +268,14 @@
     <div class="main-container">
         <div class="section-header">
             <div class="section-title" id="pageTitle" data-lang="all_goods">Все объявления</div>
-            <div class="section-back-btn" id="backBtn" onclick="goHome()">← <span data-lang="back_home">На главную</span></div>
+            <div class="section-back-btn" id="backBtn" onclick="goHome()">← <span data-lang="back_home">Назад</span></div>
+        </div>
+        
+        <div class="status-tabs" id="statusTabs">
+            <div class="status-tab active" onclick="setMyStatusFilter('all', this)">Все</div>
+            <div class="status-tab" onclick="setMyStatusFilter('active', this)">Активные</div>
+            <div class="status-tab" onclick="setMyStatusFilter('pending', this)">На проверке</div>
+            <div class="status-tab" onclick="setMyStatusFilter('rejected', this)">Отклонено</div>
         </div>
 
         <div class="controls-panel" id="controlsPanel">
@@ -369,8 +392,8 @@
     <div id="authModal" class="modal-overlay">
         <div class="modal-box" style="text-align:center;">
             <div class="close-btn" onclick="closeModal('authModal')">×</div>
-            <h2>Вход</h2>
-            <button class="btn-full" style="background:white; color:#333; border:1px solid #ccc;" onclick="handleGoogleLogin()">
+            <h2 id="authTitle">Вход</h2>
+            <button class="google-btn" onclick="handleGoogleLogin()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google
             </button>
             <div style="margin:20px 0; color:var(--text-sec);">— ИЛИ —</div>
@@ -416,6 +439,7 @@
         let currentProduct = null;
         let currentGallery = [];
         let currentPhotoIdx = 0;
+        let myStatusFilter = 'all';
 
         // --- INIT ---
         function initSlots(mode) {
@@ -436,13 +460,10 @@
             slot.style.backgroundImage = `url('${base64}')`;
             slot.classList.add('has');
         }
-
         window.clearSlot = (e, mode, i) => {
-            e.stopPropagation();
-            photos[i] = null;
+            e.stopPropagation(); photos[i] = null;
             const slot = document.getElementById(`${mode}Slot${i}`);
-            slot.style.backgroundImage = 'none';
-            slot.classList.remove('has');
+            slot.style.backgroundImage = 'none'; slot.classList.remove('has');
             document.getElementById(`${mode}File${i}`).value = '';
         }
 
@@ -461,50 +482,45 @@
 
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
-            const menuLogin = document.getElementById('menuLogin');
-            const menuLogout = document.getElementById('menuLogout');
-            const menuMyAds = document.getElementById('menuMyAds');
-            const menuFavs = document.getElementById('menuFavs');
-            const menuAdmin = document.getElementById('menuAdmin');
+            const loginBtn = document.getElementById('menuLogin');
+            const logoutBtn = document.getElementById('menuLogout');
+            const myAdsBtn = document.getElementById('menuMyAds');
+            const favBtn = document.getElementById('menuFavs');
+            const adminBtn = document.getElementById('menuAdmin');
             
-            // SAFE TOGGLE
-            const setDisplay = (el, display) => { if(el) el.style.display = display; };
+            if(user) {
+                document.getElementById('loginBtn').style.display = 'none';
+                if(document.getElementById('userProfile')) {
+                    document.getElementById('userProfile').style.display = 'flex';
+                    if(user.photoURL) { 
+                        document.getElementById('userProfile').style.backgroundImage=`url('${user.photoURL}')`; 
+                        document.getElementById('userProfile').innerText='';
+                    } else { 
+                        document.getElementById('userProfile').style.backgroundImage='none'; 
+                        document.getElementById('userProfile').innerText = user.email[0].toUpperCase(); 
+                    }
+                    // Admin Badge
+                    if(user.email === ADMIN_EMAIL) document.getElementById('userProfile').innerHTML += `<div class="admin-badge">👑</div>`;
+                }
 
-            if (user) {
-                setDisplay(document.getElementById('loginBtn'), 'none');
-                setDisplay(document.getElementById('userProfile'), 'flex');
-                
-                // Avatar
-                const ava = document.getElementById('userProfile');
-                if(user.photoURL) { ava.style.backgroundImage=`url('${user.photoURL}')`; ava.innerText=''; }
-                else { ava.style.backgroundImage='none'; ava.innerText=user.email[0].toUpperCase(); }
+                if(loginBtn) loginBtn.style.display = 'none';
+                if(logoutBtn) logoutBtn.style.display = 'flex';
+                if(myAdsBtn) myAdsBtn.style.display = 'flex';
+                if(favBtn) favBtn.style.display = 'flex';
+                if(adminBtn && user.email === ADMIN_EMAIL) adminBtn.style.display = 'flex';
 
-                // Menu Items
-                setDisplay(menuLogin, 'none');
-                setDisplay(menuLogout, 'flex');
-                setDisplay(menuMyAds, 'flex');
-                setDisplay(menuFavs, 'flex');
-                
-                // Admin
-                if(user.email === ADMIN_EMAIL) setDisplay(menuAdmin, 'flex');
-                else setDisplay(menuAdmin, 'none');
-
-                try {
-                    const docRef = doc(db, "users", user.uid);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) favorites = docSnap.data().favorites || [];
-                    else await setDoc(docRef, { email: user.email, favorites: [] });
-                } catch(e) { console.log('Fav error', e); }
-
+                const docRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) favorites = docSnap.data().favorites || [];
+                else await setDoc(docRef, { email: user.email, favorites: [] });
             } else {
-                setDisplay(document.getElementById('loginBtn'), 'flex');
-                setDisplay(document.getElementById('userProfile'), 'none');
-                
-                setDisplay(menuLogin, 'flex');
-                setDisplay(menuLogout, 'none');
-                setDisplay(menuMyAds, 'none');
-                setDisplay(menuFavs, 'none');
-                setDisplay(menuAdmin, 'none');
+                document.getElementById('loginBtn').style.display = 'flex';
+                if(document.getElementById('userProfile')) document.getElementById('userProfile').style.display = 'none';
+                if(loginBtn) loginBtn.style.display = 'flex';
+                if(logoutBtn) logoutBtn.style.display = 'none';
+                if(myAdsBtn) myAdsBtn.style.display = 'none';
+                if(favBtn) favBtn.style.display = 'none';
+                if(adminBtn) adminBtn.style.display = 'none';
                 favorites = [];
             }
             renderProducts();
@@ -520,11 +536,21 @@
         window.filterFavorites = () => { filterMode='fav'; updateHeader("Избранное"); toggleMenu(); renderProducts(); }
         window.filterModeration = () => { filterMode='admin'; updateHeader("Модерация"); toggleMenu(); renderProducts(); }
         window.goHome = () => { filterMode='all'; updateHeader("Все объявления"); renderProducts(); }
-        
+        window.setMyStatusFilter = (status, el) => {
+            myStatusFilter = status;
+            document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderProducts();
+        }
+
         function updateHeader(title) {
             document.getElementById('pageTitle').innerText = title;
             document.getElementById('controlsPanel').style.display = (title === "Все объявления") ? 'block' : 'none';
             document.getElementById('backBtn').style.display = (title === "Все объявления") ? 'none' : 'block';
+            
+            const tabs = document.getElementById('statusTabs');
+            if(title === "Мои товары") tabs.style.display = 'flex';
+            else tabs.style.display = 'none';
         }
 
         // --- CRUD ---
@@ -536,12 +562,8 @@
             const cat = document.getElementById('newCat').value;
             const finalImgs = photos.filter(p => p !== null);
             const status = (currentUser && currentUser.email === ADMIN_EMAIL) ? 'active' : 'pending';
-
             try {
-                await addDoc(collection(db, "products"), {
-                    title, price, desc, contact, cat, imgs: finalImgs,
-                    userId: currentUser.uid, date: Date.now(), status, isPromoted: false
-                });
+                await addDoc(collection(db, "products"), { title, price, desc, contact, cat, imgs: finalImgs, userId: currentUser.uid, date: Date.now(), status, isPromoted: false });
                 alert(status === 'active' ? "Готово!" : "На проверке!");
                 closeModal('addModal'); location.reload();
             } catch(e) { alert(e.message); }
@@ -561,43 +583,29 @@
                 alert("Сохранено"); closeModal('editModal'); loadProducts();
             } catch(e) { alert(e.message); }
         }
+
         window.deleteProduct = async (id, e) => { e.stopPropagation(); if(confirm("Удалить?")) { await deleteDoc(doc(db, "products", id)); loadProducts(); } }
 
-        // --- ADMIN ACTIONS ---
-        window.approveProduct = async (id, e) => {
-            e.stopPropagation();
-            if(!confirm("Одобрить?")) return;
-            await updateDoc(doc(db, "products", id), { status: 'active' });
+        // --- RENDER ---
+        async function loadProducts() {
+            const q = query(collection(db, "products"));
+            const snap = await getDocs(q);
+            products = []; snap.forEach(d => products.push({id: d.id, ...d.data()}));
+            products.sort((a,b) => (b.isPromoted?1:0)-(a.isPromoted?1:0) || b.date-a.date);
             renderProducts();
         }
 
-        window.rejectProduct = async (id, e) => {
-            e.stopPropagation();
-            if(!confirm("Отклонить?")) return;
-            await updateDoc(doc(db, "products", id), { status: 'rejected' });
-            renderProducts();
-        }
-
-        window.togglePromote = async (id, currentStatus, e) => {
-            e.stopPropagation();
-            if(!confirm(currentStatus ? "Снять ТОП?" : "Сделать ТОП?")) return;
-            try {
-                await updateDoc(doc(db, "products", id), { isPromoted: !currentStatus });
-                renderProducts();
-            } catch (e) { alert("Ошибка: " + e.message); }
-        }
-
-        async function loadProducts() { const cont = document.getElementById('goods-container'); cont.innerHTML = "<p>...</p>"; const q = query(collection(db, "products"), orderBy("date", "desc")); const snap = await getDocs(q); products = []; snap.forEach(d => products.push({id: d.id, ...d.data()})); renderProducts(); }
-        
         window.renderProducts = () => {
-            const cont = document.getElementById('goods-container');
-            cont.innerHTML = "";
+            const cont = document.getElementById('goods-container'); cont.innerHTML = "";
             const search = document.getElementById('searchInput').value.toLowerCase();
-            
             const filtered = products.filter(p => {
                 if(!p.title.toLowerCase().includes(search)) return false;
                 if(filterMode === 'admin') return p.status === 'pending';
-                if(filterMode === 'my') return currentUser && p.userId === currentUser.uid;
+                if(filterMode === 'my') {
+                     if(!currentUser || p.userId !== currentUser.uid) return false;
+                     if(myStatusFilter !== 'all' && p.status !== myStatusFilter) return false;
+                     return true;
+                }
                 if(filterMode === 'fav') return favorites.includes(p.id) && p.status === 'active';
                 if(p.status !== 'active') return false; 
                 if(currentCatFilter !== 'all' && p.cat !== currentCatFilter) return false;
@@ -612,22 +620,22 @@
                 const isFav = favorites.includes(p.id);
                 
                 let btns = "";
-                // КНОПКИ: Если Админ или Владелец - показываем карандаш
+                // КНОПКИ: Админ видит на всех, Владелец только на своих
                 if(isMine || isAdmin) {
                     btns = `<div class="action-icon" onclick="openEditModal('${p.id}', event)"><i class="fas fa-pen" style="color:#006d77"></i></div>
                             <div class="action-icon" onclick="deleteProduct('${p.id}', event)"><i class="fas fa-trash" style="color:#e74c3c"></i></div>`;
                 } else {
                     btns = `<div class="action-icon ${isFav?'fav-active':''}" onclick="toggleFav('${p.id}', event)"><i class="fas fa-heart"></i></div>`;
                 }
-
-                // КОРОНА АДМИНУ
+                
+                // КОРОНА АДМИНУ (В режиме Админа или на карточке)
                 if (isAdmin) {
                     btns += `<div class="action-icon" onclick="togglePromote('${p.id}', ${p.isPromoted}, event)" style="color:${p.isPromoted ? 'gold' : '#ccc'}"><i class="fas fa-crown"></i></div>`;
                 }
 
                 let badge = "";
                 if(p.isPromoted) badge = `<div class="promoted-badge" style="background:gold;color:black">TOP</div>`;
-                else if(filterMode !== 'all') {
+                else if(filterMode === 'my' || filterMode === 'admin') {
                    if(p.status==='pending') badge = `<div class="status-badge pending">На проверке</div>`;
                    if(p.status==='rejected') badge = `<div class="status-badge rejected">Отклонено</div>`;
                 }
@@ -649,7 +657,7 @@
 
         window.toggleFav = async (id, e) => { e.stopPropagation(); if (!currentUser) return alert("Вход?"); const ref = doc(db, "users", currentUser.uid); if (favorites.includes(id)) { await updateDoc(ref, {favorites: arrayRemove(id)}); favorites = favorites.filter(f=>f!==id); } else { await updateDoc(ref, {favorites: arrayUnion(id)}); favorites.push(id); } renderProducts(); }
 
-        // --- VIEW PRODUCT ---
+        // --- ADMIN & MODALS ---
         const catNames = {tech:'Электроника', home:'Дом', study:'Учеба', clothes:'Одежда', other:'Разное'};
         window.openProduct = (id) => {
             currentProduct = products.find(p => p.id === id);
@@ -667,35 +675,31 @@
 
             const contactBtn = document.getElementById('contactBtn');
             const adminActions = document.getElementById('adminActions');
-            
             contactBtn.style.display = 'none';
             adminActions.style.display = 'none';
 
-            if(isAdmin && isPending) {
-                adminActions.style.display = 'flex';
-            } else {
+            if(isAdmin && isPending) adminActions.style.display = 'flex';
+            else {
                 contactBtn.style.display = 'block';
                 contactBtn.href = `https://t.me/${p.contact.replace('@','')}`;
             }
             document.getElementById('productView').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
-        window.closeProduct = () => { 
-            document.getElementById('productView').style.display = 'none'; 
-            document.body.style.overflow = 'auto';
+        
+        window.adminAction = async (action) => {
+            if(!confirm("Уверены?")) return;
+            const status = action === 'approve' ? 'active' : 'rejected';
+            await updateDoc(doc(db, "products", currentProduct.id), { status });
+            document.getElementById('productView').style.display='none'; document.body.style.overflow='auto';
+            renderProducts();
         }
         
-        function updateGallery() { 
-            const img = document.getElementById('pfImg'); 
-            if(currentGallery.length) { img.src = currentGallery[currentPhotoIdx]; img.style.display='block'; } 
-            else { img.style.display='none'; } 
-            const prev = document.querySelector('.g-prev'); const next = document.querySelector('.g-next');
-            if(currentGallery.length > 1) { prev.style.display='flex'; next.style.display='flex'; } else { prev.style.display='none'; next.style.display='none'; }
+        window.togglePromote = async (id, status, e) => {
+            e.stopPropagation(); if(!confirm(status ? "Снять ТОП?" : "Сделать ТОП?")) return;
+            await updateDoc(doc(db, "products", id), { isPromoted: !status }); renderProducts();
         }
-        window.nextPhoto = (e) => { e.stopPropagation(); if(currentGallery.length<2)return; currentPhotoIdx++; if(currentPhotoIdx>=currentGallery.length) currentPhotoIdx=0; updateGallery(); }
-        window.prevPhoto = (e) => { e.stopPropagation(); if(currentGallery.length<2)return; currentPhotoIdx--; if(currentPhotoIdx<0) currentPhotoIdx=currentGallery.length-1; updateGallery(); }
 
-        // --- MODALS ---
         window.openEditModal = (id, e) => {
             e.stopPropagation(); const p = products.find(p => p.id === id); 
             document.getElementById('editId').value = p.id; document.getElementById('editTitle').value = p.title; document.getElementById('editPrice').value = p.price; document.getElementById('editDesc').value = p.desc; document.getElementById('editContact').value = p.contact;
@@ -711,30 +715,24 @@
         window.openAddModal = () => { if(!currentUser) return openAuthModal(); photos=[null,null,null,null,null]; document.querySelectorAll('#addSlots .slot').forEach(s=>{s.style.backgroundImage='';s.classList.remove('has')}); document.getElementById('addModal').style.display='flex'; }
         window.openSettingsModal = () => { document.getElementById('settingsModal').style.display='flex'; toggleMenu(); }
         window.closeModal = (id) => document.getElementById(id).style.display='none';
-        window.toggleMenu = () => { const m = document.getElementById('profileMenu'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
-        window.applyFilters = () => renderProducts();
+        window.closeProduct = () => { document.getElementById('productView').style.display='none'; document.body.style.overflow='auto'; }
         window.setFilter = (cat, el) => { currentCatFilter = cat; document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); renderProducts(); }
+        window.applyFilters = () => renderProducts();
         
-        function compressImage(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.src = e.target.result; img.onload = () => { const cvs = document.createElement('canvas'); const maxWidth = 800; const scale = maxWidth / img.width; cvs.width = maxWidth; cvs.height = img.height * scale; cvs.getContext('2d').drawImage(img,0,0,cvs.width,cvs.height); resolve(cvs.toDataURL('image/jpeg', 0.6)); } }; reader.readAsDataURL(file); }); }
+        function updateGallery() { const img = document.getElementById('pfImg'); if(currentGallery.length) { img.src = currentGallery[currentPhotoIdx]; img.style.display='block'; } else { img.style.display='none'; } const prev = document.querySelector('.g-prev'); const next = document.querySelector('.g-next'); if(currentGallery.length > 1) { prev.style.display='flex'; next.style.display='flex'; } else { prev.style.display='none'; next.style.display='none'; } }
+        window.nextPhoto = (e) => { e.stopPropagation(); if(currentGallery.length<2)return; currentPhotoIdx++; if(currentPhotoIdx>=currentGallery.length) currentPhotoIdx=0; updateGallery(); }
+        window.prevPhoto = (e) => { e.stopPropagation(); if(currentGallery.length<2)return; currentPhotoIdx--; if(currentPhotoIdx<0) currentPhotoIdx=currentGallery.length-1; updateGallery(); }
 
         // Theme/Lang
         const translations = { ru: { login: "Войти", logout: "Выйти", settings: "Настройки", my_ads: "Мои товары", favorites: "Избранное", all_goods: "Все объявления", my_goods_title: "📦 Мои объявления", fav_goods_title: "❤️ Избранное", back_home: "На главную", sell_btn: "Подать", cat_all: "Все", cat_tech: "Электроника", cat_home: "Дом", cat_study: "Учеба", cat_clothes: "Одежда", cat_other: "Разное", theme: "Тема", lang: "Язык", close: "Закрыть", empty: "Пока нет объявлений ;-)" }, ua: { login: "Увійти", logout: "Вийти", settings: "Налаштування", my_ads: "Мої товари", favorites: "Обране", all_goods: "Всі оголошення", my_goods_title: "📦 Мої оголошення", fav_goods_title: "❤️ Обране", back_home: "На головну", sell_btn: "Продати", cat_all: "Всі", cat_tech: "Електроніка", cat_home: "Дім", cat_study: "Навчання", cat_clothes: "Одяг", cat_other: "Різне", theme: "Тема", lang: "Мова", close: "Закрити", empty: "Поки немає оголошень ;-)" }, en: { login: "Login", logout: "Logout", settings: "Settings", my_ads: "My Listings", favorites: "Favorites", all_goods: "All Products", my_goods_title: "📦 My Listings", fav_goods_title: "❤️ Favorites", back_home: "Home", sell_btn: "Sell Item", cat_all: "All", cat_tech: "Tech", cat_home: "Home", cat_study: "Study", cat_clothes: "Clothes", cat_other: "Other", theme: "Theme", lang: "Language", close: "Close", empty: "No listings yet ;-)" } };
         let currentLang = localStorage.getItem('siteLang') || 'ru';
-
-        window.setTheme = (t) => { 
-            if(t==='dark') { document.documentElement.classList.add('dark-mode'); localStorage.setItem('siteTheme', 'dark'); document.getElementById('themeDark').classList.add('active'); document.getElementById('themeLight').classList.remove('active'); }
-            else { document.documentElement.classList.remove('dark-mode'); localStorage.setItem('siteTheme', 'light'); document.getElementById('themeLight').classList.add('active'); document.getElementById('themeDark').classList.remove('active'); }
-        }
+        window.setTheme = (t) => { if(t==='dark') { document.documentElement.classList.add('dark-mode'); localStorage.setItem('siteTheme', 'dark'); document.getElementById('themeDark').classList.add('active'); document.getElementById('themeLight').classList.remove('active'); } else { document.documentElement.classList.remove('dark-mode'); localStorage.setItem('siteTheme', 'light'); document.getElementById('themeLight').classList.add('active'); document.getElementById('themeDark').classList.remove('active'); } }
         window.setLang = (l) => { currentLang = l; localStorage.setItem('siteLang', l); applyLanguage(); document.querySelectorAll('[id^="lang"]').forEach(b=>b.classList.remove('active')); document.getElementById('lang'+l.toUpperCase()).classList.add('active'); }
-        
+        function updateSettingsUI() { const theme = localStorage.getItem('siteTheme') || 'light'; document.getElementById('themeLight').className = `opt-btn ${theme==='light'?'active':''}`; document.getElementById('themeDark').className = `opt-btn ${theme==='dark'?'active':''}`; document.getElementById('langRU').className = `opt-btn ${currentLang==='ru'?'active':''}`; document.getElementById('langUA').className = `opt-btn ${currentLang==='ua'?'active':''}`; document.getElementById('langEN').className = `opt-btn ${currentLang==='en'?'active':''}`; }
         function applyLanguage() { const t = translations[currentLang]; document.querySelectorAll('[data-lang]').forEach(el => { const key = el.getAttribute('data-lang'); if(t[key]) el.innerText = t[key]; }); document.getElementById('searchInput').placeholder = currentLang === 'en' ? "Search..." : (currentLang === 'ua' ? "Пошук..." : "Поиск..."); if (filterMode === 'my') document.getElementById('pageTitle').innerText = t.my_goods_title; else if (filterMode === 'fav') document.getElementById('pageTitle').innerText = t.fav_goods_title; else document.getElementById('pageTitle').innerText = t.all_goods; }
-        applyLanguage();
+        if(localStorage.getItem('siteTheme') === 'dark') document.body.classList.add('dark-mode'); applyLanguage(); updateSettingsUI();
 
-        const savedTheme = localStorage.getItem('siteTheme');
-        if(savedTheme === 'dark') { document.getElementById('themeDark').classList.add('active'); document.getElementById('themeLight').classList.remove('active'); } 
-        else { document.getElementById('themeLight').classList.add('active'); document.getElementById('themeDark').classList.remove('active'); }
-        document.getElementById('lang'+currentLang.toUpperCase()).classList.add('active');
-
+        function compressImage(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.src = e.target.result; img.onload = () => { const cvs = document.createElement('canvas'); const maxWidth = 800; const scale = maxWidth / img.width; cvs.width = maxWidth; cvs.height = img.height * scale; cvs.getContext('2d').drawImage(img,0,0,cvs.width,cvs.height); resolve(cvs.toDataURL('image/jpeg', 0.6)); } }; reader.readAsDataURL(file); }); }
         loadProducts();
     </script>
 </body>
