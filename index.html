@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>БАРАХОЛКА 6 Общага</title>
+    <title>БАРАХОЛКА KNUBA</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* ГЛОБАЛЬНЫЙ СБРОС (ЧТОБЫ НИЧЕГО НЕ СЪЕЗЖАЛО) */
-        * { box-sizing: border-box; }
-
+        /* --- ЦВЕТА --- */
         :root {
             --primary: #006d77;
             --accent: #83c5be;
@@ -17,6 +15,8 @@
             --text: #2d3436;
             --text-sec: #636e72;
             --danger: #e76f51;
+            --success: #2ecc71;
+            --warning: #f1c40f;
             --gold: #f1c40f;
             --border: #eee;
             --chip-bg: #f0f0f0;
@@ -40,7 +40,7 @@
             padding-bottom: 80px; 
             transition: 0.3s;
             -webkit-tap-highlight-color: transparent;
-            overflow-x: hidden; /* ЗАПРЕТ ГОРИЗОНТАЛЬНОГО СКРОЛЛА */
+            overflow-x: hidden;
         }
 
         /* ШАПКА */
@@ -58,13 +58,13 @@
         .logo { font-size: 20px; font-weight: bold; display: flex; align-items: center; gap: 10px; justify-self: start; cursor: pointer;}
         .header-center { text-align: center; display: flex; flex-direction: column; justify-content: center; cursor: pointer; user-select: none; }
         .main-title { font-size: 24px; font-weight: 900; margin: 0; letter-spacing: 1px; text-transform: uppercase;}
-        .sub-title { font-size: 12px; margin: 0; opacity: 0.8; font-weight: 400; margin-top: 2px;}
+        .sub-title { font-size: 12px; margin: 0; opacity: 0.8; font-weight: 400; margin-top: 2px; letter-spacing: 1px;}
         .header-right { justify-self: end; display: flex; align-items: center; gap: 15px; }
 
         .auth-btn { cursor: pointer; font-weight: bold; color: #006d77; background: white; padding: 8px 15px; border-radius: 20px; font-size: 14px; border: 2px solid white;}
         .user-avatar { width: 35px; height: 35px; border-radius: 50%; background-size: cover; background-position: center; background-color: var(--accent); cursor: pointer; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;}
         
-        .dropdown-menu { position: absolute; top: 60px; right: 10px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); width: 180px; display: none; overflow: hidden; z-index: 101; border: 1px solid var(--border);}
+        .dropdown-menu { position: absolute; top: 60px; right: 10px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); width: 200px; display: none; overflow: hidden; z-index: 101; border: 1px solid var(--border);}
         .dropdown-item { padding: 12px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: var(--text); font-size: 14px;}
         .dropdown-item:hover { background: var(--chip-bg); }
         
@@ -83,13 +83,24 @@
         .cat-chip { padding: 8px 16px; background: var(--chip-bg); border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; user-select: none; color: var(--text-sec); border: 2px solid transparent; }
         .cat-chip.active { background: var(--card-bg); color: var(--primary); border: 2px solid var(--primary); }
 
+        /* ВКЛАДКИ СТАТУСА (для моих объявлений) */
+        .status-tabs { display: none; gap: 5px; justify-content: center; margin-bottom: 15px; flex-wrap: wrap; }
+        .status-tab { padding: 6px 12px; font-size: 12px; border-radius: 15px; background: var(--bg); cursor: pointer; color: var(--text-sec); border: 1px solid var(--border); }
+        .status-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+
         /* СЕТКА */
         .goods-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         .empty-message { grid-column: 1 / -1; text-align: center; font-size: 20px; font-weight: bold; color: var(--text-sec); margin-top: 40px; }
 
         .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; border: 1px solid transparent;}
         .card.promoted { border: 2px solid var(--gold); box-shadow: 0 5px 15px rgba(241, 196, 15, 0.3); }
-        .promoted-badge { position: absolute; top: 8px; left: 8px; background: var(--gold); color: #000; padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: 800; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        /* БЕЙДЖИКИ СТАТУСА */
+        .status-badge { position: absolute; top: 8px; left: 8px; padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: 800; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); color: #fff; text-transform: uppercase;}
+        .status-badge.top { background: var(--gold); color: black; }
+        .status-badge.pending { background: var(--warning); color: black; }
+        .status-badge.rejected { background: var(--danger); }
+        .status-badge.active { background: var(--success); display: none; /* Активные не подписываем, чтобы не мусорить */ }
 
         .card-img-container { height: 160px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;}
         .card-img { width: 100%; height: 100%; object-fit: cover; }
@@ -116,8 +127,6 @@
 
         /* МОДАЛКИ */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(3px); padding: 15px; box-sizing: border-box;}
-        
-        /* Окно входа и создания */
         .modal-box { background: var(--card-bg); color: var(--text); width: 100%; max-width: 500px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); position: relative; animation: slideUp 0.3s ease; max-height: 90vh; overflow-y: auto;}
         @keyframes slideUp { from {transform: translateY(20px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
         
@@ -126,72 +135,35 @@
         .btn-secondary { width: 100%; padding: 14px; background: var(--chip-bg); color: var(--text-sec); border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;}
         
         .google-btn { width: 100%; padding: 12px; background: white; color: #333; border: 2px solid #eee; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .toggle-link { text-align: center; margin-top: 15px; color: var(--primary); cursor: pointer; font-weight: 600; }
         
-        /* --- ОКНО ПРОСМОТРА (FIXED FULLSCREEN) --- */
-        .product-modal-box { 
-            width: 100%; height: 100%; 
-            max-width: 100%; max-height: 100%;
-            background: var(--card-bg); color: var(--text); 
-            display: flex; flex-direction: column; 
-            border-radius: 0; margin: 0; padding: 0;
-            overflow-x: hidden; /* Нет скролла влево-вправо */
-            overflow-y: auto; /* Скролл вниз */
-        }
-        
-        .pm-left { 
-            width: 100%; height: 40vh; flex-shrink: 0;
-            background: #000; position: relative; 
-            display: flex; align-items: center; justify-content: center; 
-        }
+        /* ОКНО ПРОСМОТРА */
+        .product-modal-box { max-width: 900px; width: 100%; padding: 0; overflow: hidden; height: 85vh; display: flex; flex-direction: column;}
+        .pm-left { flex: 1; background: #000; display: flex; align-items: center; justify-content: center; position: relative; min-height: 50%; }
         .pm-img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        
-        .pm-right { 
-            flex-grow: 1; 
-            padding: 20px; 
-            display: flex; flex-direction: column;
-            /* Отступ снизу для удобства */
-            padding-bottom: 40px;
-        }
-
+        .pm-right { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
         .close-modal-btn { position: fixed; top: 15px; right: 15px; width: 35px; height: 35px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 24px; color: #333; z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,0.2);}
         
-        /* КНОПКА НАПИСАТЬ (КОМПАКТНАЯ И ПО ЦЕНТРУ) */
-        #pmBtn {
-            display: block;
-            width: auto;           /* Ширина по контенту */
-            min-width: 200px;      /* Но не слишком узкая */
-            max-width: 80%;        /* Не шире 80% экрана */
-            margin: 30px auto 10px auto; /* По центру, отступ сверху */
-            padding: 12px 30px;
-            text-align: center;
-            text-decoration: none;
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
-            border-radius: 30px;   /* Закругленная */
-            box-shadow: 0 4px 15px rgba(0, 109, 119, 0.3);
-        }
-
         .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.3); color: white; padding: 10px; cursor: pointer; font-size: 20px; border-radius: 50%; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; z-index: 5; }
         .gallery-prev { left: 10px; } .gallery-next { right: 10px; }
-        
         .settings-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-        .setting-label { font-size: 18px; font-weight: bold; }
-        .setting-opts { display: flex; gap: 10px; }
+        
         .opt-btn { padding: 8px 15px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; color: var(--text); }
         .opt-btn.active { border-color: var(--primary); color: var(--primary); background: var(--card-bg); font-weight: bold;}
 
-        /* АДАПТИВ ДЛЯ ПК */
+        /* КНОПКА НАПИСАТЬ ПРОДАВЦУ */
+        #pmBtn {
+            display: block;
+            width: auto; min-width: 200px; max-width: 80%;
+            margin: 30px auto 10px auto;
+            padding: 12px 30px; text-align: center; text-decoration: none;
+            background: var(--primary); color: white; font-weight: bold;
+            border-radius: 30px; box-shadow: 0 4px 15px rgba(0, 109, 119, 0.3);
+        }
+
         @media (min-width: 768px) {
-            .product-modal-box { 
-                max-width: 900px; width: 90%; height: 80vh; 
-                border-radius: 16px; margin: auto;
-                flex-direction: row; overflow: hidden; 
-            }
-            .pm-left { width: 50%; height: 100%; }
-            .pm-right { width: 50%; overflow-y: auto; }
-            .close-modal-btn { position: absolute; top: 15px; right: 15px; }
+            .product-modal-box { flex-direction: row; height: 80vh; }
+            .pm-left { height: auto; }
+            .close-modal-btn { position: absolute; }
         }
     </style>
 </head>
@@ -201,7 +173,7 @@
         <div class="logo" onclick="goHome()"><i class="fas fa-store"></i></div>
         <div class="header-center" onclick="goHome()" title="На главную">
             <div class="main-title">БАРАХОЛКА</div>
-            <div class="sub-title">6 общага</div>
+            <div class="sub-title">KNUBA</div>
         </div>
         <div class="header-right">
             <div id="loginBtn" class="auth-btn" onclick="openAuthModal()" data-lang="login">Войти</div>
@@ -210,6 +182,8 @@
         <div id="profileMenu" class="dropdown-menu">
             <div class="dropdown-item" onclick="filterMyAds()"><i class="fas fa-box"></i> <span data-lang="my_ads">Мои товары</span></div>
             <div class="dropdown-item" onclick="filterFavorites()"><i class="fas fa-heart"></i> <span data-lang="favorites">Избранное</span></div>
+            <div class="dropdown-item" id="adminBtn" style="display:none;" onclick="filterModeration()"><i class="fas fa-shield-alt"></i> Модерация</div>
+            
             <div class="dropdown-item" onclick="openSettingsModal()"><i class="fas fa-cog"></i> <span data-lang="settings">Настройки</span></div>
             <div class="dropdown-item" style="color:var(--danger);" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span data-lang="logout">Выйти</span></div>
         </div>
@@ -219,6 +193,13 @@
         <div class="section-header">
             <div class="section-title" id="pageTitle" data-lang="all_goods">Все объявления</div>
             <div class="section-back-btn" id="backBtn" onclick="goHome()">← <span data-lang="back_home">На главную</span></div>
+        </div>
+
+        <div class="status-tabs" id="statusTabs">
+            <div class="status-tab active" onclick="setMyStatusFilter('all', this)">Все</div>
+            <div class="status-tab" onclick="setMyStatusFilter('active', this)">Активные</div>
+            <div class="status-tab" onclick="setMyStatusFilter('pending', this)">На проверке</div>
+            <div class="status-tab" onclick="setMyStatusFilter('rejected', this)">Отклонено</div>
         </div>
 
         <div class="controls-panel" id="controlsPanel">
@@ -304,8 +285,8 @@
                 <h2 id="pmTitle" style="margin: 0 0 10px 0; font-size: 24px;"></h2>
                 <h1 id="pmPrice" style="color:var(--primary); margin: 0 0 20px 0;"></h1>
                 <div style="font-weight: bold; margin-bottom: 5px;">Описание:</div>
-                <p id="pmDesc" style="color:var(--text); line-height:1.5; white-space: pre-wrap; background:var(--bg); padding:15px; border-radius:8px;"></p>
-                <a id="pmBtn" href="#" target="_blank">Написать продавцу</a>
+                <p id="pmDesc" style="color:var(--text); line-height:1.5; white-space: pre-wrap; background:var(--bg); padding:10px; border-radius:8px; flex-grow: 1; overflow-y: auto;"></p>
+                <a id="pmBtn" href="#" target="_blank" class="btn-full">Написать продавцу</a>
             </div>
         </div>
     </div>
@@ -351,10 +332,10 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc, arrayUnion, arrayRemove, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // ========================================
-        // ВНИМАНИЕ: АДМИНСКАЯ ПОЧТА
+        // ADMIN EMAIL
         // ========================================
         const ADMIN_EMAIL = "romanzam007@gmail.com"; 
 
@@ -379,6 +360,7 @@
         let filterMode = 'all'; 
         let currentCatFilter = 'all';
         let isRegMode = false;
+        let myStatusFilter = 'all'; // active, pending, rejected, all
         
         let newPhotos = [null, null, null, null, null];
         let editPhotos = [null, null, null, null, null];
@@ -429,14 +411,20 @@
         }
 
         // --- AUTH ---
+        getRedirectResult(auth).then((result) => {
+            if (result) { checkAndCreateUser(result.user); }
+        }).catch((error) => { console.error(error); });
+
         window.handleGoogleLogin = async () => { 
-            try { 
-                const result = await signInWithPopup(auth, googleProvider); 
-                await checkAndCreateUser(result.user); 
-                closeModal('authModal'); 
-            } catch (error) { 
-                alert("Ошибка: " + error.message); 
-            } 
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (isMobile) signInWithRedirect(auth, googleProvider);
+            else {
+                try {
+                    const result = await signInWithPopup(auth, googleProvider);
+                    await checkAndCreateUser(result.user);
+                    closeModal('authModal');
+                } catch (error) { alert("Ошибка входа: " + error.message); }
+            }
         }
 
         window.handleEmailAuth = async () => {
@@ -480,9 +468,13 @@
                 }
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) favorites = userDoc.data().favorites || [];
+                
+                // Show Admin Button
+                if (user.email === ADMIN_EMAIL) document.getElementById('adminBtn').style.display = 'flex';
             } else {
                 document.getElementById('loginBtn').style.display = 'flex';
                 document.getElementById('userProfile').style.display = 'none';
+                document.getElementById('adminBtn').style.display = 'none';
                 favorites = [];
             }
             renderProducts();
@@ -490,9 +482,54 @@
 
         // --- ФУНКЦИИ ---
         window.logout = () => { signOut(auth); document.getElementById('profileMenu').style.display = 'none'; goHome(); }
-        window.goHome = () => { filterMode = 'all'; currentCatFilter = 'all'; document.getElementById('searchInput').value = ""; document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); document.querySelector('.cat-chip[onclick*="all"]').classList.add('active'); document.getElementById('controlsPanel').style.display = 'block'; document.getElementById('backBtn').style.display = 'none'; applyLanguage(); renderProducts(); }
-        window.filterMyAds = () => { if(!currentUser) return alert("Войдите!"); filterMode = 'my'; document.getElementById('controlsPanel').style.display = 'none'; document.getElementById('backBtn').style.display = 'block'; applyLanguage(); toggleMenu(); renderProducts(); }
-        window.filterFavorites = () => { if(!currentUser) return alert("Войдите!"); filterMode = 'fav'; document.getElementById('controlsPanel').style.display = 'none'; document.getElementById('backBtn').style.display = 'block'; applyLanguage(); toggleMenu(); renderProducts(); }
+        window.goHome = () => { 
+            filterMode = 'all'; currentCatFilter = 'all'; 
+            document.getElementById('searchInput').value = ""; 
+            document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); 
+            document.querySelector('.cat-chip[onclick*="all"]').classList.add('active'); 
+            document.getElementById('controlsPanel').style.display = 'block'; 
+            document.getElementById('backBtn').style.display = 'none'; 
+            document.getElementById('statusTabs').style.display = 'none'; // Hide tabs
+            applyLanguage(); renderProducts(); 
+        }
+        
+        window.filterMyAds = () => { 
+            if(!currentUser) return alert("Войдите!"); 
+            filterMode = 'my'; myStatusFilter = 'all'; // Reset tabs
+            document.getElementById('controlsPanel').style.display = 'none'; 
+            document.getElementById('backBtn').style.display = 'block';
+            document.getElementById('statusTabs').style.display = 'flex'; // Show tabs
+            // Reset tabs visual
+            document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('.status-tab[onclick*="all"]').classList.add('active');
+            
+            applyLanguage(); toggleMenu(); renderProducts(); 
+        }
+        
+        window.filterFavorites = () => { 
+            if(!currentUser) return alert("Войдите!"); 
+            filterMode = 'fav'; 
+            document.getElementById('controlsPanel').style.display = 'none'; 
+            document.getElementById('backBtn').style.display = 'block'; 
+            document.getElementById('statusTabs').style.display = 'none';
+            applyLanguage(); toggleMenu(); renderProducts(); 
+        }
+
+        window.filterModeration = () => {
+            filterMode = 'admin';
+            document.getElementById('controlsPanel').style.display = 'none'; 
+            document.getElementById('backBtn').style.display = 'block'; 
+            document.getElementById('statusTabs').style.display = 'none';
+            document.getElementById('pageTitle').innerText = "🛡️ Модерация";
+            toggleMenu(); renderProducts();
+        }
+
+        window.setMyStatusFilter = (status, el) => {
+            myStatusFilter = status;
+            document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderProducts();
+        }
         
         // CRUD
         window.createProduct = async () => {
@@ -506,13 +543,19 @@
             if (!title || !price || !cat || !contact) return alert("Заполни поля!");
             const imgs = newPhotos.filter(p => p !== null);
             btn.disabled = true; btn.innerText = "...";
+            
+            // ADMIN gets active immediately, others pending
+            const initStatus = (currentUser.email === ADMIN_EMAIL) ? 'active' : 'pending';
+
             try {
                 await addDoc(collection(db, "products"), { 
                     title, price, desc, contact, cat, imgs, 
                     userId: currentUser.uid, date: Date.now(), 
+                    status: initStatus, // active, pending, rejected
                     isPromoted: false
                 });
-                alert("Готово!"); closeModal('addModal'); loadProducts();
+                alert(initStatus === 'active' ? "Опубликовано!" : "Отправлено на проверку!"); 
+                closeModal('addModal'); loadProducts();
                 newPhotos=[null,null,null,null,null]; for(let i=0;i<5;i++) updateSlotVisual('add',i,null);
                 document.getElementById('newTitle').value=""; document.getElementById('newPrice').value=""; document.getElementById('newDesc').value=""; document.getElementById('newContact').value="";
             } catch (e) { alert(e.message); } finally { btn.disabled = false; btn.innerText = "Опубликовать"; }
@@ -535,6 +578,7 @@
             const id = document.getElementById('editId').value;
             const finalPhotos = editPhotos.filter(p => p !== null);
             try {
+                // If user edits, maybe set back to pending? For now keep same status
                 await updateDoc(doc(db, "products", id), {
                     title: document.getElementById('editTitle').value,
                     price: document.getElementById('editPrice').value,
@@ -547,7 +591,7 @@
         }
         window.deleteProduct = async (id, e) => { e.stopPropagation(); if (!confirm("Удалить?")) return; await deleteDoc(doc(db, "products", id)); loadProducts(); }
 
-        // --- ADMIN PROMO ---
+        // --- ADMIN ACTIONS ---
         window.togglePromote = async (id, currentStatus, e) => {
             e.stopPropagation();
             if(!confirm(currentStatus ? "Снять ТОП?" : "Сделать ТОП?")) return;
@@ -557,18 +601,56 @@
             } catch (e) { alert("Ошибка: " + e.message); }
         }
 
+        window.approveProduct = async (id, e) => {
+            e.stopPropagation();
+            if(!confirm("Одобрить?")) return;
+            await updateDoc(doc(db, "products", id), { status: 'active' });
+            renderProducts();
+        }
+
+        window.rejectProduct = async (id, e) => {
+            e.stopPropagation();
+            if(!confirm("Отклонить?")) return;
+            await updateDoc(doc(db, "products", id), { status: 'rejected' });
+            renderProducts();
+        }
+
         async function loadProducts() { const cont = document.getElementById('goods-container'); cont.innerHTML = "<p>...</p>"; const q = query(collection(db, "products"), orderBy("date", "desc")); const snap = await getDocs(q); products = []; snap.forEach(d => products.push({id: d.id, ...d.data()})); renderProducts(); }
         
         window.renderProducts = () => {
             const cont = document.getElementById('goods-container');
             cont.innerHTML = "";
             const search = document.getElementById('searchInput').value.toLowerCase();
+            
             let filtered = products.filter(p => {
+                // SEARCH FILTER
                 if (!p.title.toLowerCase().includes(search)) return false;
-                if (filterMode === 'all' && currentCatFilter !== 'all' && p.cat !== currentCatFilter) return false;
-                if (filterMode === 'my' && (!currentUser || p.userId !== currentUser.uid)) return false;
-                if (filterMode === 'fav' && !favorites.includes(p.id)) return false;
-                return true;
+
+                // MODE LOGIC
+                if (filterMode === 'all') {
+                    // Show ONLY ACTIVE, and apply cat filter
+                    if (p.status !== 'active') return false;
+                    if (currentCatFilter !== 'all' && p.cat !== currentCatFilter) return false;
+                    return true;
+                } 
+                else if (filterMode === 'my') {
+                    // Show ALL my products, apply Tab filter
+                    if (!currentUser || p.userId !== currentUser.uid) return false;
+                    if (myStatusFilter !== 'all' && p.status !== myStatusFilter) return false;
+                    return true;
+                }
+                else if (filterMode === 'fav') {
+                    // Show active favs
+                    if (!favorites.includes(p.id)) return false;
+                    if (p.status !== 'active') return false;
+                    return true;
+                }
+                else if (filterMode === 'admin') {
+                    // Show PENDING from OTHERS
+                    if (p.status !== 'pending') return false;
+                    return true;
+                }
+                return false;
             });
             
             filtered.sort((a, b) => (b.isPromoted ? 1 : 0) - (a.isPromoted ? 1 : 0));
@@ -582,21 +664,41 @@
                 const isFav = favorites.includes(p.id);
                 
                 let buttonsHtml = "";
-                if (isMine || isAdmin) {
-                    buttonsHtml = `<div class="action-icon" onclick="openEditModal('${p.id}', event)"><i class="fas fa-pen" style="color:var(--primary);"></i></div><div class="action-icon" onclick="deleteProduct('${p.id}', event)"><i class="fas fa-trash" style="color:var(--danger);"></i></div>`;
-                } else {
-                    buttonsHtml = `<div class="action-icon ${isFav ? 'fav-active' : ''}" onclick="toggleFav('${p.id}', event)"><i class="fas fa-heart"></i></div>`;
-                }
                 
-                if (isAdmin) {
-                    buttonsHtml += `<div class="action-icon" onclick="togglePromote('${p.id}', ${p.isPromoted}, event)" style="color:${p.isPromoted ? 'gold' : '#ccc'}"><i class="fas fa-crown"></i></div>`;
+                // Logic for buttons based on Mode
+                if (filterMode === 'admin') {
+                    // Admin Mode: Approve/Reject
+                    buttonsHtml = `
+                        <div class="action-icon" onclick="approveProduct('${p.id}', event)" style="color:green"><i class="fas fa-check"></i></div>
+                        <div class="action-icon" onclick="rejectProduct('${p.id}', event)" style="color:red"><i class="fas fa-times"></i></div>
+                        <div class="action-icon" onclick="openProduct('${p.id}')"><i class="fas fa-eye"></i></div>
+                    `;
+                } else {
+                    // Normal Logic
+                    if (isMine || isAdmin) {
+                        buttonsHtml = `<div class="action-icon" onclick="openEditModal('${p.id}', event)"><i class="fas fa-pen" style="color:var(--primary);"></i></div><div class="action-icon" onclick="deleteProduct('${p.id}', event)"><i class="fas fa-trash" style="color:var(--danger);"></i></div>`;
+                    } else {
+                        buttonsHtml = `<div class="action-icon ${isFav ? 'fav-active' : ''}" onclick="toggleFav('${p.id}', event)"><i class="fas fa-heart"></i></div>`;
+                    }
+                    // TOP button for admin
+                    if (isAdmin) {
+                        buttonsHtml += `<div class="action-icon" onclick="togglePromote('${p.id}', ${p.isPromoted}, event)" style="color:${p.isPromoted ? 'gold' : '#ccc'}"><i class="fas fa-crown"></i></div>`;
+                    }
                 }
 
                 let mainImg = (p.imgs && p.imgs.length > 0) ? p.imgs[0] : (p.img || null);
                 let imgHtml = mainImg ? `<img src="${mainImg}" class="card-img">` : `<span class="no-photo">Нет фото</span>`;
                 let badge = p.isPromoted ? `<div class="promoted-badge"><i class="fas fa-crown"></i> TOP</div>` : "";
                 
-                cont.innerHTML += `<div class="card ${p.isPromoted?'promoted':''}" onclick="openProduct('${p.id}')">${badge}<div class="card-img-container"><div class="card-actions">${buttonsHtml}</div>${imgHtml}</div><div class="card-content"><div class="title">${p.title}</div><div class="price">${p.price} грн</div></div></div>`;
+                // Status Badge for My Ads
+                let statusBadge = "";
+                if (filterMode === 'my' && !p.isPromoted) {
+                    if(p.status === 'pending') statusBadge = `<div class="status-badge pending">На проверке</div>`;
+                    else if(p.status === 'rejected') statusBadge = `<div class="status-badge rejected">Отклонено</div>`;
+                    else if(p.status === 'active') statusBadge = `<div class="status-badge active">Активно</div>`;
+                }
+
+                cont.innerHTML += `<div class="card ${p.isPromoted?'promoted':''}" onclick="openProduct('${p.id}')">${badge} ${statusBadge} <div class="card-img-container"><div class="card-actions">${buttonsHtml}</div>${imgHtml}</div><div class="card-content"><div class="title">${p.title}</div><div class="price">${p.price} грн</div></div></div>`;
             });
         }
         window.toggleFav = async (id, e) => { e.stopPropagation(); if (!currentUser) return alert("Войдите!"); const userRef = doc(db, "users", currentUser.uid); if (favorites.includes(id)) { await updateDoc(userRef, { favorites: arrayRemove(id) }); favorites = favorites.filter(pid => pid !== id); } else { await updateDoc(userRef, { favorites: arrayUnion(id) }); favorites.push(id); } renderProducts(); }
@@ -615,13 +717,12 @@
             document.getElementById('pmDesc').innerText = p.desc || "Без описания";
             document.getElementById('pmBtn').href = `https://t.me/${p.contact.replace('@','')}`;
             document.getElementById('productModal').style.display = 'flex';
-            
-            // БЛОКИРОВКА СКРОЛЛА ФОНА (Фикс скролла)
+            // LOCK SCROLL
             document.body.style.overflow = 'hidden';
         }
         window.closeModal = (id) => { 
             document.getElementById(id).style.display = 'none'; 
-            document.body.style.overflow = 'auto'; // Разблокировка
+            document.body.style.overflow = 'auto'; // UNLOCK
         }
 
         function updateGalleryImage() { const imgEl = document.getElementById('pmImg'); if(currentGalleryPhotos.length > 0) { imgEl.src = currentGalleryPhotos[currentPhotoIndex]; imgEl.style.display = 'block'; } else { imgEl.src = ''; imgEl.style.display = 'none'; } }
@@ -639,6 +740,7 @@
         window.openSettingsModal = () => { document.getElementById('settingsModal').style.display = 'flex'; toggleMenu(); }
         window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
         window.openAddModal = () => { if(!currentUser) return openAuthModal(); newPhotos=[null,null,null,null,null]; for(let i=0;i<5;i++)updateSlotVisual('add',i,null); document.getElementById('addModal').style.display = 'flex'; }
+        
         window.toggleMenu = () => { const m = document.getElementById('profileMenu'); m.style.display = m.style.display === 'block' ? 'none' : 'block'; }
         window.applyFilters = () => renderProducts();
         window.setFilter = (cat, el) => { currentCatFilter = cat; document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); renderProducts(); }
