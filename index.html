@@ -12,6 +12,7 @@
         })();
     </script>
     <style>
+        /* --- ЦВЕТА --- */
         :root {
             --primary: #006d77;
             --accent: #83c5be;
@@ -48,6 +49,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* ШАПКА */
         header {
             background: var(--primary); 
             padding: 15px 20px;
@@ -58,19 +60,44 @@
         }
 
         .logo { font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;}
+        
         .header-center { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; }
         .main-title { font-size: 20px; font-weight: 900; margin: 0; text-transform: uppercase;}
         .sub-title { font-size: 11px; margin: 0; opacity: 0.9;}
+
         .header-right { display: flex; align-items: center; gap: 10px; }
-        .menu-btn { width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; color: white;}
 
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; background-color: var(--accent); border: 2px solid white; display: none; align-items: center; justify-content: center; font-weight: bold; color: #fff; margin-right: 5px;}
-        .admin-badge { position: absolute; bottom: -2px; right: -2px; background: var(--gold); border-radius: 50%; width: 12px; height: 12px; border: 1px solid white; display: none;}
+        /* Кнопка МЕНЮ (для всех) */
+        .menu-btn { 
+            width: 40px; height: 40px; 
+            display: flex; justify-content: center; align-items: center;
+            font-size: 20px; cursor: pointer; color: white;
+        }
 
-        .dropdown-menu { position: fixed; top: 60px; right: 10px; background: var(--card-bg); border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); width: 200px; display: none; flex-direction: column; overflow: hidden; z-index: 101; border: 1px solid var(--border);}
+        /* Аватар (если вошел) */
+        .user-avatar { 
+            width: 36px; height: 36px; border-radius: 50%; 
+            background-size: cover; background-position: center; 
+            background-color: var(--accent); 
+            border: 2px solid white; 
+            display: none; /* Скрыт по умолчанию */
+            align-items: center; justify-content: center; 
+            font-weight: bold; color: #fff; margin-right: 5px;
+        }
+
+        .dropdown-menu { 
+            position: fixed; top: 60px; right: 10px; 
+            background: var(--card-bg); border-radius: 12px; 
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2); 
+            width: 200px; display: none; 
+            flex-direction: column;
+            overflow: hidden; z-index: 101; border: 1px solid var(--border);
+        }
         .dropdown-item { padding: 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: var(--text); font-size: 15px; border-bottom: 1px solid var(--border); transition: 0.2s;}
         .dropdown-item:hover { background: var(--chip-bg); }
+        .dropdown-item:last-child { border-bottom: none; }
         
+        /* КОНТЕНТ */
         .main-container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
         .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px;}
         .section-title { font-size: 20px; font-weight: 800; color: var(--text); }
@@ -82,16 +109,12 @@
         #searchInput:focus { border-color: var(--primary); }
         .btn-primary { background: var(--primary); color: white; padding: 0 20px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 14px; white-space: nowrap; display: flex; align-items: center;}
         
-        .categories-filter { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;}
+        .categories-filter { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; -webkit-overflow-scrolling: touch; scrollbar-width: none;}
         .categories-filter::-webkit-scrollbar { display: none; }
         .cat-chip { padding: 10px 18px; background: var(--chip-bg); border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text-sec); white-space: nowrap; transition: 0.2s; border: 2px solid transparent;}
         .cat-chip.active { background: var(--card-bg); color: var(--primary); border: 2px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
-        /* Вкладки статуса */
-        .status-tabs { display: none; gap: 5px; justify-content: center; margin-bottom: 15px; flex-wrap: wrap; }
-        .status-tab { padding: 6px 12px; font-size: 12px; border-radius: 15px; background: var(--chip-bg); cursor: pointer; color: var(--text-sec); border: 1px solid var(--border); }
-        .status-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
-
+        /* СЕТКА */
         .goods-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         @media (min-width: 600px) { .goods-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; } }
 
@@ -99,39 +122,74 @@
 
         .card { background: var(--card-bg); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.04); position: relative; border: 1px solid var(--border); height: 100%; display: flex; flex-direction: column;}
         .card.promoted { border: 2px solid var(--gold); box-shadow: 0 5px 15px rgba(241, 196, 15, 0.2); }
-        
+        .promoted-badge { position: absolute; top: 10px; left: 10px; background: var(--gold); color: #000; padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: 800; z-index: 5; }
+
         .status-badge { position: absolute; top: 10px; left: 10px; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; z-index: 5; color: white; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.2);}
         .status-badge.pending { background: #f39c12; }
         .status-badge.rejected { background: #e74c3c; }
-        .status-badge.top { background: var(--gold); color: black; }
 
         .card-img-container { height: 160px; background: var(--chip-bg); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; flex-shrink: 0;}
         .card-img { width: 100%; height: 100%; object-fit: cover; }
         .no-photo { color: var(--text-sec); font-size: 14px; font-weight: bold;}
-        .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; z-index: 10; }
-        .action-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; font-size: 14px; color: #333; backdrop-filter: blur(2px); }
+        
+        /* КНОПКИ НА КАРТОЧКЕ (ВСЕГДА ВИДНЫ) */
+        .card-actions { 
+            position: absolute; top: 8px; right: 8px; 
+            display: flex; gap: 6px; z-index: 10;
+        }
+        .action-icon { 
+            width: 32px; height: 32px; 
+            background: rgba(255,255,255,0.9); 
+            border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2); 
+            cursor: pointer; font-size: 14px; color: #333;
+        }
         .fav-active { color: var(--danger); }
 
         .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
         .title { font-size: 15px; font-weight: 600; margin: 0 0 5px 0; color: var(--text); line-height: 1.3; height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;}
         .price { font-size: 18px; font-weight: 800; color: var(--primary); }
 
+        /* FAB */
         .support-fab { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; z-index: 90; text-decoration: none; box-shadow: 0 4px 15px rgba(0, 109, 119, 0.4); }
 
-        /* ПОЛНОЭКРАННОЕ ОКНО */
-        .product-fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--card-bg); z-index: 3000; display: none; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+        /* --- ПОЛНОЭКРАННЫЙ ПРОСМОТР --- */
+        .product-fullscreen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--card-bg); z-index: 3000; display: none; flex-direction: column; 
+            overflow-y: auto; overflow-x: hidden;
+        }
         .pf-header { position: absolute; top: 15px; right: 15px; z-index: 20; }
         .close-pf-btn { width: 40px; height: 40px; background: rgba(0,0,0,0.3); border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; cursor: pointer; backdrop-filter: blur(4px); }
+        
         .pf-img-area { width: 100%; height: 45vh; background: #000; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
         .pf-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
         .pf-content { padding: 25px; flex-grow: 1; background: var(--card-bg); border-top-left-radius: 24px; border-top-right-radius: 24px; margin-top: -20px; position: relative; z-index: 5; min-height: 50vh;}
         .pf-cat { font-size: 12px; color: var(--text-sec); text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
         .pf-title { font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 10px; color: var(--text); }
         .pf-price { font-size: 32px; font-weight: 900; color: var(--primary); margin-bottom: 20px; }
+        
         .pf-desc-title { font-weight: bold; font-size: 16px; margin-bottom: 10px; color: var(--text); }
-        .pf-desc { font-size: 16px; line-height: 1.6; color: var(--text); white-space: pre-wrap; background: var(--desc-bg); padding: 15px; border-radius: 12px; margin-bottom: 40px; border: 1px solid var(--border); }
-        .pf-footer { position: fixed; bottom: 0; left: 0; width: 100%; padding: 20px; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; z-index: 30; box-sizing: border-box;}
+        /* ОПИСАНИЕ С ФОНОМ */
+        .pf-desc { 
+            font-size: 16px; line-height: 1.6; color: var(--text); 
+            white-space: pre-wrap; 
+            background: var(--desc-bg); 
+            padding: 15px; border-radius: 12px; 
+            margin-bottom: 40px; border: 1px solid var(--border);
+        }
+
+        .pf-footer { 
+            position: fixed; bottom: 0; left: 0; width: 100%; 
+            padding: 20px; background: var(--card-bg); border-top: 1px solid var(--border); 
+            display: flex; flex-direction: column; gap: 10px; z-index: 30; box-sizing: border-box;
+        }
+        
         .btn-contact { display: block; width: 100%; padding: 15px; background: var(--primary); color: white; text-align: center; border-radius: 12px; font-weight: bold; font-size: 16px; text-decoration: none; }
+        
+        /* Кнопки админа */
         .admin-panel { display: flex; gap: 10px; width: 100%; }
         .btn-approve { flex: 1; padding: 15px; background: var(--success); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
         .btn-reject { flex: 1; padding: 15px; background: var(--danger); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
@@ -141,15 +199,17 @@
 
         /* МОДАЛКИ */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;}
-        .modal-box { background: var(--card-bg); color: var(--text); width: 100%; max-width: 400px; border-radius: 16px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);}
+        .modal-box { background: var(--card-bg); color: var(--text); width: 100%; max-width: 400px; border-radius: 16px; padding: 25px; position: relative; max-height: 90vh; overflow-y: auto;}
         .form-input, textarea, select { width: 100%; padding: 14px; margin: 8px 0; border: 2px solid var(--border); background: var(--bg); color: var(--text); border-radius: 12px; box-sizing: border-box; font-size: 16px;}
         .btn-full { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;}
         .btn-secondary { width: 100%; padding: 15px; background: var(--chip-bg); color: var(--text-sec); border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;}
-
+        
+        /* СТАРЫЕ НАСТРОЙКИ */
         .settings-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
         .opt-btn { padding: 8px 15px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; color: var(--text); font-size: 14px;}
         .opt-btn.active { border-color: var(--primary); color: var(--primary); background: var(--card-bg); font-weight: bold; box-shadow: 0 0 0 1px var(--primary); }
-
+        
+        .google-btn { width: 100%; padding: 12px; background: white; color: #333; border: 2px solid #eee; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .photo-slots { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;}
         .slot { width: 70px; height: 70px; background: var(--chip-bg); border: 1px dashed var(--border); border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: var(--text-sec); position: relative; background-size: cover; background-position: center;}
         .slot-del { position: absolute; top: -5px; right: -5px; width: 20px; height: 20px; background: var(--danger); color: white; border-radius: 50%; font-size: 12px; display: none; justify-content: center; align-items: center; }
@@ -181,7 +241,9 @@
             <div class="dropdown-item" id="menuMyAds" style="display:none;" onclick="filterMyAds()"><i class="fas fa-box"></i> <span data-lang="my_ads">Мои товары</span></div>
             <div class="dropdown-item" id="menuFavs" style="display:none;" onclick="filterFavorites()"><i class="fas fa-heart"></i> <span data-lang="favorites">Избранное</span></div>
             <div class="dropdown-item" id="menuAdmin" style="display:none; color:orange;" onclick="filterModeration()"><i class="fas fa-shield-alt"></i> Модерация</div>
+            
             <div class="dropdown-item" onclick="openSettingsModal()"><i class="fas fa-cog"></i> <span data-lang="settings">Настройки</span></div>
+            
             <div class="dropdown-item" id="menuLogin" onclick="openAuthModal()"><i class="fas fa-sign-in-alt"></i> <span data-lang="login">Войти</span></div>
             <div class="dropdown-item" id="menuLogout" style="display:none; color:var(--danger);" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span data-lang="logout">Выйти</span></div>
         </div>
@@ -190,14 +252,7 @@
     <div class="main-container">
         <div class="section-header">
             <div class="section-title" id="pageTitle" data-lang="all_goods">Все объявления</div>
-            <div class="section-back-btn" id="backBtn" onclick="goHome()">← <span data-lang="back_home">Назад</span></div>
-        </div>
-        
-        <div class="status-tabs" id="statusTabs">
-            <div class="status-tab active" onclick="setMyStatusFilter('all', this)">Все</div>
-            <div class="status-tab" onclick="setMyStatusFilter('active', this)">Активные</div>
-            <div class="status-tab" onclick="setMyStatusFilter('pending', this)">На проверке</div>
-            <div class="status-tab" onclick="setMyStatusFilter('rejected', this)">Отклонено</div>
+            <div class="section-back-btn" id="backBtn" onclick="goHome()">← <span data-lang="back_home">На главную</span></div>
         </div>
 
         <div class="controls-panel" id="controlsPanel">
@@ -292,16 +347,16 @@
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-box">
             <div class="close-btn" onclick="closeModal('settingsModal')">×</div>
-            <h2 data-lang="settings">Настройки</h2>
+            <h2>Настройки</h2>
             <div class="settings-row">
-                <div class="setting-label" data-lang="theme">Тема</div>
+                <div class="setting-label">Тема</div>
                 <div class="setting-opts">
                     <button class="opt-btn active" id="themeLight" onclick="setTheme('light')">☀️</button>
                     <button class="opt-btn" id="themeDark" onclick="setTheme('dark')">🌙</button>
                 </div>
             </div>
             <div class="settings-row" style="border:none;">
-                <div class="setting-label" data-lang="lang">Язык</div>
+                <div class="setting-label">Язык</div>
                 <div class="setting-opts">
                     <button class="opt-btn" id="langRU" onclick="setLang('ru')">RU</button>
                     <button class="opt-btn" id="langUA" onclick="setLang('ua')">UA</button>
@@ -314,15 +369,15 @@
     <div id="authModal" class="modal-overlay">
         <div class="modal-box" style="text-align:center;">
             <div class="close-btn" onclick="closeModal('authModal')">×</div>
-            <h2 id="authTitle">Вход</h2>
+            <h2>Вход</h2>
             <button class="btn-full" style="background:white; color:#333; border:1px solid #ccc;" onclick="handleGoogleLogin()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google
             </button>
             <div style="margin:20px 0; color:var(--text-sec);">— ИЛИ —</div>
             <input type="email" id="authEmail" class="form-input" placeholder="Email">
             <input type="password" id="authPass" class="form-input" placeholder="Пароль">
-            <button id="authActionBtn" class="btn-full" onclick="handleEmailAuth()">Войти</button>
-            <div id="authToggle" style="margin-top:15px; color:var(--primary); cursor:pointer;" onclick="toggleAuthMode()">Регистрация</div>
+            <button class="btn-full" onclick="handleEmailAuth()">Войти</button>
+            <div style="margin-top:15px; color:var(--primary); cursor:pointer;" onclick="toggleAuthMode()">Регистрация</div>
         </div>
     </div>
 
@@ -357,12 +412,12 @@
         let filterMode = 'all'; 
         let currentCatFilter = 'all';
         let isRegMode = false;
-        let myStatusFilter = 'all';
         let photos = [null,null,null,null,null];
         let currentProduct = null;
         let currentGallery = [];
         let currentPhotoIdx = 0;
 
+        // --- INIT ---
         function initSlots(mode) {
             const c = document.getElementById(mode+'Slots');
             c.innerHTML = '';
@@ -381,10 +436,13 @@
             slot.style.backgroundImage = `url('${base64}')`;
             slot.classList.add('has');
         }
+
         window.clearSlot = (e, mode, i) => {
-            e.stopPropagation(); photos[i] = null;
+            e.stopPropagation();
+            photos[i] = null;
             const slot = document.getElementById(`${mode}Slot${i}`);
-            slot.style.backgroundImage = 'none'; slot.classList.remove('has');
+            slot.style.backgroundImage = 'none';
+            slot.classList.remove('has');
             document.getElementById(`${mode}File${i}`).value = '';
         }
 
@@ -399,12 +457,7 @@
                 closeModal('authModal');
             } catch(e) { alert(e.message); }
         }
-        window.toggleAuthMode = () => {
-            isRegMode = !isRegMode;
-            document.getElementById('authTitle').innerText = isRegMode ? "Регистрация" : "Вход";
-            document.getElementById('authActionBtn').innerText = isRegMode ? "Создать" : "Войти";
-            document.getElementById('authToggle').innerText = isRegMode ? "Войти" : "Регистрация";
-        }
+        window.toggleAuthMode = () => { isRegMode = !isRegMode; document.getElementById('authTitle').innerText = isRegMode ? "Регистрация" : "Вход"; }
 
         onAuthStateChanged(auth, async (user) => {
             currentUser = user;
@@ -413,86 +466,65 @@
             const menuMyAds = document.getElementById('menuMyAds');
             const menuFavs = document.getElementById('menuFavs');
             const menuAdmin = document.getElementById('menuAdmin');
+            
+            // SAFE TOGGLE
+            const setDisplay = (el, display) => { if(el) el.style.display = display; };
 
             if (user) {
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('userProfile').style.display = 'flex';
-                document.getElementById('userProfile').innerText = user.email[0].toUpperCase();
+                setDisplay(document.getElementById('loginBtn'), 'none');
+                setDisplay(document.getElementById('userProfile'), 'flex');
                 
-                // Показываем корону АДМИНУ
-                if(user.email === ADMIN_EMAIL) document.getElementById('userProfile').innerHTML += `<div class="admin-badge">👑</div>`;
+                // Avatar
+                const ava = document.getElementById('userProfile');
+                if(user.photoURL) { ava.style.backgroundImage=`url('${user.photoURL}')`; ava.innerText=''; }
+                else { ava.style.backgroundImage='none'; ava.innerText=user.email[0].toUpperCase(); }
 
-                menuLogin.style.display = 'none';
-                menuLogout.style.display = 'flex';
-                menuMyAds.style.display = 'flex';
-                menuFavs.style.display = 'flex';
-                if (user.email === ADMIN_EMAIL) menuAdmin.style.display = 'flex';
+                // Menu Items
+                setDisplay(menuLogin, 'none');
+                setDisplay(menuLogout, 'flex');
+                setDisplay(menuMyAds, 'flex');
+                setDisplay(menuFavs, 'flex');
+                
+                // Admin
+                if(user.email === ADMIN_EMAIL) setDisplay(menuAdmin, 'flex');
+                else setDisplay(menuAdmin, 'none');
 
-                const docRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) favorites = docSnap.data().favorites || [];
-                else await setDoc(docRef, { email: user.email, favorites: [] });
+                try {
+                    const docRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) favorites = docSnap.data().favorites || [];
+                    else await setDoc(docRef, { email: user.email, favorites: [] });
+                } catch(e) { console.log('Fav error', e); }
+
             } else {
-                document.getElementById('loginBtn').style.display = 'flex';
-                document.getElementById('userProfile').style.display = 'none';
-                menuLogin.style.display = 'flex';
-                menuLogout.style.display = 'none';
-                menuMyAds.style.display = 'none';
-                menuFavs.style.display = 'none';
-                menuAdmin.style.display = 'none';
+                setDisplay(document.getElementById('loginBtn'), 'flex');
+                setDisplay(document.getElementById('userProfile'), 'none');
+                
+                setDisplay(menuLogin, 'flex');
+                setDisplay(menuLogout, 'none');
+                setDisplay(menuMyAds, 'none');
+                setDisplay(menuFavs, 'none');
+                setDisplay(menuAdmin, 'none');
                 favorites = [];
             }
             renderProducts();
         });
 
+        // --- ACTIONS ---
         window.logout = () => { signOut(auth); toggleMenu(); goHome(); }
         window.toggleMenu = () => { 
             const m = document.getElementById('profileMenu'); 
             m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; 
         }
+        window.filterMyAds = () => { filterMode='my'; updateHeader("Мои товары"); toggleMenu(); renderProducts(); }
+        window.filterFavorites = () => { filterMode='fav'; updateHeader("Избранное"); toggleMenu(); renderProducts(); }
+        window.filterModeration = () => { filterMode='admin'; updateHeader("Модерация"); toggleMenu(); renderProducts(); }
+        window.goHome = () => { filterMode='all'; updateHeader("Все объявления"); renderProducts(); }
         
-        // --- NAVIGATION ---
-        window.goHome = () => { 
-            filterMode = 'all'; currentCatFilter = 'all'; 
-            document.getElementById('searchInput').value = ""; 
-            document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); 
-            document.querySelector('.cat-chip[onclick*="all"]').classList.add('active'); 
-            document.getElementById('controlsPanel').style.display = 'block'; 
-            document.getElementById('backBtn').style.display = 'none'; 
-            document.getElementById('statusTabs').style.display = 'none'; 
-            applyLanguage(); renderProducts(); 
-        }
-        window.filterMyAds = () => { 
-            if(!currentUser) return alert('Вход?'); 
-            filterMode = 'my'; myStatusFilter = 'all';
-            document.getElementById('controlsPanel').style.display = 'none'; 
-            document.getElementById('backBtn').style.display = 'block';
-            document.getElementById('statusTabs').style.display = 'flex';
-            document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
-            document.querySelector('.status-tab[onclick*="all"]').classList.add('active');
-            applyLanguage(); toggleMenu(); renderProducts(); 
-        }
-        window.filterFavorites = () => { 
-            if(!currentUser) return alert('Вход?'); 
-            filterMode = 'fav'; 
-            document.getElementById('controlsPanel').style.display = 'none'; 
-            document.getElementById('backBtn').style.display = 'block'; 
-            document.getElementById('statusTabs').style.display = 'none';
-            applyLanguage(); toggleMenu(); renderProducts(); 
-        }
-        window.filterModeration = () => {
-            filterMode = 'admin';
-            document.getElementById('controlsPanel').style.display = 'none'; 
-            document.getElementById('backBtn').style.display = 'block'; 
-            document.getElementById('statusTabs').style.display = 'none';
-            document.getElementById('pageTitle').innerText = "🛡️ Модерация";
-            toggleMenu(); renderProducts();
-        }
-        window.setMyStatusFilter = (status, el) => {
-            myStatusFilter = status;
-            document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-            renderProducts();
+        function updateHeader(title) {
+            document.getElementById('pageTitle').innerText = title;
+            document.getElementById('controlsPanel').style.display = (title === "Все объявления") ? 'block' : 'none';
+            document.getElementById('backBtn').style.display = (title === "Все объявления") ? 'none' : 'block';
         }
 
         // --- CRUD ---
@@ -504,9 +536,14 @@
             const cat = document.getElementById('newCat').value;
             const finalImgs = photos.filter(p => p !== null);
             const status = (currentUser && currentUser.email === ADMIN_EMAIL) ? 'active' : 'pending';
+
             try {
-                await addDoc(collection(db, "products"), { title, price, desc, contact, cat, imgs: finalImgs, userId: currentUser.uid, date: Date.now(), status, isPromoted: false });
-                alert(status === 'active' ? "Готово!" : "На проверке!"); closeModal('addModal'); location.reload();
+                await addDoc(collection(db, "products"), {
+                    title, price, desc, contact, cat, imgs: finalImgs,
+                    userId: currentUser.uid, date: Date.now(), status, isPromoted: false
+                });
+                alert(status === 'active' ? "Готово!" : "На проверке!");
+                closeModal('addModal'); location.reload();
             } catch(e) { alert(e.message); }
         }
 
@@ -526,29 +563,43 @@
         }
         window.deleteProduct = async (id, e) => { e.stopPropagation(); if(confirm("Удалить?")) { await deleteDoc(doc(db, "products", id)); loadProducts(); } }
 
-        // --- RENDER ---
-        async function loadProducts() {
-            const q = query(collection(db, "products"));
-            const snap = await getDocs(q);
-            products = []; snap.forEach(d => products.push({id: d.id, ...d.data()}));
-            products.sort((a,b) => (b.isPromoted?1:0)-(a.isPromoted?1:0) || b.date-a.date);
+        // --- ADMIN ACTIONS ---
+        window.approveProduct = async (id, e) => {
+            e.stopPropagation();
+            if(!confirm("Одобрить?")) return;
+            await updateDoc(doc(db, "products", id), { status: 'active' });
             renderProducts();
         }
 
+        window.rejectProduct = async (id, e) => {
+            e.stopPropagation();
+            if(!confirm("Отклонить?")) return;
+            await updateDoc(doc(db, "products", id), { status: 'rejected' });
+            renderProducts();
+        }
+
+        window.togglePromote = async (id, currentStatus, e) => {
+            e.stopPropagation();
+            if(!confirm(currentStatus ? "Снять ТОП?" : "Сделать ТОП?")) return;
+            try {
+                await updateDoc(doc(db, "products", id), { isPromoted: !currentStatus });
+                renderProducts();
+            } catch (e) { alert("Ошибка: " + e.message); }
+        }
+
+        async function loadProducts() { const cont = document.getElementById('goods-container'); cont.innerHTML = "<p>...</p>"; const q = query(collection(db, "products"), orderBy("date", "desc")); const snap = await getDocs(q); products = []; snap.forEach(d => products.push({id: d.id, ...d.data()})); renderProducts(); }
+        
         window.renderProducts = () => {
-            const cont = document.getElementById('goods-container'); cont.innerHTML = "";
+            const cont = document.getElementById('goods-container');
+            cont.innerHTML = "";
             const search = document.getElementById('searchInput').value.toLowerCase();
             
             const filtered = products.filter(p => {
                 if(!p.title.toLowerCase().includes(search)) return false;
                 if(filterMode === 'admin') return p.status === 'pending';
-                if(filterMode === 'my') {
-                    if(!currentUser || p.userId !== currentUser.uid) return false;
-                    if(myStatusFilter !== 'all' && p.status !== myStatusFilter) return false;
-                    return true;
-                }
+                if(filterMode === 'my') return currentUser && p.userId === currentUser.uid;
                 if(filterMode === 'fav') return favorites.includes(p.id) && p.status === 'active';
-                if(p.status !== 'active') return false;
+                if(p.status !== 'active') return false; 
                 if(currentCatFilter !== 'all' && p.cat !== currentCatFilter) return false;
                 return true;
             });
@@ -561,14 +612,15 @@
                 const isFav = favorites.includes(p.id);
                 
                 let btns = "";
-                // КНОПКИ РЕДАКТИРОВАНИЯ (АДМИН ИЛИ ВЛАДЕЛЕЦ)
+                // КНОПКИ: Если Админ или Владелец - показываем карандаш
                 if(isMine || isAdmin) {
                     btns = `<div class="action-icon" onclick="openEditModal('${p.id}', event)"><i class="fas fa-pen" style="color:#006d77"></i></div>
                             <div class="action-icon" onclick="deleteProduct('${p.id}', event)"><i class="fas fa-trash" style="color:#e74c3c"></i></div>`;
                 } else {
                     btns = `<div class="action-icon ${isFav?'fav-active':''}" onclick="toggleFav('${p.id}', event)"><i class="fas fa-heart"></i></div>`;
                 }
-                // КОРОНА (ТОЛЬКО АДМИН)
+
+                // КОРОНА АДМИНУ
                 if (isAdmin) {
                     btns += `<div class="action-icon" onclick="togglePromote('${p.id}', ${p.isPromoted}, event)" style="color:${p.isPromoted ? 'gold' : '#ccc'}"><i class="fas fa-crown"></i></div>`;
                 }
@@ -597,7 +649,8 @@
 
         window.toggleFav = async (id, e) => { e.stopPropagation(); if (!currentUser) return alert("Вход?"); const ref = doc(db, "users", currentUser.uid); if (favorites.includes(id)) { await updateDoc(ref, {favorites: arrayRemove(id)}); favorites = favorites.filter(f=>f!==id); } else { await updateDoc(ref, {favorites: arrayUnion(id)}); favorites.push(id); } renderProducts(); }
 
-        // --- PRODUCT VIEW ---
+        // --- VIEW PRODUCT ---
+        const catNames = {tech:'Электроника', home:'Дом', study:'Учеба', clothes:'Одежда', other:'Разное'};
         window.openProduct = (id) => {
             currentProduct = products.find(p => p.id === id);
             const p = currentProduct;
@@ -607,6 +660,7 @@
             document.getElementById('pfTitle').innerText = p.title;
             document.getElementById('pfPrice').innerText = p.price + " грн";
             document.getElementById('pfDesc').innerText = p.desc;
+            document.getElementById('pfCat').innerText = catNames[p.cat] || 'Разное';
             
             const isAdmin = currentUser && currentUser.email === ADMIN_EMAIL;
             const isPending = p.status === 'pending';
@@ -626,43 +680,10 @@
             document.getElementById('productView').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
-
-        window.adminAction = async (action) => {
-            if(!confirm("Уверены?")) return;
-            const status = action === 'approve' ? 'active' : 'rejected';
-            await updateDoc(doc(db, "products", currentProduct.id), { status });
-            document.getElementById('productView').style.display='none';
+        window.closeProduct = () => { 
+            document.getElementById('productView').style.display = 'none'; 
             document.body.style.overflow = 'auto';
-            renderProducts();
         }
-
-        window.togglePromote = async (id, status, e) => {
-            e.stopPropagation(); if(!confirm(status ? "Снять ТОП?" : "Сделать ТОП?")) return;
-            await updateDoc(doc(db, "products", id), { isPromoted: !status }); renderProducts();
-        }
-
-        window.openEditModal = (id, e) => {
-            e.stopPropagation(); const p = products.find(p => p.id === id);
-            document.getElementById('editId').value = p.id;
-            document.getElementById('editTitle').value = p.title;
-            document.getElementById('editPrice').value = p.price;
-            document.getElementById('editDesc').value = p.desc;
-            document.getElementById('editContact').value = p.contact;
-            photos = [null,null,null,null,null]; 
-            if(p.imgs) p.imgs.forEach((im, i) => { 
-                if(i<5) { photos[i]=im; const s=document.getElementById(`editSlot${i}`); if(s){s.style.backgroundImage=`url('${im}')`; s.classList.add('has');} } 
-            }); 
-            else if(p.img) { photos[0]=p.img; document.getElementById('editSlot0').style.backgroundImage=`url('${p.img}')`; document.getElementById('editSlot0').classList.add('has'); }
-            document.getElementById('editModal').style.display='flex';
-        }
-
-        window.openAuthModal = () => document.getElementById('authModal').style.display='flex';
-        window.openAddModal = () => { if(!currentUser) return openAuthModal(); photos=[null,null,null,null,null]; document.querySelectorAll('#addSlots .slot').forEach(s=>{s.style.backgroundImage='';s.classList.remove('has')}); document.getElementById('addModal').style.display='flex'; }
-        window.openSettingsModal = () => { document.getElementById('settingsModal').style.display='flex'; toggleMenu(); }
-        window.closeModal = (id) => document.getElementById(id).style.display='none';
-        window.closeProduct = () => { document.getElementById('productView').style.display='none'; document.body.style.overflow='auto'; }
-        window.setFilter = (cat, el) => { currentCatFilter = cat; document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); renderProducts(); }
-        window.applyFilters = () => renderProducts();
         
         function updateGallery() { 
             const img = document.getElementById('pfImg'); 
@@ -674,7 +695,29 @@
         window.nextPhoto = (e) => { e.stopPropagation(); if(currentGallery.length<2)return; currentPhotoIdx++; if(currentPhotoIdx>=currentGallery.length) currentPhotoIdx=0; updateGallery(); }
         window.prevPhoto = (e) => { e.stopPropagation(); if(currentGallery.length<2)return; currentPhotoIdx--; if(currentPhotoIdx<0) currentPhotoIdx=currentGallery.length-1; updateGallery(); }
 
-        // ТЕМА И ЯЗЫК
+        // --- MODALS ---
+        window.openEditModal = (id, e) => {
+            e.stopPropagation(); const p = products.find(p => p.id === id); 
+            document.getElementById('editId').value = p.id; document.getElementById('editTitle').value = p.title; document.getElementById('editPrice').value = p.price; document.getElementById('editDesc').value = p.desc; document.getElementById('editContact').value = p.contact;
+            photos = [null,null,null,null,null]; 
+            if(p.imgs) p.imgs.forEach((im, i) => { 
+                if(i<5) { photos[i]=im; const s=document.getElementById(`editSlot${i}`); if(s){s.style.backgroundImage=`url('${im}')`; s.classList.add('has');} } 
+            }); 
+            else if(p.img) { photos[0]=p.img; document.getElementById('editSlot0').style.backgroundImage=`url('${p.img}')`; document.getElementById('editSlot0').classList.add('has'); }
+            document.getElementById('editModal').style.display='flex'; 
+        }
+
+        window.openAuthModal = () => document.getElementById('authModal').style.display='flex';
+        window.openAddModal = () => { if(!currentUser) return openAuthModal(); photos=[null,null,null,null,null]; document.querySelectorAll('#addSlots .slot').forEach(s=>{s.style.backgroundImage='';s.classList.remove('has')}); document.getElementById('addModal').style.display='flex'; }
+        window.openSettingsModal = () => { document.getElementById('settingsModal').style.display='flex'; toggleMenu(); }
+        window.closeModal = (id) => document.getElementById(id).style.display='none';
+        window.toggleMenu = () => { const m = document.getElementById('profileMenu'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
+        window.applyFilters = () => renderProducts();
+        window.setFilter = (cat, el) => { currentCatFilter = cat; document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active')); el.classList.add('active'); renderProducts(); }
+        
+        function compressImage(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.src = e.target.result; img.onload = () => { const cvs = document.createElement('canvas'); const maxWidth = 800; const scale = maxWidth / img.width; cvs.width = maxWidth; cvs.height = img.height * scale; cvs.getContext('2d').drawImage(img,0,0,cvs.width,cvs.height); resolve(cvs.toDataURL('image/jpeg', 0.6)); } }; reader.readAsDataURL(file); }); }
+
+        // Theme/Lang
         const translations = { ru: { login: "Войти", logout: "Выйти", settings: "Настройки", my_ads: "Мои товары", favorites: "Избранное", all_goods: "Все объявления", my_goods_title: "📦 Мои объявления", fav_goods_title: "❤️ Избранное", back_home: "На главную", sell_btn: "Подать", cat_all: "Все", cat_tech: "Электроника", cat_home: "Дом", cat_study: "Учеба", cat_clothes: "Одежда", cat_other: "Разное", theme: "Тема", lang: "Язык", close: "Закрыть", empty: "Пока нет объявлений ;-)" }, ua: { login: "Увійти", logout: "Вийти", settings: "Налаштування", my_ads: "Мої товари", favorites: "Обране", all_goods: "Всі оголошення", my_goods_title: "📦 Мої оголошення", fav_goods_title: "❤️ Обране", back_home: "На головну", sell_btn: "Продати", cat_all: "Всі", cat_tech: "Електроніка", cat_home: "Дім", cat_study: "Навчання", cat_clothes: "Одяг", cat_other: "Різне", theme: "Тема", lang: "Мова", close: "Закрити", empty: "Поки немає оголошень ;-)" }, en: { login: "Login", logout: "Logout", settings: "Settings", my_ads: "My Listings", favorites: "Favorites", all_goods: "All Products", my_goods_title: "📦 My Listings", fav_goods_title: "❤️ Favorites", back_home: "Home", sell_btn: "Sell Item", cat_all: "All", cat_tech: "Tech", cat_home: "Home", cat_study: "Study", cat_clothes: "Clothes", cat_other: "Other", theme: "Theme", lang: "Language", close: "Close", empty: "No listings yet ;-)" } };
         let currentLang = localStorage.getItem('siteLang') || 'ru';
 
@@ -692,7 +735,6 @@
         else { document.getElementById('themeLight').classList.add('active'); document.getElementById('themeDark').classList.remove('active'); }
         document.getElementById('lang'+currentLang.toUpperCase()).classList.add('active');
 
-        function compressImage(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.src = e.target.result; img.onload = () => { const cvs = document.createElement('canvas'); const maxWidth = 800; const scale = maxWidth / img.width; cvs.width = maxWidth; cvs.height = img.height * scale; cvs.getContext('2d').drawImage(img,0,0,cvs.width,cvs.height); resolve(cvs.toDataURL('image/jpeg', 0.6)); } }; reader.readAsDataURL(file); }); }
         loadProducts();
     </script>
 </body>
