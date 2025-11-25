@@ -6,20 +6,19 @@
     <title>БАРАХОЛКА 6 Общага</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* ГЛОБАЛЬНЫЙ СБРОС (ЧТОБЫ НИЧЕГО НЕ СЪЕЗЖАЛО) */
-        * { box-sizing: border-box; }
-
+        /* --- ЦВЕТА --- */
         :root {
             --primary: #006d77;
             --accent: #83c5be;
-            --bg: #edf6f9;
+            --bg: #f4f6f8;
             --card-bg: #ffffff;
             --text: #2d3436;
             --text-sec: #636e72;
             --danger: #e76f51;
+            --success: #2ecc71;
             --gold: #f1c40f;
-            --border: #eee;
-            --chip-bg: #f0f0f0;
+            --border: #e0e0e0;
+            --chip-bg: #ececec;
         }
 
         body.dark-mode {
@@ -33,14 +32,13 @@
         }
 
         body { 
-            font-family: 'Segoe UI', 'Roboto', sans-serif; 
+            font-family: 'Segoe UI', sans-serif; 
             background: var(--bg); 
             margin: 0; 
             color: var(--text); 
-            padding-bottom: 80px; 
+            padding-bottom: 90px; 
             transition: 0.3s;
             -webkit-tap-highlight-color: transparent;
-            overflow-x: hidden; /* ЗАПРЕТ ГОРИЗОНТАЛЬНОГО СКРОЛЛА */
         }
 
         /* ШАПКА */
@@ -57,15 +55,15 @@
 
         .logo { font-size: 20px; font-weight: bold; display: flex; align-items: center; gap: 10px; justify-self: start; cursor: pointer;}
         .header-center { text-align: center; display: flex; flex-direction: column; justify-content: center; cursor: pointer; user-select: none; }
-        .main-title { font-size: 24px; font-weight: 900; margin: 0; letter-spacing: 1px; text-transform: uppercase;}
+        .main-title { font-size: 22px; font-weight: 900; margin: 0; letter-spacing: 1px; text-transform: uppercase;}
         .sub-title { font-size: 12px; margin: 0; opacity: 0.8; font-weight: 400; margin-top: 2px;}
         .header-right { justify-self: end; display: flex; align-items: center; gap: 15px; }
 
-        .auth-btn { cursor: pointer; font-weight: bold; color: #006d77; background: white; padding: 8px 15px; border-radius: 20px; font-size: 14px; border: 2px solid white;}
-        .user-avatar { width: 35px; height: 35px; border-radius: 50%; background-size: cover; background-position: center; background-color: var(--accent); cursor: pointer; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;}
+        .auth-btn { cursor: pointer; font-weight: bold; color: #006d77; background: white; padding: 8px 15px; border-radius: 20px; font-size: 13px; border: 2px solid white;}
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; background-color: var(--accent); cursor: pointer; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;}
         
-        .dropdown-menu { position: absolute; top: 60px; right: 10px; background: var(--card-bg); border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); width: 180px; display: none; overflow: hidden; z-index: 101; border: 1px solid var(--border);}
-        .dropdown-item { padding: 12px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: var(--text); font-size: 14px;}
+        .dropdown-menu { position: absolute; top: 65px; right: 10px; background: var(--card-bg); border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.2); width: 190px; display: none; overflow: hidden; z-index: 101; border: 1px solid var(--border);}
+        .dropdown-item { padding: 14px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: var(--text); font-size: 14px; transition: 0.2s;}
         .dropdown-item:hover { background: var(--chip-bg); }
         
         /* КОНТЕНТ */
@@ -74,38 +72,146 @@
         .section-title { font-size: 20px; font-weight: 800; color: var(--text); }
         .section-back-btn { display: none; cursor: pointer; color: var(--text-sec); font-weight: bold; font-size: 14px;}
 
-        .controls-panel { background: var(--card-bg); padding: 15px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        .controls-panel { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 25px; }
         .search-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;}
-        #searchInput { flex-grow: 1; padding: 12px; border: 2px solid var(--border); background: var(--bg); color: var(--text); border-radius: 8px; outline: none; font-size: 16px; min-width: 150px;}
-        .btn-primary { background: var(--primary); color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; white-space: nowrap;}
+        #searchInput { flex-grow: 1; padding: 14px; border: 2px solid var(--border); background: var(--bg); color: var(--text); border-radius: 12px; outline: none; font-size: 16px; min-width: 150px; transition: 0.3s;}
+        #searchInput:focus { border-color: var(--primary); }
+        .btn-primary { background: var(--primary); color: white; padding: 14px 20px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 14px; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,109,119,0.2);}
         
         .categories-filter { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-        .cat-chip { padding: 8px 16px; background: var(--chip-bg); border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600; user-select: none; color: var(--text-sec); border: 2px solid transparent; }
-        .cat-chip.active { background: var(--card-bg); color: var(--primary); border: 2px solid var(--primary); }
+        .cat-chip { padding: 10px 18px; background: var(--chip-bg); border-radius: 25px; cursor: pointer; font-size: 13px; font-weight: 600; user-select: none; color: var(--text-sec); border: 2px solid transparent; transition: 0.2s;}
+        .cat-chip.active { background: var(--card-bg); color: var(--primary); border: 2px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
 
         /* СЕТКА */
         .goods-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .empty-message { grid-column: 1 / -1; text-align: center; font-size: 20px; font-weight: bold; color: var(--text-sec); margin-top: 40px; }
+        .empty-message { grid-column: 1 / -1; text-align: center; font-size: 20px; font-weight: bold; color: var(--text-sec); margin-top: 60px; }
 
-        .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; border: 1px solid transparent;}
-        .card.promoted { border: 2px solid var(--gold); box-shadow: 0 5px 15px rgba(241, 196, 15, 0.3); }
-        .promoted-badge { position: absolute; top: 8px; left: 8px; background: var(--gold); color: #000; padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: 800; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .card { background: var(--card-bg); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.04); position: relative; border: 1px solid transparent; transition: 0.3s;}
+        .card:active { transform: scale(0.98); }
+        .card.promoted { border: 2px solid var(--gold); box-shadow: 0 5px 15px rgba(241, 196, 15, 0.2); }
+        .promoted-badge { position: absolute; top: 10px; left: 10px; background: var(--gold); color: #000; padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: 800; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        .card-img-container { height: 160px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;}
+        .card-img-container { height: 170px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;}
         .card-img { width: 100%; height: 100%; object-fit: cover; }
         .no-photo { color: #ccc; font-size: 14px; font-weight: bold;}
-        .card-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 5px; }
-        .action-icon { width: 30px; height: 30px; background: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); cursor: pointer; z-index: 10; color: #333; font-size: 14px;}
+        .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
+        .action-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; z-index: 10; color: #333; font-size: 14px; backdrop-filter: blur(2px);}
         .fav-active { color: var(--danger); }
         
-        .card-content { padding: 12px; }
-        .title { font-size: 14px; font-weight: bold; margin: 0 0 4px 0; color: var(--text); line-height: 1.2; height: 34px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;}
-        .price { font-size: 16px; font-weight: bold; color: var(--primary); }
+        .card-content { padding: 15px; }
+        .title { font-size: 15px; font-weight: 600; margin: 0 0 6px 0; color: var(--text); line-height: 1.3; height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;}
+        .price { font-size: 18px; font-weight: 800; color: var(--primary); }
 
         /* FAB */
-        .support-fab { position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 5px 15px rgba(0, 109, 119, 0.4); cursor: pointer; z-index: 900; text-decoration: none; }
+        .support-fab { position: fixed; bottom: 25px; right: 25px; width: 55px; height: 55px; background: var(--primary); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; box-shadow: 0 8px 20px rgba(0, 109, 119, 0.3); cursor: pointer; z-index: 900; text-decoration: none; transition: 0.3s; }
+        .support-fab:active { transform: scale(0.9); }
 
-        /* ФОТО СЛОТЫ */
+        /* МОДАЛКИ */
+        .modal-overlay { 
+            display: none; 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); 
+            z-index: 2000; 
+            /* ЦЕНТРИРОВАНИЕ ВСЕГО */
+            justify-content: center; 
+            align-items: center; 
+            backdrop-filter: blur(5px); 
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+        
+        .modal-box { 
+            background: var(--card-bg); color: var(--text); 
+            width: 100%; max-width: 500px; 
+            border-radius: 24px; padding: 25px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2); 
+            position: relative; 
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            max-height: 85vh; overflow-y: auto;
+        }
+        
+        @keyframes popIn { from {transform: scale(0.9); opacity: 0;} to {transform: scale(1); opacity: 1;} }
+        
+        .form-input, textarea, select { width: 100%; padding: 14px; margin: 8px 0; border: 2px solid var(--border); background: var(--bg); color: var(--text); border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 16px;}
+        .btn-full { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px;}
+        .btn-secondary { width: 100%; padding: 16px; background: var(--chip-bg); color: var(--text-sec); border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;}
+        
+        .google-btn { width: 100%; padding: 12px; background: white; color: #333; border: 2px solid #eee; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        
+        /* --- НОВОЕ ОКНО ПРОСМОТРА (КРАСИВОЕ) --- */
+        .product-modal-box { 
+            background: var(--card-bg); 
+            width: 100%; max-width: 500px; 
+            height: 85vh; /* Фикс высота */
+            border-radius: 24px; 
+            overflow: hidden; 
+            display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            position: relative;
+            margin: auto; /* Центрирование */
+        }
+
+        .pm-scroll-area {
+            overflow-y: auto; /* Скроллим содержимое */
+            flex-grow: 1;
+            display: flex; flex-direction: column;
+        }
+
+        .pm-img-area { 
+            width: 100%; height: 350px; 
+            background: #000; 
+            display: flex; align-items: center; justify-content: center; 
+            position: relative; flex-shrink: 0;
+        }
+        .pm-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        .pm-content { padding: 25px; }
+        
+        .pm-cat { color: var(--text-sec); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .pm-title { font-size: 24px; font-weight: 800; margin: 0 0 10px 0; line-height: 1.2; }
+        .pm-price { font-size: 28px; font-weight: 900; color: var(--primary); margin: 0 0 20px 0; }
+        
+        .pm-desc-label { font-weight: bold; margin-bottom: 5px; color: var(--text); }
+        /* КРАСИВОЕ ОПИСАНИЕ (БЕЗ СЕРОГО ФОНА) */
+        .pm-desc-text { 
+            font-size: 16px; 
+            line-height: 1.6; 
+            color: var(--text); 
+            white-space: pre-wrap; 
+            margin-bottom: 20px;
+        }
+
+        /* КНОПКА НАПИСАТЬ (ВНИЗУ, ПО ЦЕНТРУ) */
+        .pm-footer {
+            padding: 20px;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            display: flex; justify-content: center;
+        }
+        #pmBtn {
+            display: block;
+            width: 100%; max-width: 280px;
+            padding: 14px; 
+            background: var(--primary); color: white; 
+            text-align: center; text-decoration: none;
+            font-weight: bold; font-size: 16px;
+            border-radius: 50px; /* Овальная кнопка */
+            box-shadow: 0 5px 15px rgba(0, 109, 119, 0.3);
+        }
+
+        .close-modal-btn { 
+            position: absolute; top: 15px; right: 15px; 
+            width: 35px; height: 35px; 
+            background: rgba(255,255,255,0.2); 
+            backdrop-filter: blur(5px);
+            border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            cursor: pointer; font-size: 20px; color: white; z-index: 20;
+        }
+        .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); color: white; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 50%; cursor: pointer; z-index: 10; backdrop-filter: blur(3px); }
+        .gallery-prev { left: 15px; } .gallery-next { right: 15px; }
+
+        /* Фото слоты */
         .photo-upload-label { display: block; margin-bottom: 10px; font-weight: bold; }
         .photo-slots-container { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .photo-slot { width: 60px; height: 60px; background: var(--chip-bg); border: 2px dashed var(--border); border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 20px; color: var(--text-sec); cursor: pointer; position: relative; background-size: cover; background-position: center; }
@@ -114,84 +220,13 @@
         .slot-remove { position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; background: var(--danger); color: white; border-radius: 50%; font-size: 10px; display: none; justify-content: center; align-items: center; cursor: pointer; }
         .photo-slot.has-photo .slot-remove { display: flex; }
 
-        /* МОДАЛКИ */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(3px); padding: 15px; box-sizing: border-box;}
-        
-        /* Окно входа и создания */
-        .modal-box { background: var(--card-bg); color: var(--text); width: 100%; max-width: 500px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); position: relative; animation: slideUp 0.3s ease; max-height: 90vh; overflow-y: auto;}
-        @keyframes slideUp { from {transform: translateY(20px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
-        
-        .form-input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var(--border); background: var(--bg); color: var(--text); border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 16px;}
-        .btn-full { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px;}
-        .btn-secondary { width: 100%; padding: 14px; background: var(--chip-bg); color: var(--text-sec); border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;}
-        
-        .google-btn { width: 100%; padding: 12px; background: white; color: #333; border: 2px solid #eee; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .toggle-link { text-align: center; margin-top: 15px; color: var(--primary); cursor: pointer; font-weight: 600; }
-        
-        /* --- ОКНО ПРОСМОТРА (FIXED FULLSCREEN) --- */
-        .product-modal-box { 
-            width: 100%; height: 100%; 
-            max-width: 100%; max-height: 100%;
-            background: var(--card-bg); color: var(--text); 
-            display: flex; flex-direction: column; 
-            border-radius: 0; margin: 0; padding: 0;
-            overflow-x: hidden; /* Нет скролла влево-вправо */
-            overflow-y: auto; /* Скролл вниз */
-        }
-        
-        .pm-left { 
-            width: 100%; height: 40vh; flex-shrink: 0;
-            background: #000; position: relative; 
-            display: flex; align-items: center; justify-content: center; 
-        }
-        .pm-img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        
-        .pm-right { 
-            flex-grow: 1; 
-            padding: 20px; 
-            display: flex; flex-direction: column;
-            /* Отступ снизу для удобства */
-            padding-bottom: 40px;
-        }
-
-        .close-modal-btn { position: fixed; top: 15px; right: 15px; width: 35px; height: 35px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 24px; color: #333; z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,0.2);}
-        
-        /* КНОПКА НАПИСАТЬ (КОМПАКТНАЯ И ПО ЦЕНТРУ) */
-        #pmBtn {
-            display: block;
-            width: auto;           /* Ширина по контенту */
-            min-width: 200px;      /* Но не слишком узкая */
-            max-width: 80%;        /* Не шире 80% экрана */
-            margin: 30px auto 10px auto; /* По центру, отступ сверху */
-            padding: 12px 30px;
-            text-align: center;
-            text-decoration: none;
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
-            border-radius: 30px;   /* Закругленная */
-            box-shadow: 0 4px 15px rgba(0, 109, 119, 0.3);
-        }
-
-        .gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.3); color: white; padding: 10px; cursor: pointer; font-size: 20px; border-radius: 50%; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; z-index: 5; }
-        .gallery-prev { left: 10px; } .gallery-next { right: 10px; }
-        
-        .settings-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-        .setting-label { font-size: 18px; font-weight: bold; }
-        .setting-opts { display: flex; gap: 10px; }
-        .opt-btn { padding: 8px 15px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); cursor: pointer; color: var(--text); }
-        .opt-btn.active { border-color: var(--primary); color: var(--primary); background: var(--card-bg); font-weight: bold;}
-
-        /* АДАПТИВ ДЛЯ ПК */
         @media (min-width: 768px) {
-            .product-modal-box { 
-                max-width: 900px; width: 90%; height: 80vh; 
-                border-radius: 16px; margin: auto;
-                flex-direction: row; overflow: hidden; 
-            }
-            .pm-left { width: 50%; height: 100%; }
-            .pm-right { width: 50%; overflow-y: auto; }
-            .close-modal-btn { position: absolute; top: 15px; right: 15px; }
+            .product-modal-box { max-width: 900px; width: 90%; height: 80vh; flex-direction: row; }
+            .pm-scroll-area { flex-direction: row; width: 100%; }
+            .pm-img-area { width: 50%; height: 100%; }
+            .pm-content { width: 50%; overflow-y: auto; padding-bottom: 80px;}
+            .pm-footer { position: absolute; bottom: 0; right: 0; width: 50%; border-top: none; box-sizing: border-box;}
+            .close-modal-btn { color: #333; background: rgba(0,0,0,0.1); }
         }
     </style>
 </head>
@@ -210,6 +245,7 @@
         <div id="profileMenu" class="dropdown-menu">
             <div class="dropdown-item" onclick="filterMyAds()"><i class="fas fa-box"></i> <span data-lang="my_ads">Мои товары</span></div>
             <div class="dropdown-item" onclick="filterFavorites()"><i class="fas fa-heart"></i> <span data-lang="favorites">Избранное</span></div>
+            <div class="dropdown-item" id="adminBtn" style="display:none; color: var(--gold);" onclick="filterModeration()"><i class="fas fa-shield-alt"></i> Модерация</div>
             <div class="dropdown-item" onclick="openSettingsModal()"><i class="fas fa-cog"></i> <span data-lang="settings">Настройки</span></div>
             <div class="dropdown-item" style="color:var(--danger);" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span data-lang="logout">Выйти</span></div>
         </div>
@@ -224,7 +260,7 @@
         <div class="controls-panel" id="controlsPanel">
             <div class="search-row">
                 <input type="text" id="searchInput" placeholder="Поиск товаров..." oninput="applyFilters()">
-                <button class="btn-primary" onclick="openAddModal()">+ <span data-lang="sell_btn">Подать объявление</span></button>
+                <button class="btn-primary" onclick="openAddModal()">+ <span data-lang="sell_btn">Подать</span></button>
             </div>
             <div class="categories-filter">
                 <div class="cat-chip active" onclick="setFilter('all', this)" data-lang="cat_all">Все</div>
@@ -243,9 +279,34 @@
 
     <a href="https://t.me/ghost1_kk" target="_blank" class="support-fab"><i class="fas fa-comments"></i></a>
 
+    <div id="productModal" class="modal-overlay" onclick="closeModal('productModal')">
+        <div class="modal-box product-modal-box" onclick="event.stopPropagation()">
+            <div class="close-modal-btn" onclick="closeModal('productModal')">×</div>
+            
+            <div class="pm-scroll-area">
+                <div class="pm-img-area">
+                    <div class="gallery-nav gallery-prev" onclick="prevPhoto(event)">&#10094;</div>
+                    <img id="pmImg" class="pm-img" src="">
+                    <div class="gallery-nav gallery-next" onclick="nextPhoto(event)">&#10095;</div>
+                </div>
+                <div class="pm-content">
+                    <div id="pmCat" class="pm-cat">Категория</div>
+                    <h2 id="pmTitle" class="pm-title">Название</h2>
+                    <div id="pmPrice" class="pm-price">0 грн</div>
+                    <div class="pm-desc-label">Описание:</div>
+                    <div id="pmDesc" class="pm-desc-text">Текст...</div>
+                </div>
+            </div>
+            
+            <div class="pm-footer">
+                <a id="pmBtn" href="#" target="_blank">Написать продавцу</a>
+            </div>
+        </div>
+    </div>
+
     <div id="addModal" class="modal-overlay">
         <div class="modal-box">
-            <div class="close-modal-btn" onclick="closeModal('addModal')" style="position:absolute; top:15px; right:15px; cursor:pointer;">×</div>
+            <div class="close-modal-btn" onclick="closeModal('addModal')" style="position:absolute; top:15px; right:15px; cursor:pointer; color:#333; background:none;">×</div>
             <h2 style="margin-top:0;">Новое объявление</h2>
             <label class="photo-upload-label">Фотографии (до 5 шт):</label>
             <div class="photo-slots-container" id="addPhotoSlots"></div>
@@ -266,16 +327,14 @@
             <textarea id="newDesc" class="form-input" rows="3" placeholder="Описание"></textarea>
             <input type="text" id="newContact" class="form-input" placeholder="Telegram ник (без @)">
             <button id="createBtn" class="btn-full" onclick="createProduct()">Опубликовать</button>
-            <button class="btn-secondary" onclick="closeModal('addModal')">Отмена</button>
         </div>
     </div>
 
     <div id="editModal" class="modal-overlay">
         <div class="modal-box">
-            <div class="close-modal-btn" onclick="closeModal('editModal')" style="position:absolute; top:15px; right:15px; cursor:pointer;">×</div>
+            <div class="close-modal-btn" onclick="closeModal('editModal')" style="position:absolute; top:15px; right:15px; cursor:pointer; color:#333; background:none;">×</div>
             <h2 style="margin-top:0;">Редактировать</h2>
             <input type="hidden" id="editId">
-            <label class="photo-upload-label">Фотографии:</label>
             <div class="photo-slots-container" id="editPhotoSlots"></div>
             <input type="file" id="editFile1" hidden accept="image/*" onchange="handleFileSelect(event, 0, 'edit')">
             <input type="file" id="editFile2" hidden accept="image/*" onchange="handleFileSelect(event, 1, 'edit')">
@@ -287,32 +346,12 @@
             <label>Описание:</label><textarea id="editDesc" class="form-input" rows="4"></textarea>
             <label>Telegram ник:</label><input type="text" id="editContact" class="form-input">
             <button class="btn-full" onclick="saveEdit()">Сохранить</button>
-            <button class="btn-secondary" onclick="closeModal('editModal')">Отмена</button>
-        </div>
-    </div>
-
-    <div id="productModal" class="modal-overlay" onclick="closeModal('productModal')">
-        <div class="modal-box product-modal-box" onclick="event.stopPropagation()">
-             <div class="close-modal-btn" onclick="closeModal('productModal')">×</div>
-            <div class="pm-left">
-                <div class="gallery-nav gallery-prev" onclick="prevPhoto(event)">&#10094;</div>
-                <img id="pmImg" class="pm-img" src="">
-                <div class="gallery-nav gallery-next" onclick="nextPhoto(event)">&#10095;</div>
-            </div>
-            <div class="pm-right">
-                <div id="pmCat" style="color: #999; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;"></div>
-                <h2 id="pmTitle" style="margin: 0 0 10px 0; font-size: 24px;"></h2>
-                <h1 id="pmPrice" style="color:var(--primary); margin: 0 0 20px 0;"></h1>
-                <div style="font-weight: bold; margin-bottom: 5px;">Описание:</div>
-                <p id="pmDesc" style="color:var(--text); line-height:1.5; white-space: pre-wrap; background:var(--bg); padding:15px; border-radius:8px;"></p>
-                <a id="pmBtn" href="#" target="_blank">Написать продавцу</a>
-            </div>
         </div>
     </div>
 
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-box">
-            <div class="close-modal-btn" onclick="closeModal('settingsModal')" style="position:absolute; top:15px; right:15px; cursor:pointer;">×</div>
+            <div class="close-modal-btn" onclick="closeModal('settingsModal')" style="position:absolute; top:15px; right:15px; cursor:pointer; color:#333; background:none;">×</div>
             <h2 data-lang="settings">Настройки</h2>
             <div class="settings-row">
                 <div class="setting-label" data-lang="theme">Тема</div>
@@ -329,13 +368,12 @@
                     <button class="opt-btn" id="langEN" onclick="setLang('en')">EN</button>
                 </div>
             </div>
-            <button class="btn-full" onclick="closeModal('settingsModal')" data-lang="close">Закрыть</button>
         </div>
     </div>
 
     <div id="authModal" class="modal-overlay">
         <div class="modal-box">
-            <div class="close-modal-btn" onclick="closeModal('authModal')" style="position:absolute; top:15px; right:15px; cursor:pointer;">×</div>
+            <div class="close-modal-btn" onclick="closeModal('authModal')" style="position:absolute; top:15px; right:15px; cursor:pointer; color:#333; background:none;">×</div>
             <h2 id="authTitle" style="text-align: center; margin-top: 0;">Вход</h2>
             <button class="google-btn" onclick="handleGoogleLogin()">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google
@@ -351,10 +389,10 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc, arrayUnion, arrayRemove, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // ========================================
-        // ВНИМАНИЕ: АДМИНСКАЯ ПОЧТА
+        // ADMIN EMAIL
         // ========================================
         const ADMIN_EMAIL = "romanzam007@gmail.com"; 
 
@@ -429,14 +467,20 @@
         }
 
         // --- AUTH ---
+        getRedirectResult(auth).then((result) => {
+            if (result) { checkAndCreateUser(result.user); }
+        }).catch((error) => { console.error(error); });
+
         window.handleGoogleLogin = async () => { 
-            try { 
-                const result = await signInWithPopup(auth, googleProvider); 
-                await checkAndCreateUser(result.user); 
-                closeModal('authModal'); 
-            } catch (error) { 
-                alert("Ошибка: " + error.message); 
-            } 
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (isMobile) signInWithRedirect(auth, googleProvider);
+            else {
+                try {
+                    const result = await signInWithPopup(auth, googleProvider);
+                    await checkAndCreateUser(result.user);
+                    closeModal('authModal');
+                } catch (error) { alert("Ошибка входа: " + error.message); }
+            }
         }
 
         window.handleEmailAuth = async () => {
@@ -478,11 +522,18 @@
                     profile.style.backgroundImage = "none";
                     profile.innerText = user.email[0].toUpperCase();
                 }
+                
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) favorites = userDoc.data().favorites || [];
+                
+                // ПОКАЗАТЬ КНОПКУ АДМИНА
+                if (user.email === ADMIN_EMAIL) {
+                    document.getElementById('adminBtn').style.display = 'flex';
+                }
             } else {
                 document.getElementById('loginBtn').style.display = 'flex';
                 document.getElementById('userProfile').style.display = 'none';
+                document.getElementById('adminBtn').style.display = 'none';
                 favorites = [];
             }
             renderProducts();
@@ -494,6 +545,15 @@
         window.filterMyAds = () => { if(!currentUser) return alert("Войдите!"); filterMode = 'my'; document.getElementById('controlsPanel').style.display = 'none'; document.getElementById('backBtn').style.display = 'block'; applyLanguage(); toggleMenu(); renderProducts(); }
         window.filterFavorites = () => { if(!currentUser) return alert("Войдите!"); filterMode = 'fav'; document.getElementById('controlsPanel').style.display = 'none'; document.getElementById('backBtn').style.display = 'block'; applyLanguage(); toggleMenu(); renderProducts(); }
         
+        // ФИЛЬТР МОДЕРАЦИИ
+        window.filterModeration = () => {
+            filterMode = 'admin';
+            document.getElementById('controlsPanel').style.display = 'none'; 
+            document.getElementById('backBtn').style.display = 'block'; 
+            document.getElementById('pageTitle').innerText = "🛡️ Модерация";
+            toggleMenu(); renderProducts();
+        }
+
         // CRUD
         window.createProduct = async () => {
             if (!currentUser) return alert("Войдите!");
@@ -506,13 +566,18 @@
             if (!title || !price || !cat || !contact) return alert("Заполни поля!");
             const imgs = newPhotos.filter(p => p !== null);
             btn.disabled = true; btn.innerText = "...";
+            
+            const initStatus = (currentUser.email === ADMIN_EMAIL) ? 'active' : 'pending';
+
             try {
                 await addDoc(collection(db, "products"), { 
                     title, price, desc, contact, cat, imgs, 
                     userId: currentUser.uid, date: Date.now(), 
+                    status: initStatus,
                     isPromoted: false
                 });
-                alert("Готово!"); closeModal('addModal'); loadProducts();
+                alert(initStatus === 'active' ? "Опубликовано!" : "Отправлено на проверку!"); 
+                closeModal('addModal'); loadProducts();
                 newPhotos=[null,null,null,null,null]; for(let i=0;i<5;i++) updateSlotVisual('add',i,null);
                 document.getElementById('newTitle').value=""; document.getElementById('newPrice').value=""; document.getElementById('newDesc').value=""; document.getElementById('newContact').value="";
             } catch (e) { alert(e.message); } finally { btn.disabled = false; btn.innerText = "Опубликовать"; }
@@ -547,7 +612,21 @@
         }
         window.deleteProduct = async (id, e) => { e.stopPropagation(); if (!confirm("Удалить?")) return; await deleteDoc(doc(db, "products", id)); loadProducts(); }
 
-        // --- ADMIN PROMO ---
+        // --- ADMIN ACTIONS ---
+        window.approveProduct = async (id, e) => {
+            e.stopPropagation();
+            if(!confirm("Одобрить?")) return;
+            await updateDoc(doc(db, "products", id), { status: 'active' });
+            renderProducts();
+        }
+
+        window.rejectProduct = async (id, e) => {
+            e.stopPropagation();
+            if(!confirm("Отклонить?")) return;
+            await updateDoc(doc(db, "products", id), { status: 'rejected' });
+            renderProducts();
+        }
+
         window.togglePromote = async (id, currentStatus, e) => {
             e.stopPropagation();
             if(!confirm(currentStatus ? "Снять ТОП?" : "Сделать ТОП?")) return;
@@ -563,12 +642,29 @@
             const cont = document.getElementById('goods-container');
             cont.innerHTML = "";
             const search = document.getElementById('searchInput').value.toLowerCase();
+            
             let filtered = products.filter(p => {
                 if (!p.title.toLowerCase().includes(search)) return false;
-                if (filterMode === 'all' && currentCatFilter !== 'all' && p.cat !== currentCatFilter) return false;
-                if (filterMode === 'my' && (!currentUser || p.userId !== currentUser.uid)) return false;
-                if (filterMode === 'fav' && !favorites.includes(p.id)) return false;
-                return true;
+
+                if (filterMode === 'all') {
+                    if (p.status !== 'active') return false;
+                    if (currentCatFilter !== 'all' && p.cat !== currentCatFilter) return false;
+                    return true;
+                } 
+                else if (filterMode === 'my') {
+                    if (!currentUser || p.userId !== currentUser.uid) return false;
+                    return true;
+                }
+                else if (filterMode === 'fav') {
+                    if (!favorites.includes(p.id)) return false;
+                    if (p.status !== 'active') return false;
+                    return true;
+                }
+                else if (filterMode === 'admin') {
+                    if (p.status !== 'pending') return false;
+                    return true;
+                }
+                return false;
             });
             
             filtered.sort((a, b) => (b.isPromoted ? 1 : 0) - (a.isPromoted ? 1 : 0));
@@ -582,14 +678,23 @@
                 const isFav = favorites.includes(p.id);
                 
                 let buttonsHtml = "";
-                if (isMine || isAdmin) {
-                    buttonsHtml = `<div class="action-icon" onclick="openEditModal('${p.id}', event)"><i class="fas fa-pen" style="color:var(--primary);"></i></div><div class="action-icon" onclick="deleteProduct('${p.id}', event)"><i class="fas fa-trash" style="color:var(--danger);"></i></div>`;
-                } else {
-                    buttonsHtml = `<div class="action-icon ${isFav ? 'fav-active' : ''}" onclick="toggleFav('${p.id}', event)"><i class="fas fa-heart"></i></div>`;
-                }
                 
-                if (isAdmin) {
-                    buttonsHtml += `<div class="action-icon" onclick="togglePromote('${p.id}', ${p.isPromoted}, event)" style="color:${p.isPromoted ? 'gold' : '#ccc'}"><i class="fas fa-crown"></i></div>`;
+                if (filterMode === 'admin') {
+                    // ADMIN MODERATION BUTTONS
+                    buttonsHtml = `
+                        <div class="action-icon" onclick="approveProduct('${p.id}', event)" style="color:green"><i class="fas fa-check"></i></div>
+                        <div class="action-icon" onclick="rejectProduct('${p.id}', event)" style="color:red"><i class="fas fa-times"></i></div>
+                    `;
+                } else {
+                    // NORMAL BUTTONS
+                    if (isMine || isAdmin) {
+                        buttonsHtml = `<div class="action-icon" onclick="openEditModal('${p.id}', event)"><i class="fas fa-pen" style="color:var(--primary);"></i></div><div class="action-icon" onclick="deleteProduct('${p.id}', event)"><i class="fas fa-trash" style="color:var(--danger);"></i></div>`;
+                    } else {
+                        buttonsHtml = `<div class="action-icon ${isFav ? 'fav-active' : ''}" onclick="toggleFav('${p.id}', event)"><i class="fas fa-heart"></i></div>`;
+                    }
+                    if (isAdmin) {
+                        buttonsHtml += `<div class="action-icon" onclick="togglePromote('${p.id}', ${p.isPromoted}, event)" style="color:${p.isPromoted ? 'gold' : '#ccc'}"><i class="fas fa-crown"></i></div>`;
+                    }
                 }
 
                 let mainImg = (p.imgs && p.imgs.length > 0) ? p.imgs[0] : (p.img || null);
@@ -615,13 +720,12 @@
             document.getElementById('pmDesc').innerText = p.desc || "Без описания";
             document.getElementById('pmBtn').href = `https://t.me/${p.contact.replace('@','')}`;
             document.getElementById('productModal').style.display = 'flex';
-            
-            // БЛОКИРОВКА СКРОЛЛА ФОНА (Фикс скролла)
+            // LOCK SCROLL
             document.body.style.overflow = 'hidden';
         }
         window.closeModal = (id) => { 
             document.getElementById(id).style.display = 'none'; 
-            document.body.style.overflow = 'auto'; // Разблокировка
+            document.body.style.overflow = 'auto'; // UNLOCK
         }
 
         function updateGalleryImage() { const imgEl = document.getElementById('pmImg'); if(currentGalleryPhotos.length > 0) { imgEl.src = currentGalleryPhotos[currentPhotoIndex]; imgEl.style.display = 'block'; } else { imgEl.src = ''; imgEl.style.display = 'none'; } }
@@ -639,6 +743,7 @@
         window.openSettingsModal = () => { document.getElementById('settingsModal').style.display = 'flex'; toggleMenu(); }
         window.openAuthModal = () => document.getElementById('authModal').style.display = 'flex';
         window.openAddModal = () => { if(!currentUser) return openAuthModal(); newPhotos=[null,null,null,null,null]; for(let i=0;i<5;i++)updateSlotVisual('add',i,null); document.getElementById('addModal').style.display = 'flex'; }
+        
         window.toggleMenu = () => { const m = document.getElementById('profileMenu'); m.style.display = m.style.display === 'block' ? 'none' : 'block'; }
         window.applyFilters = () => renderProducts();
         window.setFilter = (cat, el) => { currentCatFilter = cat; document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active')); el.classList.add('active'); renderProducts(); }
