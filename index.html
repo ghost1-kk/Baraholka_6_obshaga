@@ -615,7 +615,7 @@
 
             /* ИСПРАВЛЕНИЕ: поиск на мобильных */
             .mobile-search-bar {
-                display: block !important;
+                display: none;
                 position: fixed;
                 top: 70px;
                 left: 0;
@@ -624,6 +624,7 @@
                 padding: 10px;
                 border-bottom: 1px solid var(--border-light);
                 z-index: 999;
+                box-shadow: var(--shadow-md);
             }
             
             .mobile-search-input {
@@ -880,7 +881,7 @@
 
         @media (max-width: 768px) {
             .mobile-search-bar {
-                display: block;
+                display: none;
             }
         }
 
@@ -891,6 +892,8 @@
             margin-bottom: 20px;
             overflow-x: auto;
             padding-bottom: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .photo-gallery img {
@@ -950,6 +953,94 @@
                 width: 60px;
                 height: 60px;
             }
+
+            /* Мобильное меню профиля */
+            .mobile-profile-menu {
+                display: none;
+                position: fixed;
+                bottom: 70px;
+                left: 10px;
+                right: 10px;
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                z-index: 1001;
+                box-shadow: var(--shadow-lg);
+            }
+
+            .mobile-profile-item {
+                padding: 15px;
+                border-bottom: 1px solid var(--border-light);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                color: var(--text-primary);
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .mobile-profile-item:last-child {
+                border-bottom: none;
+            }
+
+            .mobile-profile-item:hover {
+                background: var(--bg-secondary);
+            }
+
+            .mobile-profile-item.danger {
+                color: var(--danger);
+            }
+        }
+
+        /* Улучшенный поиск на мобильных */
+        .mobile-search-container {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-search-container {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: var(--bg-primary);
+                z-index: 1002;
+                padding: 70px 15px 15px 15px;
+                transform: translateY(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .mobile-search-container.active {
+                transform: translateY(0);
+            }
+
+            .mobile-search-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+
+            .mobile-search-input-full {
+                width: 100%;
+                padding: 15px;
+                background: var(--bg-primary);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-md);
+                font-size: 16px;
+                color: var(--text-primary);
+            }
+
+            .close-search-btn {
+                background: none;
+                border: none;
+                color: var(--text-primary);
+                font-size: 20px;
+                cursor: pointer;
+                padding: 5px;
+            }
         }
     </style>
 </head>
@@ -986,7 +1077,6 @@
                         <span data-lang="add_ad">Подать объявление</span>
                     </button>
                     
-                    <!-- ИЗМЕНЕНО: убрано toggleMenu из кнопки избранного -->
                     <button class="header-btn" onclick="filterFavorites()">
                         <i class="far fa-heart"></i>
                         <span data-lang="favorites">Избранное</span>
@@ -1029,9 +1119,38 @@
             </div>
         </header>
 
-        <!-- ДОБАВЛЕНО: мобильная поисковая строка -->
-        <div class="mobile-search-bar" style="display: none;">
-            <input type="text" class="mobile-search-input" data-lang-placeholder="search_placeholder" id="mobileSearchInput" oninput="renderProducts()">
+        <!-- Улучшенный мобильный поиск -->
+        <div class="mobile-search-container" id="mobileSearchContainer">
+            <div class="mobile-search-header">
+                <button class="close-search-btn" onclick="closeMobileSearch()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <input type="text" class="mobile-search-input-full" data-lang-placeholder="search_placeholder" id="mobileSearchInputFull" oninput="renderProducts()" placeholder="Поиск товаров...">
+            </div>
+        </div>
+
+        <!-- Мобильное меню профиля -->
+        <div class="mobile-profile-menu" id="mobileProfileMenu">
+            <div class="mobile-profile-item" onclick="filterMyAds()">
+                <i class="fas fa-box"></i>
+                <span data-lang="my_ads">Мои товары</span>
+            </div>
+            <div class="mobile-profile-item" onclick="filterFavorites()">
+                <i class="fas fa-heart"></i>
+                <span data-lang="favorites">Избранное</span>
+            </div>
+            <div class="mobile-profile-item" id="mobileAdminLink" style="display:none;" onclick="filterModeration()">
+                <i class="fas fa-shield-alt"></i>
+                <span data-lang="moderation">Модерация</span>
+            </div>
+            <div class="mobile-profile-item" onclick="openSettingsModal()">
+                <i class="fas fa-cog"></i>
+                <span data-lang="settings">Настройки</span>
+            </div>
+            <div class="mobile-profile-item danger" id="mobileMenuLogout" style="display:none;" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span data-lang="logout">Выйти</span>
+            </div>
         </div>
 
         <aside class="sidebar">
@@ -1096,19 +1215,15 @@
 
         <main class="main-content">
             <div class="content-header">
-                <!-- ИЗМЕНЕНО: заголовок стал больше и жирнее -->
                 <div class="results-info" id="resultsInfo">
                     Все объявления
                 </div>
-                <!-- ПЕРЕМЕЩЕНО: фильтр сортировки теперь вверху -->
                 <select class="sort-select" onchange="sortProducts(this.value)">
                     <option value="newest" data-lang="newest">Сначала новые</option>
                     <option value="cheapest" data-lang="cheapest">Сначала дешевые</option>
                     <option value="expensive" data-lang="expensive">Сначала дорогие</option>
                 </select>
             </div>
-
-            <!-- УБРАНО: строка с фильтрами цены -->
 
             <div class="products-grid-v3" id="goodsGrid">
                 <div class="skeleton skeleton-card"></div>
@@ -1124,7 +1239,7 @@
             <i class="fas fa-home"></i>
             <span data-lang="home">Главная</span>
         </button>
-        <button class="nav-item" onclick="toggleMobileSearch()">
+        <button class="nav-item" onclick="openMobileSearch()">
             <i class="fas fa-search"></i>
             <span data-lang="search">Поиск</span>
         </button>
@@ -1136,7 +1251,7 @@
             <i class="far fa-heart"></i>
             <span data-lang="favorites">Избранное</span>
         </button>
-        <button class="nav-item" onclick="openAuthModal()">
+        <button class="nav-item" onclick="toggleMobileProfileMenu()">
             <i class="far fa-user"></i>
             <span data-lang="profile">Профиль</span>
         </button>
@@ -1240,11 +1355,10 @@
             </div>
             <div class="settings-row" style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
                 <div data-lang="language">Язык</div>
-                <!-- ИСПРАВЛЕНО: кнопки языка в настройках -->
                 <div style="display:flex; gap:5px;">
-                    <button class="settings-lang-btn ${currentLang === 'ru' ? 'active' : ''}" onclick="setLanguage('ru')">RU</button>
-                    <button class="settings-lang-btn ${currentLang === 'ua' ? 'active' : ''}" onclick="setLanguage('ua')">UA</button>
-                    <button class="settings-lang-btn ${currentLang === 'en' ? 'active' : ''}" onclick="setLanguage('en')">EN</button>
+                    <button class="settings-lang-btn active" onclick="setLanguage('ru')">RU</button>
+                    <button class="settings-lang-btn" onclick="setLanguage('ua')">UA</button>
+                    <button class="settings-lang-btn" onclick="setLanguage('en')">EN</button>
                 </div>
             </div>
         </div>
@@ -1439,7 +1553,6 @@
             localStorage.setItem('siteLang', lang);
             updateLanguage();
             
-            // Обновляем активные кнопки языка
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 if (btn.textContent === lang.toUpperCase()) {
@@ -1447,7 +1560,6 @@
                 }
             });
 
-            // Обновляем кнопки в настройках
             document.querySelectorAll('.settings-lang-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.settings-lang-btn').forEach(btn => {
                 if (btn.textContent === lang.toUpperCase()) {
@@ -1459,25 +1571,21 @@
         function updateLanguage() {
             const t = translations[currentLang];
             
-            // Обновляем тексты с data-lang
             document.querySelectorAll('[data-lang]').forEach(el => {
                 const key = el.getAttribute('data-lang');
                 if (t[key]) el.textContent = t[key];
             });
             
-            // Обновляем placeholder'ы
             document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-lang-placeholder');
                 if (t[key]) el.placeholder = t[key];
             });
             
-            // Обновляем опции select'ов
             document.querySelectorAll('option[data-lang]').forEach(el => {
                 const key = el.getAttribute('data-lang');
                 if (t[key]) el.textContent = t[key];
             });
             
-            // Перерисовываем продукты для обновления текста
             renderProducts();
         }
 
@@ -1506,6 +1614,10 @@
             const loginBtn = document.getElementById('loginBtn');
             const userBlock = document.getElementById('userBlock');
             const menuLogout = document.getElementById('menuLogout');
+            const mobileMenuLogout = document.getElementById('mobileMenuLogout');
+            const adminLink = document.getElementById('adminLink');
+            const mobileAdminLink = document.getElementById('mobileAdminLink');
+            
             if(u) {
                 if(loginBtn) loginBtn.style.display='none';
                 if(userBlock) { 
@@ -1521,7 +1633,11 @@
                 document.getElementById('dropNick').innerText = u.displayName || u.email.split('@')[0];
                 document.getElementById('dropEmail').innerText = u.email;
                 if(menuLogout) menuLogout.style.display='flex';
-                if(u.email === ADMIN_EMAIL) document.getElementById('adminLink').style.display = 'flex';
+                if(mobileMenuLogout) mobileMenuLogout.style.display='flex';
+                if(u.email === ADMIN_EMAIL) {
+                    if(adminLink) adminLink.style.display = 'flex';
+                    if(mobileAdminLink) mobileAdminLink.style.display = 'flex';
+                }
                 const snap = await getDoc(doc(db, "users", u.uid));
                 favorites = snap.exists() ? (snap.data().favorites || []) : [];
                 if(!snap.exists()) await setDoc(doc(db, "users", u.uid), {email:u.email, favorites:[]});
@@ -1529,13 +1645,15 @@
                 if(loginBtn) loginBtn.style.display='block';
                 if(userBlock) userBlock.style.display='none';
                 if(menuLogout) menuLogout.style.display='none';
-                document.getElementById('adminLink').style.display = 'none';
+                if(mobileMenuLogout) mobileMenuLogout.style.display='none';
+                if(adminLink) adminLink.style.display = 'none';
+                if(mobileAdminLink) mobileAdminLink.style.display = 'none';
                 favorites = [];
             }
             loadProducts();
         });
 
-        window.logout=()=>{signOut(auth);toggleMenu();}
+        window.logout=()=>{signOut(auth);toggleMenu();closeMobileProfileMenu();}
         window.createProduct=async()=>{
             if(!currentUser)return openAuthModal();
             const title=document.getElementById('newTitle').value, price=document.getElementById('newPrice').value, desc=document.getElementById('newDesc').value, contact=document.getElementById('newContact').value, cat=document.getElementById('newCat').value, dorm=document.getElementById('newDorm').value;
@@ -1549,7 +1667,7 @@
             if (!g) return;
             
             const s=document.getElementById('searchInput').value.toLowerCase();
-            const mobileS = document.getElementById('mobileSearchInput') ? document.getElementById('mobileSearchInput').value.toLowerCase() : '';
+            const mobileS = document.getElementById('mobileSearchInputFull') ? document.getElementById('mobileSearchInputFull').value.toLowerCase() : '';
             const searchTerm = s || mobileS;
             
             const f=products.filter(p=>{
@@ -1563,7 +1681,6 @@
 
             const t = translations[currentLang];
             
-            // ИЗМЕНЕНО: заголовки для разных режимов
             let titleText = t.found_ads;
             if (filterMode === 'fav') titleText = t.favorites;
             else if (filterMode === 'my') titleText = t.my_ads;
@@ -1638,28 +1755,32 @@
             productModal.className = 'modal-overlay';
             productModal.style.display = 'flex';
             
-            let galleryHTML = '';
-            if (currentProduct.imgs && currentProduct.imgs.length > 1) {
-                galleryHTML = `
-                    <div class="photo-gallery">
-                        ${currentProduct.imgs.map((img, index) => `
-                            <img src="${img}" onclick="changeMainPhoto(${index})" class="${index === 0 ? 'active' : ''}">
-                        `).join('')}
-                    </div>
-                `;
-            }
-            
             productModal.innerHTML = `
                 <div class="modal-box" style="max-width: 600px;">
                     <div class="close-btn" onclick="this.closest('.modal-overlay').remove()">×</div>
                     <div style="display: flex; gap: 20px; flex-direction: column;">
-                        ${galleryHTML}
+                        <!-- Основное большое фото -->
                         <div class="main-photo" id="mainPhotoContainer">
                             ${currentProduct.imgs && currentProduct.imgs[0] 
                                 ? `<img src="${currentProduct.imgs[0]}" id="mainPhoto" style="max-width: 100%; max-height: 100%; object-fit: contain;">`
                                 : '<i class="fas fa-camera" style="font-size: 48px; color: var(--text-muted);"></i>'
                             }
                         </div>
+                        
+                        <!-- Галерея маленьких фото ПОД основным -->
+                        ${currentProduct.imgs && currentProduct.imgs.length > 0 ? `
+                            <div class="photo-gallery-container" style="display: flex; justify-content: center;">
+                                <div class="photo-gallery">
+                                    ${currentProduct.imgs.map((img, index) => `
+                                        <img src="${img}" 
+                                             onclick="changeMainPhoto(${index})" 
+                                             class="${index === 0 ? 'active' : ''}"
+                                             style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid ${index === 0 ? 'var(--primary)' : 'transparent'};">
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
                         <div>
                             <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">${catNames[currentProduct.cat] || currentProduct.cat}</div>
                             <div style="background: var(--bg-secondary); padding: 4px 12px; border-radius: var(--radius-sm); display: inline-block; font-size: 12px; font-weight: bold; color: var(--text-primary); margin-bottom: 10px;">
@@ -1709,7 +1830,13 @@
             }
             
             galleryImages.forEach((img, i) => {
-                img.classList.toggle('active', i === index);
+                if (i === index) {
+                    img.style.borderColor = 'var(--primary)';
+                    img.classList.add('active');
+                } else {
+                    img.style.borderColor = 'transparent';
+                    img.classList.remove('active');
+                }
             });
         }
 
@@ -1810,15 +1937,35 @@
             m.style.display=m.style.display==='flex'?'none':'flex';
         }
 
-        // ДОБАВЛЕНО: переключение мобильного поиска
-        window.toggleMobileSearch=()=>{
-            const searchBar = document.querySelector('.mobile-search-bar');
-            if (searchBar.style.display === 'block') {
-                searchBar.style.display = 'none';
+        // МОБИЛЬНЫЙ ПОИСК
+        window.openMobileSearch=()=>{
+            document.getElementById('mobileSearchContainer').classList.add('active');
+            document.getElementById('mobileSearchInputFull').focus();
+        }
+
+        window.closeMobileSearch=()=>{
+            document.getElementById('mobileSearchContainer').classList.remove('active');
+            renderProducts();
+        }
+
+        // МОБИЛЬНОЕ МЕНЮ ПРОФИЛЯ
+        window.toggleMobileProfileMenu=()=>{
+            const menu = document.getElementById('mobileProfileMenu');
+            if (currentUser) {
+                // Если пользователь вошел, показываем меню профиля
+                if (menu.style.display === 'block') {
+                    menu.style.display = 'none';
+                } else {
+                    menu.style.display = 'block';
+                }
             } else {
-                searchBar.style.display = 'block';
-                document.getElementById('mobileSearchInput').focus();
+                // Если не вошел, открываем окно авторизации
+                openAuthModal();
             }
+        }
+
+        window.closeMobileProfileMenu=()=>{
+            document.getElementById('mobileProfileMenu').style.display = 'none';
         }
 
         window.setFilter=(c,el)=>{
@@ -1831,20 +1978,22 @@
         window.filterMyAds=()=>{
             if(!currentUser)return openAuthModal();
             filterMode='my';
-            toggleMenu(); // закрываем меню
+            toggleMenu();
+            closeMobileProfileMenu();
             renderProducts();
         }
 
-        // ИЗМЕНЕНО: убрано toggleMenu из функции избранного
         window.filterFavorites=()=>{
             if(!currentUser)return openAuthModal();
             filterMode='fav';
+            closeMobileProfileMenu();
             renderProducts();
         }
 
         window.filterModeration=()=>{
             filterMode='admin';
             toggleMenu();
+            closeMobileProfileMenu();
             renderProducts();
         }
 
@@ -1941,6 +2090,14 @@
             // Инициализация языка
             updateLanguage();
             loadProducts();
+        });
+
+        // Закрытие мобильного меню при клике вне его
+        document.addEventListener('click', function(e) {
+            const profileMenu = document.getElementById('mobileProfileMenu');
+            if (profileMenu && profileMenu.style.display === 'block' && !e.target.closest('.mobile-profile-menu') && !e.target.closest('.nav-item:last-child')) {
+                profileMenu.style.display = 'none';
+            }
         });
     </script>
 </body>
