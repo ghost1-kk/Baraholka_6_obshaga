@@ -28,27 +28,27 @@
             overflow-x: hidden;
             max-width: 100%;
             width: 100%;
-            background-color: var(--bg-body); /* НОВЫЙ ФОН */
+            background-color: var(--bg-body);
         }
 
         :root {
-            --primary: #D4AF37; /* золотой */
-            --primary-hover: #B8941F; /* темно-золотой */
-            --secondary: #FFD700; /* желтый */
-            --accent: #FFA500; /* оранжевый */
+            --primary: #D4AF37;
+            --primary-hover: #B8941F;
+            --secondary: #FFD700;
+            --accent: #FFA500;
             --danger: #DC143C;
             --warning: #FF8C00;
             --success: #228B22;
             
             --bg-primary: #FFFFFF;
-            --bg-secondary: #FFF8DC; /* светлый горчичный */
+            --bg-secondary: #FFF8DC;
             --bg-tertiary: #F5F5DC;
             --bg-card: #FFFFFF;
-            --bg-body: #f8f9fa; /* СВЕТЛО-СЕРЫЙ ФОН САЙТА */
+            --bg-body: #f8f9fa;
             --text-primary: #1A1A1A;
             --text-secondary: #5F6368;
             --text-muted: #9AA0A6;
-            --border: #E6D7A8; /* светлый золотой */
+            --border: #E6D7A8;
             --border-light: #F0E6C3;
             --shadow-sm: 0 1px 3px rgba(212, 175, 55, 0.2);
             --shadow-md: 0 4px 12px rgba(212, 175, 55, 0.3);
@@ -73,10 +73,10 @@
             --bg-secondary: #1A1A1A;
             --bg-tertiary: #262626;
             --bg-card: #1A1A1A;
-            --bg-body: #121212; /* ТЕМНЫЙ ФОН САЙТА */
+            --bg-body: #121212;
             --text-primary: #FFFFFF;
-            --text-secondary: #D4AF37; /* золотой */
-            --text-muted: #B8941F; /* темно-золотой */
+            --text-secondary: #D4AF37;
+            --text-muted: #B8941F;
             --border: #333333;
             --border-light: #404040;
             --shadow-sm: 0 1px 3px rgba(212, 175, 55, 0.3);
@@ -184,7 +184,7 @@
             left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            color: #000000; /* ЧЕРНАЯ ЛУПА */
+            color: #000000;
             font-size: 16px;
             font-weight: bold;
         }
@@ -194,7 +194,7 @@
             right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            background: #000000; /* ЧЕРНАЯ КНОПКА ПОИСКА */
+            background: #000000;
             border: none;
             color: white;
             cursor: pointer;
@@ -204,7 +204,7 @@
         }
 
         .search-filters-btn:hover {
-            background: #333333; /* ТЕМНО-СЕРЫЙ ПРИ НАВЕДЕНИИ */
+            background: #333333;
             transform: scale(1.05);
         }
 
@@ -247,14 +247,13 @@
             box-shadow: var(--shadow-md);
         }
 
-        /* ИЗМЕНЕНИЕ: кнопка избранного без текста */
         .header-btn.favorites-btn {
             padding: 10px;
             min-width: auto;
         }
 
         .header-btn.favorites-btn span {
-            display: none; /* Скрываем текст */
+            display: none;
         }
 
         .user-menu {
@@ -396,9 +395,9 @@
         }
 
         .results-info {
-            font-size: 24px; /* УВЕЛИЧЕН РАЗМЕР */
-            font-weight: 800; /* ЖИРНЫЙ ШРИФТ */
-            color: var(--primary); /* ЗОЛОТОЙ ЦВЕТ */
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
         }
 
         .sort-select {
@@ -565,7 +564,7 @@
             color: var(--text-primary);
             margin-bottom: var(--space-sm);
             display: -webkit-box;
-            -webkit-line-amp: 2;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             min-height: 44px;
@@ -604,6 +603,7 @@
             z-index: 1000;
         }
 
+        /* ИСПРАВЛЕНИЯ ДЛЯ МОБИЛЬНОЙ ВЕРСИИ */
         @media (max-width: 768px) {
             .mobile-nav {
                 display: flex;
@@ -612,48 +612,92 @@
             
             .header-container {
                 padding: 0 var(--space-md);
+                gap: var(--space-sm);
             }
             
+            /* Скрываем поиск в шапке на мобильных */
             .search-bar-v3 {
-                display: block; /* ИСПРАВЛЕНИЕ: поиск виден на мобильных */
+                display: none !important;
             }
             
+            /* Переносим переключатель языка влево */
+            .lang-switcher {
+                margin-left: 0;
+                margin-right: auto;
+            }
+            
+            /* Уменьшаем отступы для мобильных */
+            .header-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .header-btn.favorites-btn {
+                padding: 8px;
+            }
+            
+            /* Исправляем сетку товаров */
             .products-grid-v3 {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                 gap: var(--space-md);
             }
             
             .main-content {
                 padding: var(--space-md);
             }
-
-            /* ИСПРАВЛЕНИЕ: поиск на мобильных */
-            .mobile-search-bar {
-                display: none;
-                position: fixed;
-                top: 70px;
-                left: 0;
-                right: 0;
-                background: var(--bg-card);
-                padding: 10px;
-                border-bottom: 1px solid var(--border-light);
-                z-index: 999;
-                box-shadow: var(--shadow-md);
+            
+            /* Мобильный поиск над контентом */
+            .mobile-search-top {
+                display: block;
+                margin-bottom: var(--space-lg);
+                position: relative;
             }
             
-            .mobile-search-input {
+            .mobile-search-top .search-input-v3 {
                 width: 100%;
-                padding: 12px 40px 12px 40px;
-                background: var(--bg-primary);
-                border: 1px solid var(--border);
-                border-radius: var(--radius-md);
-                font-size: 16px;
+                padding: 12px 44px 12px 40px;
             }
             
-            /* Прячем поиск в мобильной навигации */
-            .mobile-nav .nav-item:nth-child(2) {
-                display: flex; /* ИСПРАВЛЕНИЕ: показываем поиск в мобильной навигации */
+            .mobile-search-top .search-icon-v3 {
+                left: 12px;
             }
+            
+            .mobile-search-top .search-filters-btn {
+                right: 8px;
+            }
+            
+            /* Исправляем вкладки статусов */
+            .status-tabs {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .status-tab {
+                flex: 1;
+                min-width: 100px;
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+            
+            /* Показываем аватар пользователя в мобильной навигации */
+            .mobile-user-avatar {
+                display: flex !important;
+                width: 32px;
+                height: 32px;
+                border-radius: var(--radius-full);
+                background: var(--primary);
+                color: white;
+                align-items: center;
+                justify-content: center;
+                font-weight: 600;
+                font-size: 14px;
+                border: 2px solid var(--bg-card);
+            }
+        }
+
+        /* Скрываем аватар по умолчанию */
+        .mobile-user-avatar {
+            display: none;
         }
 
         .nav-item {
@@ -858,7 +902,6 @@
             border-color: white;
         }
 
-        /* ИСПРАВЛЕНО: кнопки языка в настройках */
         .settings-lang-btn {
             padding: 8px 16px;
             border: 1px solid var(--border);
@@ -879,27 +922,12 @@
             background: var(--bg-secondary);
         }
 
-        /* ИСПРАВЛЕНИЯ ПРОБЛЕМ */
-
-        /* 1. Убираем горизонтальную прокрутку на всех устройствах */
         html, body {
             overflow-x: hidden;
             max-width: 100%;
             width: 100%;
         }
 
-        /* 2. Поиск на мобильных - исправлено */
-        .mobile-search-bar {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .mobile-search-bar {
-                display: none;
-            }
-        }
-
-        /* 3. Галерея фото в объявлениях */
         .photo-gallery {
             display: flex;
             gap: 10px;
@@ -940,7 +968,6 @@
             object-fit: contain;
         }
 
-        /* 4. Исправляем текст описания - убираем центрирование */
         .description-text {
             text-align: left;
             background: var(--bg-secondary);
@@ -952,7 +979,6 @@
             margin-bottom: 20px;
         }
 
-        /* Дополнительные исправления для мобильной версии */
         @media (max-width: 768px) {
             .modal-box {
                 max-width: 95%;
@@ -968,7 +994,6 @@
                 height: 60px;
             }
 
-            /* Мобильное меню профиля */
             .mobile-profile-menu {
                 display: none;
                 position: fixed;
@@ -1006,7 +1031,6 @@
             }
         }
 
-        /* Улучшенный поиск на мобильных */
         .mobile-search-container {
             display: none;
         }
@@ -1057,7 +1081,6 @@
             }
         }
 
-        /* Стили для вкладок статусов */
         .status-tabs {
             display: flex;
             gap: 10px;
@@ -1100,12 +1123,16 @@
 
         @media (max-width: 768px) {
             .status-tabs {
-                flex-direction: column;
+                flex-direction: row;
+                flex-wrap: wrap;
                 gap: 5px;
             }
             
             .status-tab {
-                padding: 12px 15px;
+                padding: 10px 12px;
+                font-size: 12px;
+                flex: 1;
+                min-width: 100px;
             }
         }
     </style>
@@ -1143,7 +1170,6 @@
                         <span data-lang="add_ad">Подать объявление</span>
                     </button>
                     
-                    <!-- ИЗМЕНЕНИЕ: кнопка избранного без текста -->
                     <button class="header-btn favorites-btn" onclick="filterFavorites()">
                         <i class="far fa-heart"></i>
                         <span data-lang="favorites">Избранное</span>
@@ -1171,7 +1197,6 @@
                             <div class="menu-item" onclick="filterFavorites()" style="padding: 12px 15px; cursor: pointer; color: var(--text-primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
                                 <i class="fas fa-heart"></i> <span data-lang="favorites">Избранное</span>
                             </div>
-                            <!-- ИСПРАВЛЕНИЕ: скрываем модерацию для не-админов -->
                             <div class="menu-item" id="adminLink" style="display:none; color:orange; padding: 12px 15px; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;" onclick="filterModeration()">
                                 <i class="fas fa-shield-alt"></i> <span data-lang="moderation">Модерация</span>
                             </div>
@@ -1187,7 +1212,17 @@
             </div>
         </header>
 
-        <!-- Улучшенный мобильный поиск -->
+        <!-- Мобильный поиск над контентом -->
+        <div class="mobile-search-top" id="mobileSearchTop" style="display: none;">
+            <div class="search-bar-v3">
+                <i class="fas fa-search search-icon-v3"></i>
+                <input type="text" class="search-input-v3" data-lang-placeholder="search_placeholder" id="mobileSearchInput" oninput="renderProducts()">
+                <button class="search-filters-btn" onclick="renderProducts()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+
         <div class="mobile-search-container" id="mobileSearchContainer">
             <div class="mobile-search-header">
                 <button class="close-search-btn" onclick="closeMobileSearch()">
@@ -1197,7 +1232,6 @@
             </div>
         </div>
 
-        <!-- Мобильное меню профиля -->
         <div class="mobile-profile-menu" id="mobileProfileMenu">
             <div class="mobile-profile-item" onclick="filterMyAds()">
                 <i class="fas fa-box"></i>
@@ -1207,7 +1241,6 @@
                 <i class="fas fa-heart"></i>
                 <span data-lang="favorites">Избранное</span>
             </div>
-            <!-- ИСПРАВЛЕНИЕ: скрываем модерацию для не-админов -->
             <div class="mobile-profile-item" id="mobileAdminLink" style="display:none;" onclick="filterModeration()">
                 <i class="fas fa-shield-alt"></i>
                 <span data-lang="moderation">Модерация</span>
@@ -1262,12 +1295,11 @@
                     <span data-lang="filters">Фильтры</span>
                 </h3>
                 <div class="price-range">
-                    <input type="number" class="price-input" data-lang-placeholder="price_from" id="priceMin">
-                    <input type="number" class="price-input" data-lang-placeholder="price_to" id="priceMax">
+                    <input type="number" class="price-input" data-lang-placeholder="price_from" id="priceMin" placeholder="От">
+                    <input type="number" class="price-input" data-lang-placeholder="price_to" id="priceMax" placeholder="До">
                 </div>
                 <select class="price-input" id="dormFilter">
                     <option value="" data-lang="all_dorms">Все общежития</option>
-                    <!-- ИЗМЕНЕНИЕ: названия общаг на разных языках -->
                     <option value="1" data-lang-ru="Общежитие 1" data-lang-ua="Гуртожиток 1" data-lang-en="Dormitory 1">Общежитие 1</option>
                     <option value="2" data-lang-ru="Общежитие 2" data-lang-ua="Гуртожиток 2" data-lang-en="Dormitory 2">Общежитие 2</option>
                     <option value="3" data-lang-ru="Общежитие 3" data-lang-ua="Гуртожиток 3" data-lang-en="Dormitory 3">Общежитие 3</option>
@@ -1284,6 +1316,7 @@
         </aside>
 
         <main class="main-content">
+            <!-- Мобильный поиск будет вставлен сюда через JS -->
             <div class="content-header">
                 <div class="results-info" id="resultsInfo">
                     Все объявления
@@ -1295,7 +1328,6 @@
                 </select>
             </div>
 
-            <!-- Вкладки статусов для моих объявлений -->
             <div class="status-tabs" id="statusTabs" style="display: none;">
                 <button class="status-tab active" onclick="setStatusFilter('active')">
                     Активные <span class="status-counter" id="activeCount">0</span>
@@ -1335,7 +1367,11 @@
             <span data-lang="favorites">Избранное</span>
         </button>
         <button class="nav-item" onclick="toggleMobileProfileMenu()">
-            <i class="far fa-user"></i>
+            <!-- Аватар пользователя для мобильной версии -->
+            <div class="mobile-user-avatar" id="mobileUserAvatar" style="display: none;">
+                <i class="far fa-user" id="mobileAvatarIcon"></i>
+            </div>
+            <i class="far fa-user" id="mobileProfileIcon"></i>
             <span data-lang="profile">Профиль</span>
         </button>
     </nav>
@@ -1379,7 +1415,6 @@
                 <option value="other" data-lang="other">Разное</option>
             </select>
             <select id="newDorm" class="input-field">
-                <!-- ИЗМЕНЕНИЕ: названия общаг на разных языках -->
                 <option value="1" data-lang-ru="Общежитие №1" data-lang-ua="Гуртожиток №1" data-lang-en="Dormitory #1">Общежитие №1</option>
                 <option value="2" data-lang-ru="Общежитие №2" data-lang-ua="Гуртожиток №2" data-lang-en="Dormitory #2">Общежитие №2</option>
                 <option value="3" data-lang-ru="Общежитие №3" data-lang-ua="Гуртожиток №3" data-lang-en="Dormitory #3">Общежитие №3</option>
@@ -1412,11 +1447,10 @@
                 <option value="other" data-lang="other">Разное</option>
             </select>
             <select id="editDorm" class="input-field">
-                <!-- ИЗМЕНЕНИЕ: названия общаг на разных языках -->
                 <option value="1" data-lang-ru="Общежитие №1" data-lang-ua="Гуртожиток №1" data-lang-en="Dormitory #1">Общежитие №1</option>
                 <option value="2" data-lang-ru="Общежитие №2" data-lang-ua="Гуртожиток №2" data-lang-en="Dormitory #2">Общежитие №2</option>
                 <option value="3" data-lang-ru="Общежитие №3" data-lang-ua="Гуртожиток №3" data-lang-en="Dormitory #3">Общежитие №3</option>
-                <option value="4" data-lang-ru="Обобщежитие №4" data-lang-ua="Гуртожиток №4" data-lang-en="Dormitory #4">Общежитие №4</option>
+                <option value="4" data-lang-ru="Общежитие №4" data-lang-ua="Гуртожиток №4" data-lang-en="Dormitory #4">Общежитие №4</option>
                 <option value="5" data-lang-ru="Общежитие №5" data-lang-ua="Гуртожиток №5" data-lang-en="Dormitory #5">Общежитие №5</option>
                 <option value="6" data-lang-ru="Общежитие №6" data-lang-ua="Гуртожиток №6" data-lang-en="Dormitory #6">Общежитие №6</option>
                 <option value="7" data-lang-ru="Общежитие №7" data-lang-ua="Гуртожиток №7" data-lang-en="Dormitory #7">Общежитие №7</option>
@@ -1471,7 +1505,8 @@
         const provider = new GoogleAuthProvider();
         
         let currentUser=null, products=[], favorites=[], filterMode='all', currentCatFilter='all', photos=[null,null,null,null,null], currentProduct=null;
-        let currentStatusFilter = 'active'; // Новый фильтр статуса
+        let currentStatusFilter = 'active';
+        let priceMinFilter = '', priceMaxFilter = '', dormFilter = '';
         const catNames={tech:'Электроника',home:'Дом',study:'Учеба',clothes:'Одежда',other:'Разное'};
 
         // СИСТЕМА ЯЗЫКОВ
@@ -1642,7 +1677,18 @@
 
         let currentLang = localStorage.getItem('siteLang') || 'ru';
 
-        // ВЫНОСИМ ФУНКЦИИ В ГЛОБАЛЬНУЮ ОБЛАСТЬ ВИДИМОСТИ
+        // ИНИЦИАЛИЗАЦИЯ МОБИЛЬНОГО ПОИСКА
+        function initMobileSearch() {
+            if (window.innerWidth <= 768) {
+                const mobileSearchTop = document.getElementById('mobileSearchTop');
+                const contentHeader = document.querySelector('.content-header');
+                if (mobileSearchTop && contentHeader) {
+                    mobileSearchTop.style.display = 'block';
+                    contentHeader.parentNode.insertBefore(mobileSearchTop, contentHeader);
+                }
+            }
+        }
+
         window.setLanguage = function(lang) {
             currentLang = lang;
             localStorage.setItem('siteLang', lang);
@@ -1681,7 +1727,6 @@
                 if (t[key]) el.textContent = t[key];
             });
             
-            // Обновляем названия общаг в фильтрах и формах
             document.querySelectorAll('option[data-lang-ru]').forEach(el => {
                 const attr = `data-lang-${currentLang}`;
                 if (el.hasAttribute(attr)) {
@@ -1689,7 +1734,6 @@
                 }
             });
             
-            // Обновляем текст вкладок статусов
             const statusTabs = document.querySelectorAll('.status-tab');
             if (statusTabs.length > 0) {
                 statusTabs[0].innerHTML = t.active + ' <span class="status-counter" id="activeCount">0</span>';
@@ -1700,11 +1744,9 @@
             renderProducts();
         }
 
-        // НОВАЯ ФУНКЦИЯ: фильтр по статусу
         window.setStatusFilter = function(status) {
             currentStatusFilter = status;
             
-            // Обновляем активные вкладки
             document.querySelectorAll('.status-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
             
@@ -1739,6 +1781,9 @@
             const mobileMenuLogout = document.getElementById('mobileMenuLogout');
             const adminLink = document.getElementById('adminLink');
             const mobileAdminLink = document.getElementById('mobileAdminLink');
+            const mobileUserAvatar = document.getElementById('mobileUserAvatar');
+            const mobileAvatarIcon = document.getElementById('mobileAvatarIcon');
+            const mobileProfileIcon = document.getElementById('mobileProfileIcon');
             
             if(u) {
                 if(loginBtn) loginBtn.style.display='none';
@@ -1752,11 +1797,23 @@
                         userBlock.innerHTML = u.email[0].toUpperCase();
                     }
                 }
+                // Обновляем мобильный аватар
+                if (mobileUserAvatar && mobileAvatarIcon) {
+                    mobileUserAvatar.style.display = 'flex';
+                    mobileProfileIcon.style.display = 'none';
+                    mobileAvatarIcon.style.display = u.photoURL ? 'none' : 'block';
+                    if(u.photoURL) {
+                        mobileUserAvatar.style.backgroundImage=`url('${u.photoURL}')`;
+                        mobileUserAvatar.innerHTML = '';
+                    } else {
+                        mobileUserAvatar.innerHTML = u.email[0].toUpperCase();
+                    }
+                }
+                
                 document.getElementById('dropNick').innerText = u.displayName || u.email.split('@')[0];
                 document.getElementById('dropEmail').innerText = u.email;
                 if(menuLogout) menuLogout.style.display='flex';
                 if(mobileMenuLogout) mobileMenuLogout.style.display='flex';
-                // ИСПРАВЛЕНИЕ: показываем модерацию только для админа
                 if(u.email === ADMIN_EMAIL) {
                     if(adminLink) adminLink.style.display = 'flex';
                     if(mobileAdminLink) mobileAdminLink.style.display = 'flex';
@@ -1774,6 +1831,13 @@
                 if(mobileMenuLogout) mobileMenuLogout.style.display='none';
                 if(adminLink) adminLink.style.display = 'none';
                 if(mobileAdminLink) mobileAdminLink.style.display = 'none';
+                // Сбрасываем мобильный аватар
+                if (mobileUserAvatar && mobileProfileIcon) {
+                    mobileUserAvatar.style.display = 'none';
+                    mobileProfileIcon.style.display = 'block';
+                    mobileUserAvatar.style.backgroundImage = '';
+                    mobileUserAvatar.innerHTML = '<i class="far fa-user" id="mobileAvatarIcon"></i>';
+                }
                 favorites = [];
             }
             loadProducts();
@@ -1788,19 +1852,34 @@
             try{await addDoc(collection(db,"products"),{title,price,desc,contact,cat,dorm,imgs:photos.filter(p=>p),userId:currentUser.uid,date:Date.now(),status,isPromoted:false});alert(status==='active'?"Объявление опубликовано!":"Объявление отправлено на модерацию.");closeModal('addModal');loadProducts();}catch(e){alert(e.message);}
         }
 
+        // ОБНОВЛЕННАЯ ФУНКЦИЯ ФИЛЬТРАЦИИ
         window.renderProducts=()=>{
             const g=document.getElementById('goodsGrid'); 
             if (!g) return;
             
             const s=document.getElementById('searchInput').value.toLowerCase();
-            const mobileS = document.getElementById('mobileSearchInputFull') ? document.getElementById('mobileSearchInputFull').value.toLowerCase() : '';
-            const searchTerm = s || mobileS;
+            const mobileS = document.getElementById('mobileSearchInput') ? document.getElementById('mobileSearchInput').value.toLowerCase() : '';
+            const mobileSFull = document.getElementById('mobileSearchInputFull') ? document.getElementById('mobileSearchInputFull').value.toLowerCase() : '';
+            const searchTerm = s || mobileS || mobileSFull;
+            
+            // Получаем значения фильтров
+            const priceMin = document.getElementById('priceMin').value;
+            const priceMax = document.getElementById('priceMax').value;
+            const dorm = document.getElementById('dormFilter').value;
             
             let f = products.filter(p=>{
+                // Поиск по названию
                 if(!p.title.toLowerCase().includes(searchTerm))return false;
+                
+                // Фильтр по цене
+                if(priceMin && p.price < parseInt(priceMin)) return false;
+                if(priceMax && p.price > parseInt(priceMax)) return false;
+                
+                // Фильтр по общежитию
+                if(dorm && p.dorm !== dorm) return false;
+                
                 if(filterMode==='admin')return p.status==='pending';
                 if(filterMode==='my') {
-                    // Для режима "Мои объявления" применяем фильтр по статусу
                     if (currentUser && p.userId===currentUser.uid) {
                         return p.status === currentStatusFilter;
                     }
@@ -1817,10 +1896,8 @@
             if (filterMode === 'fav') titleText = t.favorites;
             else if (filterMode === 'my') {
                 titleText = t.my_ads;
-                // Показываем вкладки статусов только в режиме "Мои объявления"
                 document.getElementById('statusTabs').style.display = 'flex';
                 
-                // Подсчитываем количество объявлений по статусам
                 const myProducts = products.filter(p => currentUser && p.userId === currentUser.uid);
                 const activeCount = myProducts.filter(p => p.status === 'active').length;
                 const pendingCount = myProducts.filter(p => p.status === 'pending').length;
@@ -1831,7 +1908,6 @@
                 document.getElementById('rejectedCount').textContent = rejectedCount;
             } else if (filterMode === 'admin') titleText = t.moderation;
             else {
-                // Скрываем вкладки статусов в других режимах
                 document.getElementById('statusTabs').style.display = 'none';
             }
             
@@ -1908,7 +1984,6 @@
                 <div class="modal-box" style="max-width: 600px;">
                     <div class="close-btn" onclick="this.closest('.modal-overlay').remove()">×</div>
                     <div style="display: flex; gap: 20px; flex-direction: column;">
-                        <!-- Основное большое фото -->
                         <div class="main-photo" id="mainPhotoContainer">
                             ${currentProduct.imgs && currentProduct.imgs[0] 
                                 ? `<img src="${currentProduct.imgs[0]}" id="mainPhoto" style="max-width: 100%; max-height: 100%; object-fit: contain;">`
@@ -1916,7 +1991,6 @@
                             }
                         </div>
                         
-                        <!-- Галерея маленьких фото ПОД основным -->
                         ${currentProduct.imgs && currentProduct.imgs.length > 0 ? `
                             <div class="photo-gallery-container" style="display: flex; justify-content: center;">
                                 <div class="photo-gallery">
@@ -2101,14 +2175,12 @@
         window.toggleMobileProfileMenu=()=>{
             const menu = document.getElementById('mobileProfileMenu');
             if (currentUser) {
-                // Если пользователь вошел, показываем меню профиля
                 if (menu.style.display === 'block') {
                     menu.style.display = 'none';
                 } else {
                     menu.style.display = 'block';
                 }
             } else {
-                // Если не вошел, открываем окно авторизации
                 openAuthModal();
             }
         }
@@ -2127,7 +2199,7 @@
         window.filterMyAds=()=>{
             if(!currentUser)return openAuthModal();
             filterMode='my';
-            currentStatusFilter = 'active'; // Сбрасываем фильтр статуса при входе в "Мои объявления"
+            currentStatusFilter = 'active';
             toggleMenu();
             closeMobileProfileMenu();
             renderProducts();
@@ -2199,6 +2271,7 @@
             renderProducts();
         }
 
+        // ОБНОВЛЕННАЯ ФУНКЦИЯ ПРИМЕНЕНИЯ ФИЛЬТРОВ
         window.applyFilters = function() {
             renderProducts();
         }
@@ -2237,12 +2310,16 @@
                 document.getElementById('themeDark').classList.remove('active');
             }
             
-            // Инициализация языка
+            // Инициализация мобильного поиска
+            initMobileSearch();
+            
+            // Обработчик изменения размера окна
+            window.addEventListener('resize', initMobileSearch);
+            
             updateLanguage();
             loadProducts();
         });
 
-        // Закрытие мобильного меню при клике вне его
         document.addEventListener('click', function(e) {
             const profileMenu = document.getElementById('mobileProfileMenu');
             if (profileMenu && profileMenu.style.display === 'block' && !e.target.closest('.mobile-profile-menu') && !e.target.closest('.nav-item:last-child')) {
