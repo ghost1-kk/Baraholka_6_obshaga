@@ -1042,6 +1042,58 @@
                 padding: 5px;
             }
         }
+
+        /* Стили для вкладок статусов */
+        .status-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 10px;
+        }
+
+        .status-tab {
+            padding: 10px 20px;
+            border: none;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
+        }
+
+        .status-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .status-tab:hover {
+            background: var(--primary-hover);
+            color: white;
+        }
+
+        .status-counter {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .status-tabs {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .status-tab {
+                padding: 12px 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1225,6 +1277,19 @@
                 </select>
             </div>
 
+            <!-- Вкладки статусов для моих объявлений -->
+            <div class="status-tabs" id="statusTabs" style="display: none;">
+                <button class="status-tab active" onclick="setStatusFilter('active')">
+                    Активные <span class="status-counter" id="activeCount">0</span>
+                </button>
+                <button class="status-tab" onclick="setStatusFilter('pending')">
+                    Ожидающие <span class="status-counter" id="pendingCount">0</span>
+                </button>
+                <button class="status-tab" onclick="setStatusFilter('rejected')">
+                    Отклоненные <span class="status-counter" id="rejectedCount">0</span>
+                </button>
+            </div>
+
             <div class="products-grid-v3" id="goodsGrid">
                 <div class="skeleton skeleton-card"></div>
                 <div class="skeleton skeleton-card"></div>
@@ -1386,6 +1451,7 @@
         const provider = new GoogleAuthProvider();
         
         let currentUser=null, products=[], favorites=[], filterMode='all', currentCatFilter='all', photos=[null,null,null,null,null], currentProduct=null;
+        let currentStatusFilter = 'active'; // Новый фильтр статуса
         const catNames={tech:'Электроника',home:'Дом',study:'Учеба',clothes:'Одежда',other:'Разное'};
 
         // СИСТЕМА ЯЗЫКОВ
@@ -1439,7 +1505,10 @@
                 ads: "",
                 nothing_found: "Ничего не найдено",
                 try_filters: "Попробуйте изменить поисковый запрос или фильтры",
-                dorm: "Общежитие"
+                dorm: "Общежитие",
+                active: "Активные",
+                pending: "Ожидающие",
+                rejected: "Отклоненные"
             },
             ua: {
                 logo: "БАРАХОЛКА KNUBA",
@@ -1490,7 +1559,10 @@
                 ads: "",
                 nothing_found: "Нічого не знайдено",
                 try_filters: "Спробуйте змінити пошуковий запит або фільтри",
-                dorm: "Гуртожиток"
+                dorm: "Гуртожиток",
+                active: "Активні",
+                pending: "Очікуючі",
+                rejected: "Відхилені"
             },
             en: {
                 logo: "KNUBA MARKETPLACE",
@@ -1541,7 +1613,10 @@
                 ads: "",
                 nothing_found: "Nothing found",
                 try_filters: "Try changing search query or filters",
-                dorm: "Dorm"
+                dorm: "Dorm",
+                active: "Active",
+                pending: "Pending",
+                rejected: "Rejected"
             }
         };
 
@@ -1585,6 +1660,25 @@
                 const key = el.getAttribute('data-lang');
                 if (t[key]) el.textContent = t[key];
             });
+            
+            // Обновляем текст вкладок статусов
+            const statusTabs = document.querySelectorAll('.status-tab');
+            if (statusTabs.length > 0) {
+                statusTabs[0].innerHTML = t.active + ' <span class="status-counter" id="activeCount">0</span>';
+                statusTabs[1].innerHTML = t.pending + ' <span class="status-counter" id="pendingCount">0</span>';
+                statusTabs[2].innerHTML = t.rejected + ' <span class="status-counter" id="rejectedCount">0</span>';
+            }
+            
+            renderProducts();
+        }
+
+        // НОВАЯ ФУНКЦИЯ: фильтр по статусу
+        window.setStatusFilter = function(status) {
+            currentStatusFilter = status;
+            
+            // Обновляем активные вкладки
+            document.querySelectorAll('.status-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
             
             renderProducts();
         }
@@ -1670,10 +1764,16 @@
             const mobileS = document.getElementById('mobileSearchInputFull') ? document.getElementById('mobileSearchInputFull').value.toLowerCase() : '';
             const searchTerm = s || mobileS;
             
-            const f=products.filter(p=>{
+            let f = products.filter(p=>{
                 if(!p.title.toLowerCase().includes(searchTerm))return false;
                 if(filterMode==='admin')return p.status==='pending';
-                if(filterMode==='my')return currentUser&&p.userId===currentUser.uid;
+                if(filterMode==='my') {
+                    // Для режима "Мои объявления" применяем фильтр по статусу
+                    if (currentUser && p.userId===currentUser.uid) {
+                        return p.status === currentStatusFilter;
+                    }
+                    return false;
+                }
                 if(filterMode==='fav')return favorites.includes(p.id)&&p.status==='active';
                 if(p.status!=='active')return false;
                 return currentCatFilter==='all'||p.cat===currentCatFilter;
@@ -1683,8 +1783,25 @@
             
             let titleText = t.found_ads;
             if (filterMode === 'fav') titleText = t.favorites;
-            else if (filterMode === 'my') titleText = t.my_ads;
-            else if (filterMode === 'admin') titleText = t.moderation;
+            else if (filterMode === 'my') {
+                titleText = t.my_ads;
+                // Показываем вкладки статусов только в режиме "Мои объявления"
+                document.getElementById('statusTabs').style.display = 'flex';
+                
+                // Подсчитываем количество объявлений по статусам
+                const myProducts = products.filter(p => currentUser && p.userId === currentUser.uid);
+                const activeCount = myProducts.filter(p => p.status === 'active').length;
+                const pendingCount = myProducts.filter(p => p.status === 'pending').length;
+                const rejectedCount = myProducts.filter(p => p.status === 'rejected').length;
+                
+                document.getElementById('activeCount').textContent = activeCount;
+                document.getElementById('pendingCount').textContent = pendingCount;
+                document.getElementById('rejectedCount').textContent = rejectedCount;
+            } else if (filterMode === 'admin') titleText = t.moderation;
+            else {
+                // Скрываем вкладки статусов в других режимах
+                document.getElementById('statusTabs').style.display = 'none';
+            }
             
             document.getElementById('resultsInfo').textContent = titleText;
 
@@ -1978,6 +2095,7 @@
         window.filterMyAds=()=>{
             if(!currentUser)return openAuthModal();
             filterMode='my';
+            currentStatusFilter = 'active'; // Сбрасываем фильтр статуса при входе в "Мои объявления"
             toggleMenu();
             closeMobileProfileMenu();
             renderProducts();
