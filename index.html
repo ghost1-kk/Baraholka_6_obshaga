@@ -28,6 +28,7 @@
             overflow-x: hidden;
             max-width: 100%;
             width: 100%;
+            background-color: var(--bg-body); /* НОВЫЙ ФОН */
         }
 
         :root {
@@ -43,6 +44,7 @@
             --bg-secondary: #FFF8DC; /* светлый горчичный */
             --bg-tertiary: #F5F5DC;
             --bg-card: #FFFFFF;
+            --bg-body: #f8f9fa; /* СВЕТЛО-СЕРЫЙ ФОН САЙТА */
             --text-primary: #1A1A1A;
             --text-secondary: #5F6368;
             --text-muted: #9AA0A6;
@@ -71,6 +73,7 @@
             --bg-secondary: #1A1A1A;
             --bg-tertiary: #262626;
             --bg-card: #1A1A1A;
+            --bg-body: #121212; /* ТЕМНЫЙ ФОН САЙТА */
             --text-primary: #FFFFFF;
             --text-secondary: #D4AF37; /* золотой */
             --text-muted: #B8941F; /* темно-золотой */
@@ -181,8 +184,9 @@
             left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--primary);
+            color: #000000; /* ЧЕРНАЯ ЛУПА */
             font-size: 16px;
+            font-weight: bold;
         }
 
         .search-filters-btn {
@@ -190,7 +194,7 @@
             right: 8px;
             top: 50%;
             transform: translateY(-50%);
-            background: var(--primary);
+            background: #000000; /* ЧЕРНАЯ КНОПКА ПОИСКА */
             border: none;
             color: white;
             cursor: pointer;
@@ -200,7 +204,7 @@
         }
 
         .search-filters-btn:hover {
-            background: var(--primary-hover);
+            background: #333333; /* ТЕМНО-СЕРЫЙ ПРИ НАВЕДЕНИИ */
             transform: scale(1.05);
         }
 
@@ -241,6 +245,16 @@
             background: white;
             transform: translateY(-1px);
             box-shadow: var(--shadow-md);
+        }
+
+        /* ИЗМЕНЕНИЕ: кнопка избранного без текста */
+        .header-btn.favorites-btn {
+            padding: 10px;
+            min-width: auto;
+        }
+
+        .header-btn.favorites-btn span {
+            display: none; /* Скрываем текст */
         }
 
         .user-menu {
@@ -601,7 +615,7 @@
             }
             
             .search-bar-v3 {
-                display: none;
+                display: block; /* ИСПРАВЛЕНИЕ: поиск виден на мобильных */
             }
             
             .products-grid-v3 {
@@ -638,7 +652,7 @@
             
             /* Прячем поиск в мобильной навигации */
             .mobile-nav .nav-item:nth-child(2) {
-                display: none;
+                display: flex; /* ИСПРАВЛЕНИЕ: показываем поиск в мобильной навигации */
             }
         }
 
@@ -1129,7 +1143,8 @@
                         <span data-lang="add_ad">Подать объявление</span>
                     </button>
                     
-                    <button class="header-btn" onclick="filterFavorites()">
+                    <!-- ИЗМЕНЕНИЕ: кнопка избранного без текста -->
+                    <button class="header-btn favorites-btn" onclick="filterFavorites()">
                         <i class="far fa-heart"></i>
                         <span data-lang="favorites">Избранное</span>
                     </button>
@@ -1156,6 +1171,7 @@
                             <div class="menu-item" onclick="filterFavorites()" style="padding: 12px 15px; cursor: pointer; color: var(--text-primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
                                 <i class="fas fa-heart"></i> <span data-lang="favorites">Избранное</span>
                             </div>
+                            <!-- ИСПРАВЛЕНИЕ: скрываем модерацию для не-админов -->
                             <div class="menu-item" id="adminLink" style="display:none; color:orange; padding: 12px 15px; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;" onclick="filterModeration()">
                                 <i class="fas fa-shield-alt"></i> <span data-lang="moderation">Модерация</span>
                             </div>
@@ -1191,6 +1207,7 @@
                 <i class="fas fa-heart"></i>
                 <span data-lang="favorites">Избранное</span>
             </div>
+            <!-- ИСПРАВЛЕНИЕ: скрываем модерацию для не-админов -->
             <div class="mobile-profile-item" id="mobileAdminLink" style="display:none;" onclick="filterModeration()">
                 <i class="fas fa-shield-alt"></i>
                 <span data-lang="moderation">Модерация</span>
@@ -1250,14 +1267,15 @@
                 </div>
                 <select class="price-input" id="dormFilter">
                     <option value="" data-lang="all_dorms">Все общежития</option>
-                    <option value="1">Общежитие 1</option>
-                    <option value="2">Общежитие 2</option>
-                    <option value="3">Общежитие 3</option>
-                    <option value="4">Общежитие 4</option>
-                    <option value="5">Общежитие 5</option>
-                    <option value="6">Общежитие 6</option>
-                    <option value="7">Общежитие 7</option>
-                    <option value="8">Общежитие 8</option>
+                    <!-- ИЗМЕНЕНИЕ: названия общаг на разных языках -->
+                    <option value="1" data-lang-ru="Общежитие 1" data-lang-ua="Гуртожиток 1" data-lang-en="Dormitory 1">Общежитие 1</option>
+                    <option value="2" data-lang-ru="Общежитие 2" data-lang-ua="Гуртожиток 2" data-lang-en="Dormitory 2">Общежитие 2</option>
+                    <option value="3" data-lang-ru="Общежитие 3" data-lang-ua="Гуртожиток 3" data-lang-en="Dormitory 3">Общежитие 3</option>
+                    <option value="4" data-lang-ru="Общежитие 4" data-lang-ua="Гуртожиток 4" data-lang-en="Dormitory 4">Общежитие 4</option>
+                    <option value="5" data-lang-ru="Общежитие 5" data-lang-ua="Гуртожиток 5" data-lang-en="Dormitory 5">Общежитие 5</option>
+                    <option value="6" data-lang-ru="Общежитие 6" data-lang-ua="Гуртожиток 6" data-lang-en="Dormitory 6">Общежитие 6</option>
+                    <option value="7" data-lang-ru="Общежитие 7" data-lang-ua="Гуртожиток 7" data-lang-en="Dormitory 7">Общежитие 7</option>
+                    <option value="8" data-lang-ru="Общежитие 8" data-lang-ua="Гуртожиток 8" data-lang-en="Dormitory 8">Общежитие 8</option>
                 </select>
                 <button class="apply-filters" onclick="applyFilters()" data-lang="apply_filters">
                     Применить фильтры
@@ -1361,14 +1379,15 @@
                 <option value="other" data-lang="other">Разное</option>
             </select>
             <select id="newDorm" class="input-field">
-                <option value="1">Общежитие №1</option>
-                <option value="2">Общежитие №2</option>
-                <option value="3">Общежитие №3</option>
-                <option value="4">Общежитие №4</option>
-                <option value="5">Общежитие №5</option>
-                <option value="6">Общежитие №6</option>
-                <option value="7">Общежитие №7</option>
-                <option value="8">Общежитие №8</option>
+                <!-- ИЗМЕНЕНИЕ: названия общаг на разных языках -->
+                <option value="1" data-lang-ru="Общежитие №1" data-lang-ua="Гуртожиток №1" data-lang-en="Dormitory #1">Общежитие №1</option>
+                <option value="2" data-lang-ru="Общежитие №2" data-lang-ua="Гуртожиток №2" data-lang-en="Dormitory #2">Общежитие №2</option>
+                <option value="3" data-lang-ru="Общежитие №3" data-lang-ua="Гуртожиток №3" data-lang-en="Dormitory #3">Общежитие №3</option>
+                <option value="4" data-lang-ru="Общежитие №4" data-lang-ua="Гуртожиток №4" data-lang-en="Dormitory #4">Общежитие №4</option>
+                <option value="5" data-lang-ru="Общежитие №5" data-lang-ua="Гуртожиток №5" data-lang-en="Dormitory #5">Общежитие №5</option>
+                <option value="6" data-lang-ru="Общежитие №6" data-lang-ua="Гуртожиток №6" data-lang-en="Dormitory #6">Общежитие №6</option>
+                <option value="7" data-lang-ru="Общежитие №7" data-lang-ua="Гуртожиток №7" data-lang-en="Dormitory #7">Общежитие №7</option>
+                <option value="8" data-lang-ru="Общежитие №8" data-lang-ua="Гуртожиток №8" data-lang-en="Dormitory #8">Общежитие №8</option>
             </select>
             <input type="text" id="newContact" class="input-field" data-lang-placeholder="telegram_contact">
             <button class="btn-submit" onclick="createProduct()" data-lang="publish">Опубликовать</button>
@@ -1393,14 +1412,15 @@
                 <option value="other" data-lang="other">Разное</option>
             </select>
             <select id="editDorm" class="input-field">
-                <option value="1">Общежитие №1</option>
-                <option value="2">Общежитие №2</option>
-                <option value="3">Общежитие №3</option>
-                <option value="4">Общежитие №4</option>
-                <option value="5">Общежитие №5</option>
-                <option value="6">Общежитие №6</option>
-                <option value="7">Общежитие №7</option>
-                <option value="8">Общежитие №8</option>
+                <!-- ИЗМЕНЕНИЕ: названия общаг на разных языках -->
+                <option value="1" data-lang-ru="Общежитие №1" data-lang-ua="Гуртожиток №1" data-lang-en="Dormitory #1">Общежитие №1</option>
+                <option value="2" data-lang-ru="Общежитие №2" data-lang-ua="Гуртожиток №2" data-lang-en="Dormitory #2">Общежитие №2</option>
+                <option value="3" data-lang-ru="Общежитие №3" data-lang-ua="Гуртожиток №3" data-lang-en="Dormitory #3">Общежитие №3</option>
+                <option value="4" data-lang-ru="Обобщежитие №4" data-lang-ua="Гуртожиток №4" data-lang-en="Dormitory #4">Общежитие №4</option>
+                <option value="5" data-lang-ru="Общежитие №5" data-lang-ua="Гуртожиток №5" data-lang-en="Dormitory #5">Общежитие №5</option>
+                <option value="6" data-lang-ru="Общежитие №6" data-lang-ua="Гуртожиток №6" data-lang-en="Dormitory #6">Общежитие №6</option>
+                <option value="7" data-lang-ru="Общежитие №7" data-lang-ua="Гуртожиток №7" data-lang-en="Dormitory #7">Общежитие №7</option>
+                <option value="8" data-lang-ru="Общежитие №8" data-lang-ua="Гуртожиток №8" data-lang-en="Dormitory #8">Общежитие №8</option>
             </select>
             <input type="text" id="editContact" class="input-field" data-lang-placeholder="telegram">
             <button class="btn-submit" onclick="saveEdit()" data-lang="save">Сохранить</button>
@@ -1661,6 +1681,14 @@
                 if (t[key]) el.textContent = t[key];
             });
             
+            // Обновляем названия общаг в фильтрах и формах
+            document.querySelectorAll('option[data-lang-ru]').forEach(el => {
+                const attr = `data-lang-${currentLang}`;
+                if (el.hasAttribute(attr)) {
+                    el.textContent = el.getAttribute(attr);
+                }
+            });
+            
             // Обновляем текст вкладок статусов
             const statusTabs = document.querySelectorAll('.status-tab');
             if (statusTabs.length > 0) {
@@ -1728,9 +1756,13 @@
                 document.getElementById('dropEmail').innerText = u.email;
                 if(menuLogout) menuLogout.style.display='flex';
                 if(mobileMenuLogout) mobileMenuLogout.style.display='flex';
+                // ИСПРАВЛЕНИЕ: показываем модерацию только для админа
                 if(u.email === ADMIN_EMAIL) {
                     if(adminLink) adminLink.style.display = 'flex';
                     if(mobileAdminLink) mobileAdminLink.style.display = 'flex';
+                } else {
+                    if(adminLink) adminLink.style.display = 'none';
+                    if(mobileAdminLink) mobileAdminLink.style.display = 'none';
                 }
                 const snap = await getDoc(doc(db, "users", u.uid));
                 favorites = snap.exists() ? (snap.data().favorites || []) : [];
