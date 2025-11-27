@@ -230,7 +230,7 @@
             transition: all 0.2s;
             text-decoration: none;
             backdrop-filter: blur(10px);
-            min-height: 44px; /* Для мобильных */
+            min-height: 44px;
         }
 
         .header-btn:hover {
@@ -358,18 +358,18 @@
 
         .price-input {
             flex: 1;
-            padding: 12px; /* Увеличил для мобильных */
+            padding: 12px;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             background: var(--bg-primary);
             color: var(--text-primary);
-            font-size: 16px; /* Увеличил для мобильных */
-            min-height: 44px; /* Для удобного тапа */
+            font-size: 16px;
+            min-height: 44px;
         }
 
         .apply-filters {
             width: 100%;
-            padding: 14px; /* Увеличил для мобильных */
+            padding: 14px;
             background: var(--primary);
             color: white;
             border: none;
@@ -377,7 +377,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            min-height: 44px; /* Для удобного тапа */
+            min-height: 44px;
             font-size: 16px;
         }
 
@@ -406,13 +406,13 @@
         }
 
         .sort-select {
-            padding: 12px; /* Увеличил для мобильных */
+            padding: 12px;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             background: var(--bg-primary);
             color: var(--text-primary);
-            font-size: 16px; /* Увеличил для мобильных */
-            min-height: 44px; /* Для удобного тапа */
+            font-size: 16px;
+            min-height: 44px;
         }
 
         .products-grid-v3 {
@@ -510,8 +510,8 @@
         }
 
         .card-action-btn {
-            width: 40px; /* Увеличил для мобильных */
-            height: 40px; /* Увеличил для мобильных */
+            width: 40px;
+            height: 40px;
             background: rgba(255,255,255,0.95);
             border-radius: var(--radius-full);
             display: flex;
@@ -536,8 +536,8 @@
             position: absolute;
             bottom: 12px;
             right: 12px;
-            width: 40px; /* Увеличил для мобильных */
-            height: 40px; /* Увеличил для мобильных */
+            width: 40px;
+            height: 40px;
             background: rgba(255,255,255,0.95);
             border-radius: var(--radius-full);
             display: flex;
@@ -602,7 +602,7 @@
         /* ========== МОБИЛЬНАЯ ВЕРСИЯ ========== */
         @media (max-width: 768px) {
             body {
-                padding-bottom: 70px; /* Увеличил для нового мобильного меню */
+                padding-bottom: 70px;
                 overflow-x: hidden;
             }
             
@@ -622,7 +622,6 @@
                 font-size: 14px;
             }
             
-            /* Убираем лишние кнопки из шапки на мобильных */
             .header-btn:not(.header-btn--primary):not(.favorites-btn) {
                 display: none !important;
             }
@@ -642,7 +641,7 @@
             }
             
             .lang-btn {
-                padding: 8px 12px; /* Увеличил для мобильных */
+                padding: 8px 12px;
                 font-size: 12px;
                 min-height: 36px;
             }
@@ -667,85 +666,107 @@
                 width: 100%;
             }
             
+            /* УБИРАЕМ ДУБЛИРУЮЩИЙ ПОИСК */
+            .mobile-search-top {
+                display: none !important;
+            }
+            
+            /* УБИРАЕМ ВКЛАДКИ СТАТУСОВ В ОСНОВНОМ РЕЖИМЕ */
+            #statusTabs {
+                display: none !important;
+            }
+            
             .products-grid-v3 {
-                grid-template-columns: 1fr; /* Одна колонка на мобильных */
+                grid-template-columns: 1fr;
                 gap: var(--space-md);
+                margin-bottom: var(--space-2xl);
             }
             
             .product-card-v3 {
                 margin: 0;
                 width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
             }
             
             .card-image-v3 {
-                height: 200px; /* Увеличил для лучшего вида */
+                height: 200px;
+                width: 100%;
             }
             
             .card-title-v3 {
                 font-size: 16px;
                 min-height: auto;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
             }
             
             .card-price-v3 {
                 font-size: 18px;
             }
             
-            /* Исправляем вкладки статусов */
-            .status-tabs {
-                display: flex !important;
-                flex-direction: row;
-                gap: 4px;
-                margin-bottom: var(--space-md);
-                border-bottom: none;
-                padding-bottom: 0;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
+            .card-content-v3 {
+                padding: var(--space-md);
+                width: 100%;
+                box-sizing: border-box;
             }
             
-            .status-tabs::-webkit-scrollbar {
-                display: none;
+            .card-meta-v3 {
+                flex-wrap: wrap;
+                gap: var(--space-xs);
             }
             
-            .status-tab {
-                flex: 1;
-                min-width: 100px;
-                padding: 12px 8px; /* Увеличил для мобильных */
-                font-size: 12px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                min-height: 44px;
-            }
-            
-            .status-counter {
-                font-size: 10px;
-                padding: 2px 6px;
-                margin-left: 4px;
-            }
-
-            /* Улучшаем модальные окна для мобильных */
             .modal-box {
                 margin: 10px;
                 padding: 20px;
                 max-height: 85vh;
                 overflow-y: auto;
+                width: calc(100% - 20px);
+                box-sizing: border-box;
             }
 
             .input-field {
                 padding: 14px;
-                font-size: 16px; /* Предотвращает зум в iOS */
+                font-size: 16px;
                 min-height: 44px;
+                width: 100%;
+                box-sizing: border-box;
             }
 
             .btn-submit {
                 padding: 14px;
                 font-size: 16px;
                 min-height: 44px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            
+            .card-actions-v3 {
+                top: 8px;
+                right: 8px;
+            }
+            
+            .card-action-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+            
+            .favorite-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 14px;
+            }
+            
+            .main-content {
+                overflow-x: hidden;
+            }
+            
+            .products-grid-v3 {
+                overflow-x: hidden;
             }
         }
 
-        /* МОБИЛЬНАЯ НАВИГАЦИЯ */
         .mobile-nav {
             display: none;
             position: fixed;
@@ -861,7 +882,6 @@
             color: #1A1A1A;
         }
 
-        /* МОДАЛЬНЫЕ ОКНА */
         .modal-overlay { 
             display: none; 
             position: fixed; 
@@ -872,7 +892,7 @@
             background: rgba(0,0,0,0.6); 
             z-index: 2000; 
             justify-content: center; 
-            align-items: flex-start; /* Изменил на flex-start для мобильных */
+            align-items: flex-start;
             padding: 20px; 
             backdrop-filter: blur(3px); 
             overflow-y: auto;
@@ -888,7 +908,7 @@
             max-height: 90vh; 
             overflow-y: auto; 
             box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
-            margin-top: 20px; /* Добавил отступ сверху */
+            margin-top: 20px;
         }
 
         @media (max-width: 768px) {
@@ -954,7 +974,6 @@
             z-index: 200; overflow: hidden;
         }
 
-        /* СКЕЛЕТОН ЗАГРУЗКА */
         .skeleton {
             background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
             background-size: 200% 100%;
@@ -972,7 +991,6 @@
             border-radius: var(--radius-lg);
         }
 
-        /* СЛОТЫ ДЛЯ ФОТО */
         .slot {
             width: 60px; 
             height: 60px; 
@@ -1007,7 +1025,6 @@
             display: flex; 
         }
 
-        /* ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА */
         .lang-switcher {
             display: flex;
             gap: 5px;
@@ -1052,7 +1069,6 @@
             background: var(--bg-secondary);
         }
 
-        /* ГАЛЕРЕЯ ФОТО */
         .photo-gallery {
             display: flex;
             gap: 10px;
@@ -1104,7 +1120,6 @@
             margin-bottom: 20px;
         }
 
-        /* МОБИЛЬНОЕ МЕНЮ ПРОФИЛЯ */
         .mobile-profile-menu {
             display: none;
             position: fixed;
@@ -1144,7 +1159,6 @@
             color: var(--danger);
         }
 
-        /* МОБИЛЬНЫЙ ПОИСК */
         .mobile-search-container {
             display: none;
         }
@@ -1201,7 +1215,6 @@
             }
         }
 
-        /* ВКЛАДКИ СТАТУСОВ */
         .status-tabs {
             display: flex;
             gap: 10px;
@@ -1243,36 +1256,14 @@
             margin-left: 5px;
         }
 
-        /* УБИРАЕМ ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ */
         html, body {
             overflow-x: hidden;
             max-width: 100%;
             width: 100%;
         }
 
-        /* МОБИЛЬНЫЙ ПОИСК В ШАПКЕ */
         .mobile-search-top {
             display: none;
-        }
-
-        @media (max-width: 768px) {
-            .mobile-search-top {
-                display: block;
-                padding: var(--space-md);
-                background: var(--bg-primary);
-                border-bottom: 1px solid var(--border-light);
-            }
-            
-            .mobile-search-top .search-bar-v3 {
-                display: block !important;
-            }
-            
-            .mobile-search-top .search-input-v3 {
-                width: 100%;
-                padding: 14px 44px 14px 40px;
-                font-size: 16px;
-                min-height: 44px;
-            }
         }
     </style>
 </head>
@@ -1626,7 +1617,6 @@
     </div>
 
     <script type="module">
-        // Импорты Firebase остаются без изменений
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc, arrayUnion, arrayRemove, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -1825,16 +1815,7 @@
                 const mobileSearchTop = document.getElementById('mobileSearchTop');
                 const contentHeader = document.querySelector('.content-header');
                 if (mobileSearchTop && contentHeader) {
-                    mobileSearchTop.style.display = 'block';
-                    contentHeader.parentNode.insertBefore(mobileSearchTop, contentHeader);
-                    
-                    // Добавляем обработчик для мобильного поиска
-                    const mobileSearchInput = document.getElementById('mobileSearchInput');
-                    if (mobileSearchInput) {
-                        mobileSearchInput.addEventListener('input', function() {
-                            renderProducts();
-                        });
-                    }
+                    mobileSearchTop.style.display = 'none'; // Убираем дублирующий поиск
                 }
             } else {
                 const mobileSearchTop = document.getElementById('mobileSearchTop');
@@ -2051,6 +2032,7 @@
             if (filterMode === 'fav') titleText = t.favorites;
             else if (filterMode === 'my') {
                 titleText = t.my_ads;
+                // ВКЛАДКИ СТАТУСОВ ПОКАЗЫВАЕМ ТОЛЬКО В РЕЖИМЕ "МОИ ТОВАРЫ"
                 document.getElementById('statusTabs').style.display = 'flex';
                 
                 const myProducts = products.filter(p => currentUser && p.userId === currentUser.uid);
@@ -2061,8 +2043,12 @@
                 document.getElementById('activeCount').textContent = activeCount;
                 document.getElementById('pendingCount').textContent = pendingCount;
                 document.getElementById('rejectedCount').textContent = rejectedCount;
-            } else if (filterMode === 'admin') titleText = t.moderation;
-            else {
+            } else if (filterMode === 'admin') {
+                titleText = t.moderation;
+                // В модерации тоже скрываем вкладки
+                document.getElementById('statusTabs').style.display = 'none';
+            } else {
+                // В ОСНОВНОМ РЕЖИМЕ СКРЫВАЕМ ВКЛАДКИ СТАТУСОВ
                 document.getElementById('statusTabs').style.display = 'none';
             }
             
@@ -2080,6 +2066,7 @@
                 
                 let badges = '';
                 if(p.isPromoted) badges += '<div class="card-badge card-badge--top">TOP</div>';
+                // БЕЙДЖИ СТАТУСОВ ПОКАЗЫВАЕМ ТОЛЬКО В РЕЖИМАХ "МОИ ТОВАРЫ" И "МОДЕРАЦИЯ"
                 if(filterMode==='my'||filterMode==='admin'){
                     if(p.status==='pending') badges += '<div class="card-badge card-badge--pending">'+t.pending+'</div>';
                     if(p.status==='rejected') badges += '<div class="card-badge card-badge--rejected">'+t.rejected+'</div>';
