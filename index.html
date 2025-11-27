@@ -3,7 +3,6 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>БАРАХОЛКА KNUBA</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
@@ -13,7 +12,7 @@
         })();
     </script>
     <style>
-        /* ВСЕ CSS стили которые были выше остаются без изменений */
+        /* БАЗОВЫЕ СТИЛИ */
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -231,6 +230,7 @@
             transition: all 0.2s;
             text-decoration: none;
             backdrop-filter: blur(10px);
+            min-height: 44px; /* Для мобильных */
         }
 
         .header-btn:hover {
@@ -358,17 +358,18 @@
 
         .price-input {
             flex: 1;
-            padding: 10px 12px;
+            padding: 12px; /* Увеличил для мобильных */
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             background: var(--bg-primary);
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 16px; /* Увеличил для мобильных */
+            min-height: 44px; /* Для удобного тапа */
         }
 
         .apply-filters {
             width: 100%;
-            padding: 12px;
+            padding: 14px; /* Увеличил для мобильных */
             background: var(--primary);
             color: white;
             border: none;
@@ -376,6 +377,8 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            min-height: 44px; /* Для удобного тапа */
+            font-size: 16px;
         }
 
         .apply-filters:hover {
@@ -403,12 +406,13 @@
         }
 
         .sort-select {
-            padding: 8px 12px;
+            padding: 12px; /* Увеличил для мобильных */
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             background: var(--bg-primary);
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 16px; /* Увеличил для мобильных */
+            min-height: 44px; /* Для удобного тапа */
         }
 
         .products-grid-v3 {
@@ -506,8 +510,8 @@
         }
 
         .card-action-btn {
-            width: 36px;
-            height: 36px;
+            width: 40px; /* Увеличил для мобильных */
+            height: 40px; /* Увеличил для мобильных */
             background: rgba(255,255,255,0.95);
             border-radius: var(--radius-full);
             display: flex;
@@ -519,6 +523,7 @@
             transition: all 0.2s;
             border: none;
             box-shadow: var(--shadow-sm);
+            font-size: 16px;
         }
 
         .card-action-btn:hover {
@@ -531,8 +536,8 @@
             position: absolute;
             bottom: 12px;
             right: 12px;
-            width: 36px;
-            height: 36px;
+            width: 40px; /* Увеличил для мобильных */
+            height: 40px; /* Увеличил для мобильных */
             background: rgba(255,255,255,0.95);
             border-radius: var(--radius-full);
             display: flex;
@@ -544,6 +549,7 @@
             transition: all 0.2s;
             border: none;
             box-shadow: var(--shadow-sm);
+            font-size: 16px;
         }
 
         .favorite-btn.active {
@@ -596,7 +602,8 @@
         /* ========== МОБИЛЬНАЯ ВЕРСИЯ ========== */
         @media (max-width: 768px) {
             body {
-                padding-bottom: 60px;
+                padding-bottom: 70px; /* Увеличил для нового мобильного меню */
+                overflow-x: hidden;
             }
             
             .header-container {
@@ -622,6 +629,7 @@
             
             .header-btn.favorites-btn {
                 padding: 8px;
+                min-height: 44px;
             }
             
             .search-bar-v3 {
@@ -634,8 +642,9 @@
             }
             
             .lang-btn {
-                padding: 4px 8px;
-                font-size: 10px;
+                padding: 8px 12px; /* Увеличил для мобильных */
+                font-size: 12px;
+                min-height: 36px;
             }
             
             .main-content {
@@ -659,21 +668,22 @@
             }
             
             .products-grid-v3 {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr; /* Одна колонка на мобильных */
                 gap: var(--space-md);
             }
             
             .product-card-v3 {
                 margin: 0;
+                width: 100%;
             }
             
             .card-image-v3 {
-                height: 150px;
+                height: 200px; /* Увеличил для лучшего вида */
             }
             
             .card-title-v3 {
-                font-size: 14px;
-                min-height: 40px;
+                font-size: 16px;
+                min-height: auto;
             }
             
             .card-price-v3 {
@@ -690,25 +700,52 @@
                 padding-bottom: 0;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            
+            .status-tabs::-webkit-scrollbar {
+                display: none;
             }
             
             .status-tab {
                 flex: 1;
-                min-width: 0;
-                padding: 8px 4px;
-                font-size: 11px;
+                min-width: 100px;
+                padding: 12px 8px; /* Увеличил для мобильных */
+                font-size: 12px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                min-height: 44px;
             }
             
             .status-counter {
                 font-size: 10px;
-                padding: 1px 4px;
-                margin-left: 2px;
+                padding: 2px 6px;
+                margin-left: 4px;
+            }
+
+            /* Улучшаем модальные окна для мобильных */
+            .modal-box {
+                margin: 10px;
+                padding: 20px;
+                max-height: 85vh;
+                overflow-y: auto;
+            }
+
+            .input-field {
+                padding: 14px;
+                font-size: 16px; /* Предотвращает зум в iOS */
+                min-height: 44px;
+            }
+
+            .btn-submit {
+                padding: 14px;
+                font-size: 16px;
+                min-height: 44px;
             }
         }
 
+        /* МОБИЛЬНАЯ НАВИГАЦИЯ */
         .mobile-nav {
             display: none;
             position: fixed;
@@ -717,7 +754,7 @@
             right: 0;
             background: var(--bg-card);
             border-top: 1px solid var(--border-light);
-            padding: 8px;
+            padding: 8px 4px;
             z-index: 1000;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
@@ -734,8 +771,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
-            padding: 6px 4px;
+            gap: 4px;
+            padding: 8px 4px;
             border: none;
             background: none;
             color: var(--text-muted);
@@ -746,6 +783,7 @@
             flex: 1;
             max-width: 70px;
             min-width: 60px;
+            min-height: 50px;
         }
 
         .nav-item.active {
@@ -754,13 +792,13 @@
         }
 
         .nav-item i {
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .mobile-user-avatar {
             display: none;
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border-radius: var(--radius-full);
             background: var(--primary);
             color: white;
@@ -823,6 +861,7 @@
             color: #1A1A1A;
         }
 
+        /* МОДАЛЬНЫЕ ОКНА */
         .modal-overlay { 
             display: none; 
             position: fixed; 
@@ -833,10 +872,12 @@
             background: rgba(0,0,0,0.6); 
             z-index: 2000; 
             justify-content: center; 
-            align-items: center; 
+            align-items: flex-start; /* Изменил на flex-start для мобильных */
             padding: 20px; 
             backdrop-filter: blur(3px); 
+            overflow-y: auto;
         }
+
         .modal-box { 
             background: var(--bg-card); 
             width: 100%; 
@@ -847,7 +888,21 @@
             max-height: 90vh; 
             overflow-y: auto; 
             box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+            margin-top: 20px; /* Добавил отступ сверху */
         }
+
+        @media (max-width: 768px) {
+            .modal-overlay {
+                padding: 10px;
+                align-items: flex-start;
+            }
+            
+            .modal-box {
+                margin-top: 10px;
+                padding: 20px;
+            }
+        }
+
         .close-btn { 
             position: absolute; 
             top: 15px; 
@@ -855,7 +910,13 @@
             font-size: 24px; 
             cursor: pointer; 
             color: var(--text-muted); 
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         .input-field { 
             width: 100%; 
             padding: 14px; 
@@ -864,9 +925,11 @@
             border-radius: 8px; 
             background: var(--bg-primary); 
             color: var(--text-primary); 
-            font-size: 15px; 
+            font-size: 16px; 
             outline: none; 
+            min-height: 44px;
         }
+
         .btn-submit { 
             width: 100%; 
             padding: 14px; 
@@ -878,6 +941,7 @@
             font-weight: 800; 
             font-size: 16px; 
             transition: 0.2s; 
+            min-height: 44px;
         }
 
         .dropdown-menu {
@@ -890,6 +954,7 @@
             z-index: 200; overflow: hidden;
         }
 
+        /* СКЕЛЕТОН ЗАГРУЗКА */
         .skeleton {
             background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
             background-size: 200% 100%;
@@ -907,6 +972,7 @@
             border-radius: var(--radius-lg);
         }
 
+        /* СЛОТЫ ДЛЯ ФОТО */
         .slot {
             width: 60px; 
             height: 60px; 
@@ -941,13 +1007,14 @@
             display: flex; 
         }
 
+        /* ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА */
         .lang-switcher {
             display: flex;
             gap: 5px;
             margin-left: 10px;
         }
         .lang-btn {
-            padding: 6px 12px;
+            padding: 8px 12px;
             border: 1px solid rgba(255,255,255,0.3);
             background: rgba(255,255,255,0.2);
             border-radius: var(--radius-sm);
@@ -956,6 +1023,7 @@
             font-weight: 600;
             transition: all 0.2s;
             color: white;
+            min-height: 36px;
         }
         .lang-btn.active {
             background: white;
@@ -964,7 +1032,7 @@
         }
 
         .settings-lang-btn {
-            padding: 8px 16px;
+            padding: 10px 16px;
             border: 1px solid var(--border);
             background: var(--bg-primary);
             border-radius: var(--radius-sm);
@@ -973,6 +1041,7 @@
             font-weight: 600;
             transition: all 0.2s;
             color: var(--text-primary);
+            min-height: 44px;
         }
         .settings-lang-btn.active {
             background: var(--primary);
@@ -983,12 +1052,7 @@
             background: var(--bg-secondary);
         }
 
-        html, body {
-            overflow-x: hidden;
-            max-width: 100%;
-            width: 100%;
-        }
-
+        /* ГАЛЕРЕЯ ФОТО */
         .photo-gallery {
             display: flex;
             gap: 10px;
@@ -1040,61 +1104,47 @@
             margin-bottom: 20px;
         }
 
-        @media (max-width: 768px) {
-            .modal-box {
-                max-width: 95%;
-                padding: 20px;
-                margin: 10px;
-            }
-            
-            .photo-gallery {
-                gap: 5px;
-            }
-            
-            .photo-gallery img {
-                width: 60px;
-                height: 60px;
-            }
-
-            .mobile-profile-menu {
-                display: none;
-                position: fixed;
-                bottom: 60px;
-                left: 10px;
-                right: 10px;
-                background: var(--bg-card);
-                border: 1px solid var(--border);
-                border-radius: var(--radius-lg);
-                z-index: 1001;
-                box-shadow: var(--shadow-lg);
-                max-height: 60vh;
-                overflow-y: auto;
-            }
-
-            .mobile-profile-item {
-                padding: 12px 15px;
-                border-bottom: 1px solid var(--border-light);
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                color: var(--text-primary);
-                cursor: pointer;
-                transition: all 0.2s;
-            }
-
-            .mobile-profile-item:last-child {
-                border-bottom: none;
-            }
-
-            .mobile-profile-item:hover {
-                background: var(--bg-secondary);
-            }
-
-            .mobile-profile-item.danger {
-                color: var(--danger);
-            }
+        /* МОБИЛЬНОЕ МЕНЮ ПРОФИЛЯ */
+        .mobile-profile-menu {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            left: 10px;
+            right: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            z-index: 1001;
+            box-shadow: var(--shadow-lg);
+            max-height: 60vh;
+            overflow-y: auto;
         }
 
+        .mobile-profile-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 44px;
+        }
+
+        .mobile-profile-item:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-profile-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .mobile-profile-item.danger {
+            color: var(--danger);
+        }
+
+        /* МОБИЛЬНЫЙ ПОИСК */
         .mobile-search-container {
             display: none;
         }
@@ -1127,12 +1177,13 @@
 
             .mobile-search-input-full {
                 width: 100%;
-                padding: 12px 15px;
+                padding: 14px 15px;
                 background: var(--bg-primary);
                 border: 1px solid var(--border);
                 border-radius: var(--radius-md);
                 font-size: 16px;
                 color: var(--text-primary);
+                min-height: 44px;
             }
 
             .close-search-btn {
@@ -1141,30 +1192,16 @@
                 color: var(--text-primary);
                 font-size: 20px;
                 cursor: pointer;
-                padding: 5px;
-            }
-            
-            .mobile-search-top {
-                display: block;
-                margin-bottom: var(--space-lg);
-                position: relative;
-            }
-            
-            .mobile-search-top .search-input-v3 {
-                width: 100%;
-                padding: 12px 44px 12px 40px;
-                font-size: 16px;
-            }
-            
-            .mobile-search-top .search-icon-v3 {
-                left: 12px;
-            }
-            
-            .mobile-search-top .search-filters-btn {
-                right: 8px;
+                padding: 10px;
+                min-height: 44px;
+                min-width: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
         }
 
+        /* ВКЛАДКИ СТАТУСОВ */
         .status-tabs {
             display: flex;
             gap: 10px;
@@ -1174,7 +1211,7 @@
         }
 
         .status-tab {
-            padding: 10px 20px;
+            padding: 12px 20px;
             border: none;
             background: var(--bg-secondary);
             color: var(--text-secondary);
@@ -1184,6 +1221,7 @@
             transition: all 0.2s;
             flex: 1;
             text-align: center;
+            min-height: 44px;
         }
 
         .status-tab.active {
@@ -1205,7 +1243,37 @@
             margin-left: 5px;
         }
 
-        /* ========== КОНЕЦ МОБИЛЬНОЙ ВЕРСИИ ========== */
+        /* УБИРАЕМ ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ */
+        html, body {
+            overflow-x: hidden;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        /* МОБИЛЬНЫЙ ПОИСК В ШАПКЕ */
+        .mobile-search-top {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-search-top {
+                display: block;
+                padding: var(--space-md);
+                background: var(--bg-primary);
+                border-bottom: 1px solid var(--border-light);
+            }
+            
+            .mobile-search-top .search-bar-v3 {
+                display: block !important;
+            }
+            
+            .mobile-search-top .search-input-v3 {
+                width: 100%;
+                padding: 14px 44px 14px 40px;
+                font-size: 16px;
+                min-height: 44px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1284,7 +1352,7 @@
         </header>
 
         <!-- Мобильный поиск над контентом -->
-        <div class="mobile-search-top" id="mobileSearchTop" style="display: none;">
+        <div class="mobile-search-top" id="mobileSearchTop">
             <div class="search-bar-v3">
                 <i class="fas fa-search search-icon-v3"></i>
                 <input type="text" class="search-input-v3" data-lang-placeholder="search_placeholder" id="mobileSearchInput" oninput="renderProducts()">
@@ -1294,6 +1362,7 @@
             </div>
         </div>
 
+        <!-- Полноэкранный мобильный поиск -->
         <div class="mobile-search-container" id="mobileSearchContainer">
             <div class="mobile-search-header">
                 <button class="close-search-btn" onclick="closeMobileSearch()">
@@ -1303,6 +1372,7 @@
             </div>
         </div>
 
+        <!-- Мобильное меню профиля -->
         <div class="mobile-profile-menu" id="mobileProfileMenu">
             <div class="mobile-profile-item" onclick="filterMyAds()">
                 <i class="fas fa-box"></i>
@@ -1419,6 +1489,7 @@
         </main>
     </div>
 
+    <!-- Мобильная навигация -->
     <nav class="mobile-nav">
         <button class="nav-item active" onclick="goHome()">
             <i class="fas fa-home"></i>
@@ -1445,6 +1516,7 @@
         </button>
     </nav>
 
+    <!-- Плавающие кнопки -->
     <div class="fab-container">
         <button class="fab-btn fab-btn--secondary" onclick="openAddModal()">
             <i class="fas fa-plus"></i>
@@ -1459,7 +1531,7 @@
         <div class="modal-box" style="text-align:center;">
             <div class="close-btn" onclick="closeModal('authModal')"><i class="fas fa-times"></i></div>
             <h2 style="margin-bottom:20px;" data-lang="login">Вход</h2>
-            <button onclick="handleGoogleLogin()" style="width:100%; padding:12px; border:1px solid var(--border); background:var(--bg-primary); margin-bottom:10px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:10px; color:var(--text-primary);">
+            <button onclick="handleGoogleLogin()" style="width:100%; padding:14px; border:1px solid var(--border); background:var(--bg-primary); margin-bottom:10px; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:10px; color:var(--text-primary); min-height:44px;">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google
             </button>
             <input type="email" id="emailInput" class="input-field" data-lang-placeholder="email" >
@@ -1472,7 +1544,7 @@
         <div class="modal-box">
             <div class="close-btn" onclick="closeModal('addModal')"><i class="fas fa-times"></i></div>
             <h2 style="margin-bottom:20px;" data-lang="new_ad">Новое объявление</h2>
-            <div class="photo-slots" id="addSlots" style="display: flex; gap: 5px; margin-bottom: 10px;"></div>
+            <div class="photo-slots" id="addSlots" style="display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap;"></div>
             <input type="file" id="addFile0" hidden onchange="handleFile(0, 'add')"><input type="file" id="addFile1" hidden onchange="handleFile(1, 'add')"><input type="file" id="addFile2" hidden onchange="handleFile(2, 'add')"><input type="file" id="addFile3" hidden onchange="handleFile(3, 'add')"><input type="file" id="addFile4" hidden onchange="handleFile(4, 'add')">
             <input type="text" id="newTitle" class="input-field" data-lang-placeholder="title">
             <input type="number" id="newPrice" class="input-field" data-lang-placeholder="price">
@@ -1504,7 +1576,7 @@
             <div class="close-btn" onclick="closeModal('editModal')"><i class="fas fa-times"></i></div>
             <h2 data-lang="edit">Редактировать</h2>
             <input type="hidden" id="editId">
-            <div class="photo-slots" id="editSlots" style="display: flex; gap: 5px; margin-bottom: 10px;"></div>
+            <div class="photo-slots" id="editSlots" style="display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap;"></div>
             <input type="file" id="editFile0" hidden onchange="handleFile(0, 'edit')"><input type="file" id="editFile1" hidden onchange="handleFile(1, 'edit')"><input type="file" id="editFile2" hidden onchange="handleFile(2, 'edit')"><input type="file" id="editFile3" hidden onchange="handleFile(3, 'edit')"><input type="file" id="editFile4" hidden onchange="handleFile(4, 'edit')">
             <input type="text" id="editTitle" class="input-field" data-lang-placeholder="title">
             <input type="number" id="editPrice" class="input-field" data-lang-placeholder="price">
@@ -1538,8 +1610,8 @@
             <div class="settings-row" style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
                 <div data-lang="theme">Тема</div>
                 <div style="display:flex; gap:5px;">
-                    <button class="opt-btn active" id="themeLight" onclick="setTheme('light')" style="padding: 8px 15px; border: 2px solid var(--border); background: var(--bg-primary); cursor: pointer; color: var(--text-primary); border-radius: 5px;">☀️</button>
-                    <button class="opt-btn" id="themeDark" onclick="setTheme('dark')" style="padding: 8px 15px; border: 2px solid var(--border); background: var(--bg-primary); cursor: pointer; color: var(--text-primary); border-radius: 5px;">🌙</button>
+                    <button class="opt-btn active" id="themeLight" onclick="setTheme('light')" style="padding: 10px 15px; border: 2px solid var(--border); background: var(--bg-primary); cursor: pointer; color: var(--text-primary); border-radius: 5px; min-height:44px;">☀️</button>
+                    <button class="opt-btn" id="themeDark" onclick="setTheme('dark')" style="padding: 10px 15px; border: 2px solid var(--border); background: var(--bg-primary); cursor: pointer; color: var(--text-primary); border-radius: 5px; min-height:44px;">🌙</button>
                 </div>
             </div>
             <div class="settings-row" style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
@@ -1554,6 +1626,7 @@
     </div>
 
     <script type="module">
+        // Импорты Firebase остаются без изменений
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc, arrayUnion, arrayRemove, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -1576,7 +1649,6 @@
         
         let currentUser=null, products=[], favorites=[], filterMode='all', currentCatFilter='all', photos=[null,null,null,null,null], currentProduct=null;
         let currentStatusFilter = 'active';
-        let priceMinFilter = '', priceMaxFilter = '', dormFilter = '';
         const catNames={tech:'Электроника',home:'Дом',study:'Учеба',clothes:'Одежда',other:'Разное'};
 
         // СИСТЕМА ЯЗЫКОВ
@@ -2354,7 +2426,7 @@
             renderProducts();
         }
 
-        // ОБНОВЛЕННАЯ ФУНКЦИЯ ПРИМЕНЕНИЯ ФИЛЬТРОВ
+        // ФУНКЦИЯ ПРИМЕНЕНИЯ ФИЛЬТРОВ
         window.applyFilters = function() {
             renderProducts();
         }
