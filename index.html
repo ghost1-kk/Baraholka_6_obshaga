@@ -1331,6 +1331,41 @@
         .btn-cancel:hover {
             background: var(--bg-tertiary);
         }
+
+        /* Кастомные алерты */
+        .custom-alert {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 15px 20px;
+            box-shadow: var(--shadow-lg);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .custom-alert.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .custom-alert.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .custom-alert.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .custom-alert.info {
+            border-left: 4px solid var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -1639,13 +1674,8 @@
             <div class="close-btn" onclick="closeModerationModal()"><i class="fas fa-times"></i></div>
             <h2 style="margin-bottom:20px; text-align: center;">Проверка объявления</h2>
             
-            <div class="auto-rejected-notice" id="moderationMessage">
-                <i class="fas fa-exclamation-triangle"></i> 
-                Обнаружены запрещенные слова: хуй, хуй
-            </div>
-            
             <div style="text-align: center; margin: 20px 0;">
-                <p style="margin-bottom: 15px;">Объявление будет отправлено на проверку модератору.</p>
+                <p style="margin-bottom: 15px; font-size: 16px;">Объявление будет отправлено на проверку модератору.</p>
                 <p style="font-size: 14px; color: var(--text-muted);">Вы можете продолжить редактирование или отправить на модерацию.</p>
             </div>
             
@@ -1759,8 +1789,29 @@
             'оружие', 'пистолет', 'автомат', 'винтовка', 'огнестрел', 'gun', 'pistol', 'rifle',
             'мошенник', 'обман', 'развод', 'скам', 'scam', 'fraud',
             // Другие запрещенные слова
-            'халява', 'бесплатно', 'даром', 'free', 'халяв', 'обсужу', 'обсудим'
+            'халява', 'бесплатно', 'даром', 'free', 'халяв', 'обсужу', 'обсудим',
+            // Сексуальные словосочетания
+            'сосет', 'хорошо сосет', 'заглатывает', 'лижет', 'глотает', 'отсасывает',
+            'минет', 'куни', 'анальный', 'секс', 'трахает', 'выебывается', 'выебываться',
+            'кончает', 'сперма', 'член', 'писька', 'вагина', 'грудь', 'сиськи', 'попа', 'жопа',
+            'ебет', 'выебет', 'выебу', 'выебешь', 'выебать', 'выебался', 'выебалась'
         ];
+
+        // ФУНКЦИЯ ПОКАЗА КАСТОМНОГО АЛЕРТА
+        function showAlert(message, type = 'info') {
+            const alert = document.createElement('div');
+            alert.className = `custom-alert ${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation' : 'info'}-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 4000);
+        }
 
         // ФУНКЦИЯ ПРОВЕРКИ НА ЗАПРЕЩЕННЫЕ СЛОВА
         function checkForbiddenWords(textElement, fieldType) {
@@ -1817,20 +1868,6 @@
         function showModerationModal(result) {
             moderationResult = result;
             const modal = document.getElementById('moderationModal');
-            const messageElement = document.getElementById('moderationMessage');
-            
-            if (result.shouldReject) {
-                messageElement.innerHTML = `
-                    <i class="fas fa-exclamation-triangle"></i> 
-                    Обнаружены запрещенные слова: ${result.foundWords.join(', ')}
-                `;
-            } else {
-                messageElement.innerHTML = `
-                    <i class="fas fa-info-circle"></i> 
-                    Объявление отправляется на проверку модератору
-                `;
-                messageElement.style.background = 'var(--warning)';
-            }
             
             modal.style.display = 'flex';
         }
@@ -1851,7 +1888,7 @@
         // ОТПРАВИТЬ НА МОДЕРАЦИЮ
         async function sendToModeration() {
             if (!pendingProductData) {
-                alert('Ошибка: данные объявления не найдены');
+                showAlert('Ошибка: данные объявления не найдены', 'error');
                 return;
             }
 
@@ -1888,12 +1925,12 @@
                     autoRejected: moderationResult && moderationResult.shouldReject
                 });
                 
-                alert(message);
+                showAlert(message, status === 'rejected' ? 'error' : 'success');
                 closeModerationModal();
                 closeModal('addModal');
                 loadProducts();
             } catch(e) {
-                alert("Ошибка при создании объявления: " + e.message);
+                showAlert("Ошибка при создании объявления: " + e.message, 'error');
             }
         }
 
@@ -2162,8 +2199,8 @@
         window.handleFile=async(i,m)=>{const f=document.getElementById(`${m}File${i}`).files[0];if(!f)return;const b=await compressImage(f);photos[i]=b;const s=document.getElementById(`${m}Slot${i}`);s.style.backgroundImage=`url('${b}')`;s.classList.add('has');}
         window.clearSlot=(e,m,i)=>{e.stopPropagation();photos[i]=null;const s=document.getElementById(`${m}Slot${i}`);s.style.backgroundImage='';s.classList.remove('has');document.getElementById(`${m}File${i}`).value='';}
         
-        window.handleGoogleLogin=async()=>{try{await signInWithPopup(auth,provider);closeModal('authModal');}catch(e){alert(e.message);}}
-        window.handleEmailAuth=async()=>{const e=document.getElementById('emailInput').value, p=document.getElementById('passInput').value; try{await signInWithEmailAndPassword(auth,e,p);closeModal('authModal');}catch(er){try{await createUserWithEmailAndPassword(auth,e,p);closeModal('authModal');}catch(err){alert(err.message);}}}
+        window.handleGoogleLogin=async()=>{try{await signInWithPopup(auth,provider);closeModal('authModal');showAlert('Успешный вход через Google!', 'success');}catch(e){showAlert('Ошибка входа: ' + e.message, 'error');}}
+        window.handleEmailAuth=async()=>{const e=document.getElementById('emailInput').value, p=document.getElementById('passInput').value; try{await signInWithEmailAndPassword(auth,e,p);closeModal('authModal');showAlert('Успешный вход!', 'success');}catch(er){try{await createUserWithEmailAndPassword(auth,e,p);closeModal('authModal');showAlert('Аккаунт создан и выполнен вход!', 'success');}catch(err){showAlert('Ошибка: ' + err.message, 'error');}}}
         
         onAuthStateChanged(auth, async (u) => {
             currentUser = u;
@@ -2235,13 +2272,13 @@
             loadProducts();
         });
 
-        window.logout=()=>{signOut(auth);toggleMenu();closeMobileProfileMenu();}
+        window.logout=()=>{signOut(auth);toggleMenu();closeMobileProfileMenu();showAlert('Вы вышли из аккаунта', 'info');}
 
         // ОБНОВЛЕННАЯ ФУНКЦИЯ СОЗДАНИЯ ПРОДУКТА С СИСТЕМОЙ МОДЕРАЦИИ
         window.createProduct=async()=>{
             if(!currentUser)return openAuthModal();
             const title=document.getElementById('newTitle').value, price=document.getElementById('newPrice').value, desc=document.getElementById('newDesc').value, contact=document.getElementById('newContact').value, cat=document.getElementById('newCat').value, dorm=document.getElementById('newDorm').value;
-            if(!title||!price||!contact)return alert("Заполни обязательные поля!");
+            if(!title||!price||!contact)return showAlert("Заполни обязательные поля!", 'warning');
             
             // Сохраняем данные объявления во временную переменную
             pendingProductData = {
@@ -2395,21 +2432,13 @@
             productModal.className = 'modal-overlay';
             productModal.style.display = 'flex';
             
-            // Добавляем информацию о модерации если есть
+            // Добавляем информацию о модерации если есть (только в отклоненных)
             let moderationInfo = '';
-            if (currentProduct.autoRejected) {
+            if (currentProduct.status === 'rejected' && currentProduct.moderationReason) {
                 moderationInfo = `
                     <div class="auto-rejected-notice">
-                        <i class="fas fa-robot"></i> 
-                        Это объявление было автоматически отклонено системой модерации.
-                        ${currentProduct.moderationReason ? `<br><small>Причина: ${currentProduct.moderationReason}</small>` : ''}
-                    </div>
-                `;
-            } else if (currentProduct.status === 'rejected' && currentProduct.moderationReason) {
-                moderationInfo = `
-                    <div class="auto-rejected-notice">
-                        <i class="fas fa-user-shield"></i> 
-                        Это объявление было отклонено модератором.
+                        <i class="fas fa-${currentProduct.autoRejected ? 'robot' : 'user-shield'}"></i> 
+                        ${currentProduct.autoRejected ? 'Это объявление было автоматически отклонено системой модерации.' : 'Это объявление было отклонено модератором.'}
                         <br><small>Причина: ${currentProduct.moderationReason}</small>
                     </div>
                 `;
@@ -2511,9 +2540,9 @@
                 
                 document.querySelector('.modal-overlay').remove();
                 loadProducts();
-                alert(action === 'approve' ? 'Товар одобрен!' : 'Товар отклонен!');
+                showAlert(action === 'approve' ? 'Товар одобрен!' : 'Товар отклонен!', 'success');
             } catch (error) {
-                alert('Ошибка: ' + error.message);
+                showAlert('Ошибка: ' + error.message, 'error');
             }
         }
 
@@ -2567,7 +2596,7 @@
             const dorm=document.getElementById('editDorm').value;
             
             if(!title||!price||!contact){
-                alert("Заполните обязательные поля!");
+                showAlert("Заполните обязательные поля!", 'warning');
                 return;
             }
             
@@ -2592,14 +2621,15 @@
                     moderationReason: moderationResult.shouldReject ? moderationResult.reason : '',
                     autoRejected: moderationResult.shouldReject
                 });
-                alert(moderationResult.shouldReject ? 
+                showAlert(moderationResult.shouldReject ? 
                     "Объявление отклонено автоматически при редактировании!" : 
-                    "Изменения сохранены! Объявление отправлено на модерацию."
+                    "Изменения сохранены! Объявление отправлено на модерацию.",
+                    moderationResult.shouldReject ? 'error' : 'success'
                 );
                 closeModal('editModal');
                 loadProducts();
             }catch(error){
-                alert("Ошибка: "+error.message);
+                showAlert("Ошибка: "+error.message, 'error');
             }
         }
 
@@ -2696,9 +2726,11 @@
             if(favorites.includes(id)){
                 await updateDoc(ref,{favorites:arrayRemove(id)});
                 favorites=favorites.filter(f=>f!==id);
+                showAlert('Удалено из избранного', 'info');
             }else{
                 await updateDoc(ref,{favorites:arrayUnion(id)});
                 favorites.push(id);
+                showAlert('Добавлено в избранное', 'success');
             }
             renderProducts();
         }
@@ -2708,6 +2740,7 @@
             if(confirm("Удалить объявление?")){
                 await deleteDoc(doc(db,"products",id));
                 loadProducts();
+                showAlert('Объявление удалено', 'success');
             }
         }
 
@@ -2716,6 +2749,7 @@
             if(!confirm("Добавить в TOP?"))return;
             await updateDoc(doc(db,"products",id),{isPromoted:!s});
             loadProducts();
+            showAlert(s ? 'Убрано из TOP' : 'Добавлено в TOP', 'success');
         }
 
         window.sortProducts = function(sortType) {
