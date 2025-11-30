@@ -1740,7 +1740,7 @@
             <div class="success-title">Объявление готово!</div>
             <div class="success-message">
                 Ваше объявление успешно создано и отправлено на проверку.<br>
-                Оно будет автоматически опубликовано после быстрой проверки.
+                Оно будет автоматически опубликовано через 5 минут после проверки.
             </div>
             <button class="btn-submit" onclick="closeModal('successModal')">
                 Понятно
@@ -1891,191 +1891,6 @@
             } catch (error) {
                 console.error('Ошибка добавления в очередь модерации:', error);
             }
-        }
-
-        // ФУНКЦИЯ ПРОВЕРКИ ОЧЕРЕДИ МОДЕРАЦИИ
-        async function checkModerationQueue() {
-            try {
-                const now = new Date();
-                const q = query(
-                    collection(db, "moderationQueue"),
-                    where("processed", "==", false),
-                    where("moderationTime", "<=", now)
-                );
-                
-                const querySnapshot = await getDocs(q);
-                
-                for (const docSnap of querySnapshot.docs) {
-                    const task = docSnap.data();
-                    await processModerationTask(docSnap.id, task);
-                }
-            } catch (error) {
-                console.error('Ошибка проверки очереди модерации:', error);
-            }
-        }
-
-        // ФУНКЦИЯ ОБРАБОТКИ ЗАДАЧИ МОДЕРАЦИИ
-        async function processModerationTask(taskId, task) {
-            try {
-                const productRef = doc(db, "products", task.productId);
-                const productSnap = await getDoc(productRef);
-                
-                if (!productSnap.exists()) {
-                    // Если объявление удалено, помечаем задачу как обработанную
-                    await updateDoc(doc(db, "moderationQueue", taskId), {
-                        processed: true,
-                        processedAt: serverTimestamp(),
-                        result: 'product_not_found'
-                    });
-                    return;
-                }
-                
-                const productData = productSnap.data();
-                
-                // Проверяем текущий статус (если еще не изменен вручную)
-                if (productData.status === 'pending') {
-                    const autoModeration = autoModerateProduct(productData.title, productData.desc);
-                    
-                    if (autoModeration.shouldReject) {
-                        // Авто-отклонение если есть запрещенные слова
-                        await updateDoc(productRef, {
-                            status: 'rejected',
-                            moderationReason: `Объявление не прошло автоматическую проверку`,
-                            autoRejected: true
-                        });
-                        console.log(`Объявление "${productData.title}" автоматически отклонено`);
-                    } else {
-                        // Авто-одобрение если нет запрещенных слов
-                        await updateDoc(productRef, {
-                            status: 'active',
-                            moderationReason: 'Автоматически проверено и одобрено'
-                        });
-                        console.log(`Объявление "${productData.title}" автоматически одобрено`);
-                    }
-                }
-                
-                // Помечаем задачу как обработанную
-                await updateDoc(doc(db, "moderationQueue", taskId), {
-                    processed: true,
-                    processedAt: serverTimestamp(),
-                    result: 'processed'
-                });
-                
-                // Обновляем список на фронтенде
-                loadProducts();
-                
-            } catch (error) {
-                console.error('Ошибка обработки задачи модерации:', error);
-                // Помечаем задачу как ошибочную
-                await updateDoc(doc(db, "moderationQueue", taskId), {
-                    processed: true,
-                    processedAt: serverTimestamp(),
-                    result: 'error',
-                    error: error.message
-                });
-            }
-        }
-
-        // ЗАПУСК ПЕРИОДИЧЕСКОЙ ПРОВЕРКИ ОЧЕРЕДИ
-        function startModerationChecker() {
-            // Проверяем каждую минуту
-            setInterval(checkModerationQueue, 60 * 1000);
-            
-            // Также проверяем сразу при загрузке
-            checkModerationQueue();
-            
-            console.log('Система автоматической модерации запущена');
-        }
-
-        // ========== ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ HTML ОБРАБОТЧИКОВ ==========
-
-        window.checkForbiddenWords = function(textElement, fieldType) {
-            const text = textElement.value.toLowerCase();
-            const foundWords = [];
-            
-            forbiddenWords.forEach(word => {
-                if (text.includes(word.toLowerCase())) {
-                    foundWords.push(word);
-                }
-            });
-            
-            if (foundWords.length > 0) {
-                textElement.style.borderColor = 'var(--danger)';
-                textElement.style.boxShadow = '0 0 0 2px rgba(220, 20, 60, 0.2)';
-                showAlert(`Пожалуйста, проверьте текст объявления`, 'warning');
-                return true;
-            } else {
-                textElement.style.borderColor = '';
-                textElement.style.boxShadow = '';
-                return false;
-            }
-        }
-
-        window.sendToModeration = async function() {
-            if (!pendingProductData) {
-                showAlert('Ошибка: данные объявления не найдены', 'error');
-                return;
-            }
-
-            const { title, price, desc, contact, cat, dorm } = pendingProductData;
-            
-            try {
-                let status = 'pending';
-                let message = "Объявление успешно создано и отправлено на проверку!";
-                
-                // Если админ - сразу публикуем
-                if (currentUser && currentUser.email === ADMIN_EMAIL) {
-                    status = 'active';
-                    message = "Объявление опубликовано!";
-                }
-
-                // СОЗДАЕМ ДОКУМЕНТ В БАЗЕ
-                const docRef = await addDoc(collection(db,"products"),{
-                    title,
-                    price: parseInt(price),
-                    desc,
-                    contact,
-                    cat,
-                    dorm,
-                    imgs: photos.filter(p => p),
-                    userId: currentUser.uid,
-                    date: Date.now(),
-                    status,
-                    isPromoted: false,
-                    moderationReason: '',
-                    autoRejected: false
-                });
-                
-                // ДОБАВЛЯЕМ В ОЧЕРЕДЬ АВТОМАТИЧЕСКОЙ МОДЕРАЦИИ (только если не админ)
-                if (status === 'pending') {
-                    await addToModerationQueue(docRef.id, {
-                        title, price, desc, contact, cat, dorm
-                    });
-                }
-                
-                // ПОКАЗЫВАЕМ МОДАЛЬНОЕ ОКНО УСПЕХА
-                document.getElementById('successModal').style.display = 'flex';
-                closeModal('addModal');
-                loadProducts();
-            } catch(e) {
-                showAlert("Ошибка при создании объявления: " + e.message, 'error');
-            }
-        }
-
-        // ФУНКЦИЯ ПОКАЗА КАСТОМНОГО АЛЕРТА
-        function showAlert(message, type = 'info') {
-            const alert = document.createElement('div');
-            alert.className = `custom-alert ${type}`;
-            alert.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation' : 'info'}-circle"></i>
-                <span>${message}</span>
-            `;
-            
-            document.body.appendChild(alert);
-            
-            setTimeout(() => {
-                alert.remove();
-            }, 4000);
         }
 
         // ФУНКЦИЯ АВТО-МОДЕРАЦИИ
@@ -2466,6 +2281,95 @@
             
             // ЕСЛИ ВСЕ ХОРОШО - ОТПРАВЛЯЕМ НА МОДЕРАЦИЮ
             await sendToModeration();
+        }
+
+        // ФУНКЦИЯ ПОКАЗА КАСТОМНОГО АЛЕРТА
+        function showAlert(message, type = 'info') {
+            const alert = document.createElement('div');
+            alert.className = `custom-alert ${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation' : 'info'}-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 4000);
+        }
+
+        window.sendToModeration = async function() {
+            if (!pendingProductData) {
+                showAlert('Ошибка: данные объявления не найдены', 'error');
+                return;
+            }
+
+            const { title, price, desc, contact, cat, dorm } = pendingProductData;
+            
+            try {
+                let status = 'pending';
+                let message = "Объявление успешно создано и отправлено на проверку!";
+                
+                // Если админ - сразу публикуем
+                if (currentUser && currentUser.email === ADMIN_EMAIL) {
+                    status = 'active';
+                    message = "Объявление опубликовано!";
+                }
+
+                // СОЗДАЕМ ДОКУМЕНТ В БАЗЕ
+                const docRef = await addDoc(collection(db,"products"),{
+                    title,
+                    price: parseInt(price),
+                    desc,
+                    contact,
+                    cat,
+                    dorm,
+                    imgs: photos.filter(p => p),
+                    userId: currentUser.uid,
+                    date: Date.now(),
+                    status,
+                    isPromoted: false,
+                    moderationReason: '',
+                    autoRejected: false
+                });
+                
+                // ДОБАВЛЯЕМ В ОЧЕРЕДЬ АВТОМАТИЧЕСКОЙ МОДЕРАЦИИ (только если не админ)
+                if (status === 'pending') {
+                    await addToModerationQueue(docRef.id, {
+                        title, price, desc, contact, cat, dorm
+                    });
+                }
+                
+                // ПОКАЗЫВАЕМ МОДАЛЬНОЕ ОКНО УСПЕХА
+                document.getElementById('successModal').style.display = 'flex';
+                closeModal('addModal');
+                loadProducts();
+            } catch(e) {
+                showAlert("Ошибка при создании объявления: " + e.message, 'error');
+            }
+        }
+
+        window.checkForbiddenWords = function(textElement, fieldType) {
+            const text = textElement.value.toLowerCase();
+            const foundWords = [];
+            
+            forbiddenWords.forEach(word => {
+                if (text.includes(word.toLowerCase())) {
+                    foundWords.push(word);
+                }
+            });
+            
+            if (foundWords.length > 0) {
+                textElement.style.borderColor = 'var(--danger)';
+                textElement.style.boxShadow = '0 0 0 2px rgba(220, 20, 60, 0.2)';
+                showAlert(`Пожалуйста, проверьте текст объявления`, 'warning');
+                return true;
+            } else {
+                textElement.style.borderColor = '';
+                textElement.style.boxShadow = '';
+                return false;
+            }
         }
 
         // ОБНОВЛЕННАЯ ФУНКЦИЯ ФИЛЬТРАЦИИ
@@ -2993,9 +2897,6 @@
             
             // Обработчик изменения размера окна
             window.addEventListener('resize', initMobileSearch);
-            
-            // ЗАПУСК СИСТЕМЫ АВТОМАТИЧЕСКОЙ МОДЕРАЦИИ
-            startModerationChecker();
             
             updateLanguage();
             loadProducts();
