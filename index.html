@@ -1395,6 +1395,37 @@
             font-size: 24px;
             margin-bottom: 10px;
         }
+
+        .success-modal {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 32px;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+
+        .success-message {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -1667,9 +1698,9 @@
             <h2 style="margin-bottom:20px;" data-lang="new_ad">Новое объявление</h2>
             
             <div class="moderation-info">
-                <i class="fas fa-robot"></i>
-                <div style="font-weight: 600; margin-bottom: 5px;">Автоматическая модерация</div>
-                <div style="font-size: 14px; color: var(--text-muted);">Ваше объявление будет автоматически проверено через 5 минут</div>
+                <i class="fas fa-shield-alt"></i>
+                <div style="font-weight: 600; margin-bottom: 5px;">Автоматическая проверка</div>
+                <div style="font-size: 14px; color: var(--text-muted);">Все объявления проходят автоматическую проверку перед публикацией</div>
             </div>
             
             <div class="photo-slots" id="addSlots" style="display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap;"></div>
@@ -1699,24 +1730,21 @@
         </div>
     </div>
 
-    <!-- Модальное окно модерации -->
-    <div id="moderationModal" class="modal-overlay">
-        <div class="modal-box moderation-modal">
-            <div class="close-btn" onclick="closeModerationModal()"><i class="fas fa-times"></i></div>
-            <h2 style="margin-bottom:20px; text-align: center;">Проверка объявления</h2>
-            
-            <div id="moderationContent" style="text-align: center; margin: 20px 0;">
-                <!-- Контент будет динамически заполняться -->
+    <!-- Модальное окно успешной публикации -->
+    <div id="successModal" class="modal-overlay">
+        <div class="modal-box success-modal">
+            <div class="close-btn" onclick="closeModal('successModal')"><i class="fas fa-times"></i></div>
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
             </div>
-            
-            <div class="moderation-buttons">
-                <button class="btn-cancel" onclick="continueEditing()">
-                    Продолжить редактирование
-                </button>
-                <button class="btn-continue" onclick="sendToModeration()">
-                    Отправить на модерацию
-                </button>
+            <div class="success-title">Объявление готово!</div>
+            <div class="success-message">
+                Ваше объявление успешно создано и отправлено на проверку.<br>
+                Оно будет автоматически опубликовано после быстрой проверки.
             </div>
+            <button class="btn-submit" onclick="closeModal('successModal')">
+                Понятно
+            </button>
         </div>
     </div>
 
@@ -1818,7 +1846,6 @@
 
         // Переменные для временного хранения данных объявления
         let pendingProductData = null;
-        let moderationResult = null;
 
         // СИСТЕМА АВТО-МОДЕРАЦИИ - ЗАПРЕЩЕННЫЕ СЛОВА
         const forbiddenWords = [
@@ -1913,7 +1940,7 @@
                         // Авто-отклонение если есть запрещенные слова
                         await updateDoc(productRef, {
                             status: 'rejected',
-                            moderationReason: `Автоматически отклонено через 5 минут. Причина: ${autoModeration.reason}`,
+                            moderationReason: `Объявление не прошло автоматическую проверку`,
                             autoRejected: true
                         });
                         console.log(`Объявление "${productData.title}" автоматически отклонено`);
@@ -1921,7 +1948,7 @@
                         // Авто-одобрение если нет запрещенных слов
                         await updateDoc(productRef, {
                             status: 'active',
-                            moderationReason: 'Автоматически одобрено через 5 минут'
+                            moderationReason: 'Автоматически проверено и одобрено'
                         });
                         console.log(`Объявление "${productData.title}" автоматически одобрено`);
                     }
@@ -1975,7 +2002,7 @@
             if (foundWords.length > 0) {
                 textElement.style.borderColor = 'var(--danger)';
                 textElement.style.boxShadow = '0 0 0 2px rgba(220, 20, 60, 0.2)';
-                showAlert(`Обнаружены запрещенные слова: ${foundWords.join(', ')}`, 'warning');
+                showAlert(`Пожалуйста, проверьте текст объявления`, 'warning');
                 return true;
             } else {
                 textElement.style.borderColor = '';
@@ -1994,7 +2021,7 @@
             
             try {
                 let status = 'pending';
-                let message = "Объявление отправлено на модерацию! Оно будет автоматически проверено через 5 минут.";
+                let message = "Объявление успешно создано и отправлено на проверку!";
                 
                 // Если админ - сразу публикуем
                 if (currentUser && currentUser.email === ADMIN_EMAIL) {
@@ -2026,23 +2053,13 @@
                     });
                 }
                 
-                showAlert(message, 'success');
-                closeModerationModal();
+                // ПОКАЗЫВАЕМ МОДАЛЬНОЕ ОКНО УСПЕХА
+                document.getElementById('successModal').style.display = 'flex';
                 closeModal('addModal');
                 loadProducts();
             } catch(e) {
                 showAlert("Ошибка при создании объявления: " + e.message, 'error');
             }
-        }
-
-        window.closeModerationModal = function() {
-            document.getElementById('moderationModal').style.display = 'none';
-            moderationResult = null;
-            pendingProductData = null;
-        }
-
-        window.continueEditing = function() {
-            closeModerationModal();
         }
 
         // ФУНКЦИЯ ПОКАЗА КАСТОМНОГО АЛЕРТА
@@ -2075,7 +2092,7 @@
             if (foundWords.length > 0) {
                 return {
                     shouldReject: true,
-                    reason: `Обнаружены запрещенные слова: ${foundWords.join(', ')}`,
+                    reason: `Обнаружены запрещенные слова`,
                     foundWords: foundWords
                 };
             }
@@ -2085,43 +2102,6 @@
                 reason: '',
                 foundWords: []
             };
-        }
-
-        // ПОКАЗАТЬ МОДАЛЬНОЕ ОКНО МОДЕРАЦИИ
-        function showModerationModal(result) {
-            moderationResult = result;
-            const modal = document.getElementById('moderationModal');
-            const content = document.getElementById('moderationContent');
-            
-            if (result.shouldReject) {
-                content.innerHTML = `
-                    <div style="color: var(--danger); margin-bottom: 15px;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 15px;"></i>
-                        <p style="font-size: 16px; font-weight: 600;">Обнаружены запрещенные слова!</p>
-                        <p style="font-size: 14px; color: var(--text-muted);">Ваше объявление будет автоматически отклонено через 5 минут.</p>
-                        <div style="background: var(--bg-secondary); padding: 10px; border-radius: var(--radius-md); margin-top: 10px;">
-                            <strong>Найдены слова:</strong> ${result.foundWords.join(', ')}
-                        </div>
-                    </div>
-                `;
-            } else {
-                content.innerHTML = `
-                    <div style="color: var(--success); margin-bottom: 15px;">
-                        <i class="fas fa-robot" style="font-size: 48px; margin-bottom: 15px;"></i>
-                        <p style="font-size: 16px; font-weight: 600;">Объявление отправлено на автоматическую модерацию</p>
-                        <p style="font-size: 14px; color: var(--text-muted);">
-                            Ваше объявление будет автоматически проверено через 5 минут.<br>
-                            Если нарушений не найдено, оно будет опубликовано автоматически.
-                        </p>
-                        <div class="moderation-timer">
-                            <i class="fas fa-clock"></i>
-                            Автоматическая проверка через 5 минут
-                        </div>
-                    </div>
-                `;
-            }
-            
-            modal.style.display = 'flex';
         }
 
         // СИСТЕМА ЯЗЫКОВ
@@ -2478,8 +2458,14 @@
             // ПРОВЕРКА НА ЗАПРЕЩЕННЫЕ СЛОВА
             const moderationResult = autoModerateProduct(title, desc);
             
-            // ПОКАЗЫВАЕМ МОДАЛЬНОЕ ОКНО МОДЕРАЦИИ ВМЕСТО АВТОМАТИЧЕСКОГО ЗАКРЫТИЯ
-            showModerationModal(moderationResult);
+            // ЕСЛИ ЕСТЬ ЗАПРЕЩЕННЫЕ СЛОВА - ПРЕДУПРЕЖДАЕМ
+            if (moderationResult.shouldReject) {
+                showAlert("Пожалуйста, проверьте текст объявления", 'warning');
+                return;
+            }
+            
+            // ЕСЛИ ВСЕ ХОРОШО - ОТПРАВЛЯЕМ НА МОДЕРАЦИЮ
+            await sendToModeration();
         }
 
         // ОБНОВЛЕННАЯ ФУНКЦИЯ ФИЛЬТРАЦИИ
@@ -2818,8 +2804,8 @@
                 }
                 
                 showAlert(moderationResult.shouldReject ? 
-                    "Объявление отклонено автоматически при редактировании!" : 
-                    "Изменения сохранены! Объявление отправлено на модерацию.",
+                    "Объявление не прошло проверку при редактировании!" : 
+                    "Изменения сохранены! Объявление отправлено на проверку.",
                     moderationResult.shouldReject ? 'error' : 'success'
                 );
                 closeModal('editModal');
