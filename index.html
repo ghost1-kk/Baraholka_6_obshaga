@@ -1797,6 +1797,85 @@
             'ебет', 'выебет', 'выебу', 'выебешь', 'выебать', 'выебался', 'выебалась'
         ];
 
+        // ========== ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ HTML ОБРАБОТЧИКОВ ==========
+
+        window.checkForbiddenWords = function(textElement, fieldType) {
+            const text = textElement.value.toLowerCase();
+            const foundWords = [];
+            
+            forbiddenWords.forEach(word => {
+                if (text.includes(word.toLowerCase())) {
+                    foundWords.push(word);
+                }
+            });
+            
+            if (foundWords.length > 0) {
+                textElement.style.borderColor = 'var(--danger)';
+                textElement.style.boxShadow = '0 0 0 2px rgba(220, 20, 60, 0.2)';
+                showAlert(`Обнаружены запрещенные слова: ${foundWords.join(', ')}`, 'warning');
+                return true;
+            } else {
+                textElement.style.borderColor = '';
+                textElement.style.boxShadow = '';
+                return false;
+            }
+        }
+
+        window.sendToModeration = async function() {
+            if (!pendingProductData) {
+                showAlert('Ошибка: данные объявления не найдены', 'error');
+                return;
+            }
+
+            const { title, price, desc, contact, cat, dorm } = pendingProductData;
+            
+            try {
+                let status = 'pending';
+                let message = "Объявление отправлено на модерацию!";
+                
+                if (moderationResult && moderationResult.shouldReject) {
+                    status = 'rejected';
+                    message = `Объявление отклонено автоматически. Причина: ${moderationResult.reason}`;
+                } else if (currentUser && currentUser.email === ADMIN_EMAIL) {
+                    status = 'active';
+                    message = "Объявление опубликовано!";
+                }
+
+                await addDoc(collection(db,"products"),{
+                    title,
+                    price,
+                    desc,
+                    contact,
+                    cat,
+                    dorm,
+                    imgs: photos.filter(p => p),
+                    userId: currentUser.uid,
+                    date: Date.now(),
+                    status,
+                    isPromoted: false,
+                    moderationReason: moderationResult && moderationResult.shouldReject ? moderationResult.reason : '',
+                    autoRejected: moderationResult && moderationResult.shouldReject
+                });
+                
+                showAlert(message, status === 'rejected' ? 'error' : 'success');
+                closeModerationModal();
+                closeModal('addModal');
+                loadProducts();
+            } catch(e) {
+                showAlert("Ошибка при создании объявления: " + e.message, 'error');
+            }
+        }
+
+        window.closeModerationModal = function() {
+            document.getElementById('moderationModal').style.display = 'none';
+            moderationResult = null;
+            pendingProductData = null;
+        }
+
+        window.continueEditing = function() {
+            closeModerationModal();
+        }
+
         // ФУНКЦИЯ ПОКАЗА КАСТОМНОГО АЛЕРТА
         function showAlert(message, type = 'info') {
             const alert = document.createElement('div');
@@ -1811,31 +1890,6 @@
             setTimeout(() => {
                 alert.remove();
             }, 4000);
-        }
-
-        // ФУНКЦИЯ ПРОВЕРКИ НА ЗАПРЕЩЕННЫЕ СЛОВА
-        function checkForbiddenWords(textElement, fieldType) {
-            const text = textElement.value.toLowerCase();
-            const foundWords = [];
-            
-            forbiddenWords.forEach(word => {
-                if (text.includes(word.toLowerCase())) {
-                    foundWords.push(word);
-                }
-            });
-            
-            if (foundWords.length > 0) {
-                // Подсвечиваем поле красным
-                textElement.style.borderColor = 'var(--danger)';
-                textElement.style.boxShadow = '0 0 0 2px rgba(220, 20, 60, 0.2)';
-                
-                return true;
-            } else {
-                // Убираем подсветку
-                textElement.style.borderColor = '';
-                textElement.style.boxShadow = '';
-                return false;
-            }
         }
 
         // ФУНКЦИЯ АВТО-МОДЕРАЦИИ
@@ -1870,68 +1924,6 @@
             const modal = document.getElementById('moderationModal');
             
             modal.style.display = 'flex';
-        }
-
-        // ЗАКРЫТЬ МОДАЛЬНОЕ ОКНО МОДЕРАЦИИ
-        function closeModerationModal() {
-            document.getElementById('moderationModal').style.display = 'none';
-            moderationResult = null;
-            pendingProductData = null;
-        }
-
-        // ПРОДОЛЖИТЬ РЕДАКТИРОВАНИЕ
-        function continueEditing() {
-            closeModerationModal();
-            // Окно добавления/редактирования остается открытым для продолжения редактирования
-        }
-
-        // ОТПРАВИТЬ НА МОДЕРАЦИЮ
-        async function sendToModeration() {
-            if (!pendingProductData) {
-                showAlert('Ошибка: данные объявления не найдены', 'error');
-                return;
-            }
-
-            const { title, price, desc, contact, cat, dorm } = pendingProductData;
-            
-            try {
-                let status = 'pending';
-                let message = "Объявление отправлено на модерацию!";
-                
-                // Если есть запрещенные слова - отклоняем автоматически
-                if (moderationResult && moderationResult.shouldReject) {
-                    status = 'rejected';
-                    message = `Объявление отклонено автоматически. Причина: ${moderationResult.reason}`;
-                }
-                // Если админ - сразу публикуем
-                else if (currentUser && currentUser.email === ADMIN_EMAIL) {
-                    status = 'active';
-                    message = "Объявление опубликовано!";
-                }
-
-                await addDoc(collection(db,"products"),{
-                    title,
-                    price,
-                    desc,
-                    contact,
-                    cat,
-                    dorm,
-                    imgs: photos.filter(p => p),
-                    userId: currentUser.uid,
-                    date: Date.now(),
-                    status,
-                    isPromoted: false,
-                    moderationReason: moderationResult && moderationResult.shouldReject ? moderationResult.reason : '',
-                    autoRejected: moderationResult && moderationResult.shouldReject
-                });
-                
-                showAlert(message, status === 'rejected' ? 'error' : 'success');
-                closeModerationModal();
-                closeModal('addModal');
-                loadProducts();
-            } catch(e) {
-                showAlert("Ошибка при создании объявления: " + e.message, 'error');
-            }
         }
 
         // СИСТЕМА ЯЗЫКОВ
