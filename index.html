@@ -1366,6 +1366,35 @@
         .custom-alert.info {
             border-left: 4px solid var(--primary);
         }
+
+        /* Стили для таймера модерации */
+        .moderation-timer {
+            background: var(--primary);
+            color: white;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .moderation-info {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .moderation-info i {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -1637,8 +1666,10 @@
             <div class="close-btn" onclick="closeModal('addModal')"><i class="fas fa-times"></i></div>
             <h2 style="margin-bottom:20px;" data-lang="new_ad">Новое объявление</h2>
             
-            <div id="moderationWarning" class="moderation-notice" style="display: none;">
-                <i class="fas fa-exclamation-triangle"></i> Ваше объявление будет проверено модератором перед публикацией
+            <div class="moderation-info">
+                <i class="fas fa-robot"></i>
+                <div style="font-weight: 600; margin-bottom: 5px;">Автоматическая модерация</div>
+                <div style="font-size: 14px; color: var(--text-muted);">Ваше объявление будет автоматически проверено через 5 минут</div>
             </div>
             
             <div class="photo-slots" id="addSlots" style="display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap;"></div>
@@ -1674,9 +1705,8 @@
             <div class="close-btn" onclick="closeModerationModal()"><i class="fas fa-times"></i></div>
             <h2 style="margin-bottom:20px; text-align: center;">Проверка объявления</h2>
             
-            <div style="text-align: center; margin: 20px 0;">
-                <p style="margin-bottom: 15px; font-size: 16px;">Объявление будет отправлено на проверку модератору.</p>
-                <p style="font-size: 14px; color: var(--text-muted);">Вы можете продолжить редактирование или отправить на модерацию.</p>
+            <div id="moderationContent" style="text-align: center; margin: 20px 0;">
+                <!-- Контент будет динамически заполняться -->
             </div>
             
             <div class="moderation-buttons">
@@ -1760,7 +1790,9 @@
             arrayRemove, 
             getDoc, 
             setDoc,
-            where
+            where,
+            onSnapshot,
+            serverTimestamp
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -1812,6 +1844,122 @@
             'ебет', 'выебет', 'выебу', 'выебешь', 'выебать', 'выебался', 'выебалась'
         ];
 
+        // ========== СИСТЕМА АВТОМАТИЧЕСКОЙ МОДЕРАЦИИ ==========
+
+        // ФУНКЦИЯ ДОБАВЛЕНИЯ В ОЧЕРЕДЬ МОДЕРАЦИИ
+        async function addToModerationQueue(productId, productData) {
+            try {
+                const moderationTime = new Date(Date.now() + 5 * 60 * 1000); // +5 минут
+                
+                await addDoc(collection(db, "moderationQueue"), {
+                    productId: productId,
+                    productData: productData,
+                    status: 'pending',
+                    createdAt: serverTimestamp(),
+                    moderationTime: moderationTime,
+                    processed: false
+                });
+                
+                console.log(`Объявление ${productId} добавлено в очередь модерации`);
+            } catch (error) {
+                console.error('Ошибка добавления в очередь модерации:', error);
+            }
+        }
+
+        // ФУНКЦИЯ ПРОВЕРКИ ОЧЕРЕДИ МОДЕРАЦИИ
+        async function checkModerationQueue() {
+            try {
+                const now = new Date();
+                const q = query(
+                    collection(db, "moderationQueue"),
+                    where("processed", "==", false),
+                    where("moderationTime", "<=", now)
+                );
+                
+                const querySnapshot = await getDocs(q);
+                
+                for (const docSnap of querySnapshot.docs) {
+                    const task = docSnap.data();
+                    await processModerationTask(docSnap.id, task);
+                }
+            } catch (error) {
+                console.error('Ошибка проверки очереди модерации:', error);
+            }
+        }
+
+        // ФУНКЦИЯ ОБРАБОТКИ ЗАДАЧИ МОДЕРАЦИИ
+        async function processModerationTask(taskId, task) {
+            try {
+                const productRef = doc(db, "products", task.productId);
+                const productSnap = await getDoc(productRef);
+                
+                if (!productSnap.exists()) {
+                    // Если объявление удалено, помечаем задачу как обработанную
+                    await updateDoc(doc(db, "moderationQueue", taskId), {
+                        processed: true,
+                        processedAt: serverTimestamp(),
+                        result: 'product_not_found'
+                    });
+                    return;
+                }
+                
+                const productData = productSnap.data();
+                
+                // Проверяем текущий статус (если еще не изменен вручную)
+                if (productData.status === 'pending') {
+                    const autoModeration = autoModerateProduct(productData.title, productData.desc);
+                    
+                    if (autoModeration.shouldReject) {
+                        // Авто-отклонение если есть запрещенные слова
+                        await updateDoc(productRef, {
+                            status: 'rejected',
+                            moderationReason: `Автоматически отклонено через 5 минут. Причина: ${autoModeration.reason}`,
+                            autoRejected: true
+                        });
+                        console.log(`Объявление "${productData.title}" автоматически отклонено`);
+                    } else {
+                        // Авто-одобрение если нет запрещенных слов
+                        await updateDoc(productRef, {
+                            status: 'active',
+                            moderationReason: 'Автоматически одобрено через 5 минут'
+                        });
+                        console.log(`Объявление "${productData.title}" автоматически одобрено`);
+                    }
+                }
+                
+                // Помечаем задачу как обработанную
+                await updateDoc(doc(db, "moderationQueue", taskId), {
+                    processed: true,
+                    processedAt: serverTimestamp(),
+                    result: 'processed'
+                });
+                
+                // Обновляем список на фронтенде
+                loadProducts();
+                
+            } catch (error) {
+                console.error('Ошибка обработки задачи модерации:', error);
+                // Помечаем задачу как ошибочную
+                await updateDoc(doc(db, "moderationQueue", taskId), {
+                    processed: true,
+                    processedAt: serverTimestamp(),
+                    result: 'error',
+                    error: error.message
+                });
+            }
+        }
+
+        // ЗАПУСК ПЕРИОДИЧЕСКОЙ ПРОВЕРКИ ОЧЕРЕДИ
+        function startModerationChecker() {
+            // Проверяем каждую минуту
+            setInterval(checkModerationQueue, 60 * 1000);
+            
+            // Также проверяем сразу при загрузке
+            checkModerationQueue();
+            
+            console.log('Система автоматической модерации запущена');
+        }
+
         // ========== ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ HTML ОБРАБОТЧИКОВ ==========
 
         window.checkForbiddenWords = function(textElement, fieldType) {
@@ -1846,12 +1994,10 @@
             
             try {
                 let status = 'pending';
-                let message = "Объявление отправлено на модерацию!";
+                let message = "Объявление отправлено на модерацию! Оно будет автоматически проверено через 5 минут.";
                 
-                if (moderationResult && moderationResult.shouldReject) {
-                    status = 'rejected';
-                    message = `Объявление отклонено автоматически. Причина: ${moderationResult.reason}`;
-                } else if (currentUser && currentUser.email === ADMIN_EMAIL) {
+                // Если админ - сразу публикуем
+                if (currentUser && currentUser.email === ADMIN_EMAIL) {
                     status = 'active';
                     message = "Объявление опубликовано!";
                 }
@@ -1869,48 +2015,18 @@
                     date: Date.now(),
                     status,
                     isPromoted: false,
-                    moderationReason: moderationResult && moderationResult.shouldReject ? moderationResult.reason : '',
-                    autoRejected: moderationResult && moderationResult.shouldReject
+                    moderationReason: '',
+                    autoRejected: false
                 });
                 
-                // ⭐⭐⭐ АВТОМАТИЧЕСКАЯ МОДЕРАЦИЯ ЧЕРЕЗ 5 МИНУТ ⭐⭐⭐
-                setTimeout(async () => {
-                    try {
-                        // Получаем текущее состояние объявления
-                        const productDoc = await getDoc(docRef);
-                        if (productDoc.exists()) {
-                            const productData = productDoc.data();
-                            
-                            // Проверяем текущий статус (если еще не изменен вручную)
-                            if (productData.status === 'pending') {
-                                if (moderationResult && moderationResult.shouldReject) {
-                                    // Авто-отклонение если есть запрещенные слова
-                                    await updateDoc(docRef, {
-                                        status: 'rejected',
-                                        moderationReason: `Автоматически отклонено через 5 минут. Причина: ${moderationResult.reason}`,
-                                        autoRejected: true
-                                    });
-                                    console.log(`Объявление "${title}" автоматически отклонено`);
-                                } else {
-                                    // Авто-одобрение если нет запрещенных слов
-                                    await updateDoc(docRef, {
-                                        status: 'active',
-                                        moderationReason: 'Автоматически одобрено через 5 минут'
-                                    });
-                                    console.log(`Объявление "${title}" автоматически одобрено`);
-                                }
-                                
-                                // Обновляем список на фронтенде
-                                loadProducts();
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Ошибка авто-модерации:', error);
-                    }
-                }, 5 * 60 * 1000); // 5 минут
-                // ⭐⭐⭐ КОНЕЦ АВТОМАТИЧЕСКОЙ МОДЕРАЦИИ ⭐⭐⭐
+                // ДОБАВЛЯЕМ В ОЧЕРЕДЬ АВТОМАТИЧЕСКОЙ МОДЕРАЦИИ (только если не админ)
+                if (status === 'pending') {
+                    await addToModerationQueue(docRef.id, {
+                        title, price, desc, contact, cat, dorm
+                    });
+                }
                 
-                showAlert(message, status === 'rejected' ? 'error' : 'success');
+                showAlert(message, 'success');
                 closeModerationModal();
                 closeModal('addModal');
                 loadProducts();
@@ -1947,7 +2063,7 @@
 
         // ФУНКЦИЯ АВТО-МОДЕРАЦИИ
         function autoModerateProduct(title, description) {
-            const text = (title + ' ' + description).toLowerCase();
+            const text = (title + ' ' + (description || '')).toLowerCase();
             const foundWords = [];
             
             forbiddenWords.forEach(word => {
@@ -1975,6 +2091,35 @@
         function showModerationModal(result) {
             moderationResult = result;
             const modal = document.getElementById('moderationModal');
+            const content = document.getElementById('moderationContent');
+            
+            if (result.shouldReject) {
+                content.innerHTML = `
+                    <div style="color: var(--danger); margin-bottom: 15px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <p style="font-size: 16px; font-weight: 600;">Обнаружены запрещенные слова!</p>
+                        <p style="font-size: 14px; color: var(--text-muted);">Ваше объявление будет автоматически отклонено через 5 минут.</p>
+                        <div style="background: var(--bg-secondary); padding: 10px; border-radius: var(--radius-md); margin-top: 10px;">
+                            <strong>Найдены слова:</strong> ${result.foundWords.join(', ')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div style="color: var(--success); margin-bottom: 15px;">
+                        <i class="fas fa-robot" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <p style="font-size: 16px; font-weight: 600;">Объявление отправлено на автоматическую модерацию</p>
+                        <p style="font-size: 14px; color: var(--text-muted);">
+                            Ваше объявление будет автоматически проверено через 5 минут.<br>
+                            Если нарушений не найдено, оно будет опубликовано автоматически.
+                        </p>
+                        <div class="moderation-timer">
+                            <i class="fas fa-clock"></i>
+                            Автоматическая проверка через 5 минут
+                        </div>
+                    </div>
+                `;
+            }
             
             modal.style.display = 'flex';
         }
@@ -2598,8 +2743,6 @@
                 s.style.backgroundImage='';
                 s.classList.remove('has');
             });
-            // Показываем уведомление о модерации
-            document.getElementById('moderationWarning').style.display = 'block';
             document.getElementById('addModal').style.display='flex';
         }
 
@@ -2666,6 +2809,14 @@
                     moderationReason: moderationResult.shouldReject ? moderationResult.reason : '',
                     autoRejected: moderationResult.shouldReject
                 });
+                
+                // Если объявление отправлено на модерацию, добавляем в очередь
+                if (status === 'pending') {
+                    await addToModerationQueue(id, {
+                        title, price, desc, contact, cat, dorm
+                    });
+                }
+                
                 showAlert(moderationResult.shouldReject ? 
                     "Объявление отклонено автоматически при редактировании!" : 
                     "Изменения сохранены! Объявление отправлено на модерацию.",
@@ -2856,6 +3007,9 @@
             
             // Обработчик изменения размера окна
             window.addEventListener('resize', initMobileSearch);
+            
+            // ЗАПУСК СИСТЕМЫ АВТОМАТИЧЕСКОЙ МОДЕРАЦИИ
+            startModerationChecker();
             
             updateLanguage();
             loadProducts();
