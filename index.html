@@ -466,6 +466,11 @@
             background: var(--danger);
         }
 
+        .card-badge--auto-rejected {
+            background: #8B0000;
+            color: white;
+        }
+
         .card-image-v3 {
             position: relative;
             height: 200px;
@@ -1265,6 +1270,27 @@
         .mobile-search-top {
             display: none;
         }
+
+        /* Стили для уведомлений о модерации */
+        .moderation-notice {
+            background: var(--warning);
+            color: white;
+            padding: 10px 15px;
+            border-radius: var(--radius-md);
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .auto-rejected-notice {
+            background: var(--danger);
+            color: white;
+            padding: 10px 15px;
+            border-radius: var(--radius-md);
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -1535,11 +1561,16 @@
         <div class="modal-box">
             <div class="close-btn" onclick="closeModal('addModal')"><i class="fas fa-times"></i></div>
             <h2 style="margin-bottom:20px;" data-lang="new_ad">Новое объявление</h2>
+            
+            <div id="moderationWarning" class="moderation-notice" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i> Ваше объявление будет проверено модератором перед публикацией
+            </div>
+            
             <div class="photo-slots" id="addSlots" style="display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap;"></div>
             <input type="file" id="addFile0" hidden onchange="handleFile(0, 'add')"><input type="file" id="addFile1" hidden onchange="handleFile(1, 'add')"><input type="file" id="addFile2" hidden onchange="handleFile(2, 'add')"><input type="file" id="addFile3" hidden onchange="handleFile(3, 'add')"><input type="file" id="addFile4" hidden onchange="handleFile(4, 'add')">
-            <input type="text" id="newTitle" class="input-field" data-lang-placeholder="title">
+            <input type="text" id="newTitle" class="input-field" data-lang-placeholder="title" oninput="checkForbiddenWords(this, 'title')">
             <input type="number" id="newPrice" class="input-field" data-lang-placeholder="price">
-            <textarea id="newDesc" class="input-field" rows="4" data-lang-placeholder="description"></textarea>
+            <textarea id="newDesc" class="input-field" rows="4" data-lang-placeholder="description" oninput="checkForbiddenWords(this, 'description')"></textarea>
             <select id="newCat" class="input-field">
                 <option value="tech" data-lang="electronics">Электроника</option>
                 <option value="home" data-lang="home">Дом</option>
@@ -1569,9 +1600,9 @@
             <input type="hidden" id="editId">
             <div class="photo-slots" id="editSlots" style="display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap;"></div>
             <input type="file" id="editFile0" hidden onchange="handleFile(0, 'edit')"><input type="file" id="editFile1" hidden onchange="handleFile(1, 'edit')"><input type="file" id="editFile2" hidden onchange="handleFile(2, 'edit')"><input type="file" id="editFile3" hidden onchange="handleFile(3, 'edit')"><input type="file" id="editFile4" hidden onchange="handleFile(4, 'edit')">
-            <input type="text" id="editTitle" class="input-field" data-lang-placeholder="title">
+            <input type="text" id="editTitle" class="input-field" data-lang-placeholder="title" oninput="checkForbiddenWords(this, 'title')">
             <input type="number" id="editPrice" class="input-field" data-lang-placeholder="price">
-            <textarea id="editDesc" class="input-field" rows="4" data-lang-placeholder="description"></textarea>
+            <textarea id="editDesc" class="input-field" rows="4" data-lang-placeholder="description" oninput="checkForbiddenWords(this, 'description')"></textarea>
             <select id="editCat" class="input-field">
                 <option value="tech" data-lang="electronics">Электроника</option>
                 <option value="home" data-lang="home">Дом</option>
@@ -1640,6 +1671,112 @@
         let currentUser=null, products=[], favorites=[], filterMode='all', currentCatFilter='all', photos=[null,null,null,null,null], currentProduct=null;
         let currentStatusFilter = 'active';
         const catNames={tech:'Электроника',home:'Дом',study:'Учеба',clothes:'Одежда',other:'Разное'};
+
+        // СИСТЕМА АВТО-МОДЕРАЦИИ - ЗАПРЕЩЕННЫЕ СЛОВА
+        const forbiddenWords = [
+            // Матерные слова (русские)
+            'блядь', 'бля', 'пизда', 'пиздец', 'ебать', 'ебаный', 'хуй', 'хуёвый', 'хуевый', 'хуйня',
+            'мудак', 'мудила', 'гандон', 'гондон', 'шлюха', 'проститутка', 'сука', 'сучка',
+            // Матерные слова (украинские)
+            'блядь', 'пизда', 'пиздець', 'єбать', 'єбаний', 'хуй', 'хуйовий', 'хуйня',
+            'мудак', 'мудило', 'гандон', 'шльондра', 'проститутка', 'сука',
+            // Оскорбления
+            'дебил', 'идиот', 'дурак', 'тупой', 'кретин', 'моральный урод', 'урод',
+            // Запрещенные темы
+            'наркотики', 'наркота', 'трава', 'марихуана', 'гашиш', 'кокаин', 'героин', 'лсд', 'экстази',
+            'drugs', 'weed', 'marijuana', 'cocaine', 'heroin', 'lsd', 'ecstasy',
+            'оружие', 'пистолет', 'автомат', 'винтовка', 'огнестрел', 'gun', 'pistol', 'rifle',
+            'мошенник', 'обман', 'развод', 'скам', 'scam', 'fraud',
+            // Другие запрещенные слова
+            'халява', 'бесплатно', 'даром', 'free', 'халяв', 'обсужу', 'обсудим'
+        ];
+
+        // ФУНКЦИЯ ПРОВЕРКИ НА ЗАПРЕЩЕННЫЕ СЛОВА
+        function checkForbiddenWords(textElement, fieldType) {
+            const text = textElement.value.toLowerCase();
+            const foundWords = [];
+            
+            forbiddenWords.forEach(word => {
+                if (text.includes(word.toLowerCase())) {
+                    foundWords.push(word);
+                }
+            });
+            
+            if (foundWords.length > 0) {
+                // Подсвечиваем поле красным
+                textElement.style.borderColor = 'var(--danger)';
+                textElement.style.boxShadow = '0 0 0 2px rgba(220, 20, 60, 0.2)';
+                
+                // Показываем предупреждение
+                showModerationWarning(foundWords, fieldType);
+                return true;
+            } else {
+                // Убираем подсветку
+                textElement.style.borderColor = '';
+                textElement.style.boxShadow = '';
+                hideModerationWarning();
+                return false;
+            }
+        }
+
+        // ПОКАЗАТЬ ПРЕДУПРЕЖДЕНИЕ О МОДЕРАЦИИ
+        function showModerationWarning(words, fieldType) {
+            let warningElement = document.getElementById('moderationWarning');
+            if (!warningElement) {
+                warningElement = document.createElement('div');
+                warningElement.id = 'moderationWarning';
+                warningElement.className = 'auto-rejected-notice';
+                const addModal = document.getElementById('addModal');
+                const firstInput = addModal.querySelector('.input-field');
+                addModal.insertBefore(warningElement, firstInput);
+            }
+            
+            const fieldNames = {
+                'title': 'заголовке',
+                'description': 'описании'
+            };
+            
+            warningElement.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i> 
+                Обнаружены запрещенные слова в ${fieldNames[fieldType]}: "${words.join(', ')}". 
+                Объявление будет автоматически отклонено!
+            `;
+            warningElement.style.display = 'block';
+        }
+
+        // СКРЫТЬ ПРЕДУПРЕЖДЕНИЕ
+        function hideModerationWarning() {
+            const warningElement = document.getElementById('moderationWarning');
+            if (warningElement) {
+                warningElement.style.display = 'none';
+            }
+        }
+
+        // ФУНКЦИЯ АВТО-МОДЕРАЦИИ
+        function autoModerateProduct(title, description) {
+            const text = (title + ' ' + description).toLowerCase();
+            const foundWords = [];
+            
+            forbiddenWords.forEach(word => {
+                if (text.includes(word.toLowerCase())) {
+                    foundWords.push(word);
+                }
+            });
+            
+            if (foundWords.length > 0) {
+                return {
+                    shouldReject: true,
+                    reason: `Обнаружены запрещенные слова: ${foundWords.join(', ')}`,
+                    foundWords: foundWords
+                };
+            }
+            
+            return {
+                shouldReject: false,
+                reason: '',
+                foundWords: []
+            };
+        }
 
         // СИСТЕМА ЯЗЫКОВ
         const translations = {
@@ -1815,7 +1952,7 @@
                 const mobileSearchTop = document.getElementById('mobileSearchTop');
                 const contentHeader = document.querySelector('.content-header');
                 if (mobileSearchTop && contentHeader) {
-                    mobileSearchTop.style.display = 'none'; // Убираем дублирующий поиск
+                    mobileSearchTop.style.display = 'none';
                 }
             } else {
                 const mobileSearchTop = document.getElementById('mobileSearchTop');
@@ -1980,12 +2117,53 @@
         });
 
         window.logout=()=>{signOut(auth);toggleMenu();closeMobileProfileMenu();}
+
+        // ОБНОВЛЕННАЯ ФУНКЦИЯ СОЗДАНИЯ ПРОДУКТА С АВТО-МОДЕРАЦИЕЙ
         window.createProduct=async()=>{
             if(!currentUser)return openAuthModal();
             const title=document.getElementById('newTitle').value, price=document.getElementById('newPrice').value, desc=document.getElementById('newDesc').value, contact=document.getElementById('newContact').value, cat=document.getElementById('newCat').value, dorm=document.getElementById('newDorm').value;
             if(!title||!price||!contact)return alert("Заполни обязательные поля!");
-            const status=(currentUser.email===ADMIN_EMAIL)?'active':'pending';
-            try{await addDoc(collection(db,"products"),{title,price,desc,contact,cat,dorm,imgs:photos.filter(p=>p),userId:currentUser.uid,date:Date.now(),status,isPromoted:false});alert(status==='active'?"Объявление опубликовано!":"Объявление отправлено на модерацию.");closeModal('addModal');loadProducts();}catch(e){alert(e.message);}
+            
+            // ПРОВЕРКА НА ЗАПРЕЩЕННЫЕ СЛОВА
+            const moderationResult = autoModerateProduct(title, desc);
+            
+            let status, message;
+            
+            if (moderationResult.shouldReject) {
+                // АВТОМАТИЧЕСКИ ОТКЛОНЯЕМ
+                status = 'rejected';
+                message = `Объявление отклонено автоматически. Причина: ${moderationResult.reason}`;
+            } else if (currentUser.email === ADMIN_EMAIL) {
+                // АДМИН - СРАЗУ ОПУБЛИКОВЫВАЕМ
+                status = 'active';
+                message = "Объявление опубликовано!";
+            } else {
+                // ОБЫЧНЫЙ ПОЛЬЗОВАТЕЛЬ - НА МОДЕРАЦИЮ
+                status = 'pending';
+                message = "Объявление отправлено на модерацию.";
+            }
+            
+            try{
+                await addDoc(collection(db,"products"),{
+                    title,
+                    price,
+                    desc,
+                    contact,
+                    cat,
+                    dorm,
+                    imgs:photos.filter(p=>p),
+                    userId:currentUser.uid,
+                    date:Date.now(),
+                    status,
+                    isPromoted:false,
+                    moderationReason: moderationResult.shouldReject ? moderationResult.reason : '',
+                    autoRejected: moderationResult.shouldReject
+                });
+                
+                alert(message);
+                closeModal('addModal');
+                loadProducts();
+            }catch(e){alert(e.message);}
         }
 
         // ОБНОВЛЕННАЯ ФУНКЦИЯ ФИЛЬТРАЦИИ
@@ -2069,7 +2247,13 @@
                 // БЕЙДЖИ СТАТУСОВ ПОКАЗЫВАЕМ ТОЛЬКО В РЕЖИМАХ "МОИ ТОВАРЫ" И "МОДЕРАЦИЯ"
                 if(filterMode==='my'||filterMode==='admin'){
                     if(p.status==='pending') badges += '<div class="card-badge card-badge--pending">'+t.pending+'</div>';
-                    if(p.status==='rejected') badges += '<div class="card-badge card-badge--rejected">'+t.rejected+'</div>';
+                    if(p.status==='rejected') {
+                        if(p.autoRejected) {
+                            badges += '<div class="card-badge card-badge--auto-rejected">АВТО-ОТКЛОНЕНО</div>';
+                        } else {
+                            badges += '<div class="card-badge card-badge--rejected">'+t.rejected+'</div>';
+                        }
+                    }
                 }
 
                 let actions = '';
@@ -2113,6 +2297,9 @@
             }).join('');
         }
 
+        // ОСТАЛЬНЫЕ ФУНКЦИИ БЕЗ ИЗМЕНЕНИЙ...
+        // [Все остальные функции остаются такими же как в предыдущем коде]
+
         window.openProduct=(id)=>{
             currentProduct=products.find(p=>p.id===id);
             if (!currentProduct) return;
@@ -2122,9 +2309,30 @@
             productModal.className = 'modal-overlay';
             productModal.style.display = 'flex';
             
+            // Добавляем информацию о модерации если есть
+            let moderationInfo = '';
+            if (currentProduct.autoRejected) {
+                moderationInfo = `
+                    <div class="auto-rejected-notice">
+                        <i class="fas fa-robot"></i> 
+                        Это объявление было автоматически отклонено системой модерации.
+                        ${currentProduct.moderationReason ? `<br><small>Причина: ${currentProduct.moderationReason}</small>` : ''}
+                    </div>
+                `;
+            } else if (currentProduct.status === 'rejected' && currentProduct.moderationReason) {
+                moderationInfo = `
+                    <div class="auto-rejected-notice">
+                        <i class="fas fa-user-shield"></i> 
+                        Это объявление было отклонено модератором.
+                        <br><small>Причина: ${currentProduct.moderationReason}</small>
+                    </div>
+                `;
+            }
+            
             productModal.innerHTML = `
                 <div class="modal-box" style="max-width: 600px;">
                     <div class="close-btn" onclick="this.closest('.modal-overlay').remove()">×</div>
+                    ${moderationInfo}
                     <div style="display: flex; gap: 20px; flex-direction: column;">
                         <div class="main-photo" id="mainPhotoContainer">
                             ${currentProduct.imgs && currentProduct.imgs[0] 
@@ -2162,10 +2370,12 @@
                             </div>
 
                             <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <a href="https://t.me/${currentProduct.contact.replace('@', '')}" target="_blank" 
-                                   style="display: block; padding: 15px; background: var(--primary); color: white; text-align: center; border-radius: var(--radius-md); font-weight: bold; text-decoration: none;">
-                                    📞 ${t.contact_seller}
-                                </a>
+                                ${currentProduct.status === 'active' ? `
+                                    <a href="https://t.me/${currentProduct.contact.replace('@', '')}" target="_blank" 
+                                       style="display: block; padding: 15px; background: var(--primary); color: white; text-align: center; border-radius: var(--radius-md); font-weight: bold; text-decoration: none;">
+                                        📞 ${t.contact_seller}
+                                    </a>
+                                ` : ''}
                                 
                                 ${currentUser && currentUser.email === ADMIN_EMAIL && currentProduct.status === 'pending' ? `
                                     <div style="display: flex; gap: 10px;">
@@ -2228,6 +2438,8 @@
                 s.style.backgroundImage='';
                 s.classList.remove('has');
             });
+            // Показываем уведомление о модерации
+            document.getElementById('moderationWarning').style.display = 'block';
             document.getElementById('addModal').style.display='flex';
         }
 
@@ -2273,9 +2485,31 @@
                 return;
             }
             
+            // ПРОВЕРКА НА ЗАПРЕЩЕННЫЕ СЛОВА ПРИ РЕДАКТИРОВАНИИ
+            const moderationResult = autoModerateProduct(title, desc);
+            let status = 'pending'; // При редактировании всегда отправляем на модерацию
+            
+            if (moderationResult.shouldReject) {
+                status = 'rejected';
+            }
+            
             try{
-                await updateDoc(doc(db,"products",id),{title,price,desc,contact,cat,dorm,imgs:photos.filter(p=>p)});
-                alert("Изменения сохранены!");
+                await updateDoc(doc(db,"products",id),{
+                    title,
+                    price,
+                    desc,
+                    contact,
+                    cat,
+                    dorm,
+                    imgs:photos.filter(p=>p),
+                    status,
+                    moderationReason: moderationResult.shouldReject ? moderationResult.reason : '',
+                    autoRejected: moderationResult.shouldReject
+                });
+                alert(moderationResult.shouldReject ? 
+                    "Объявление отклонено автоматически при редактировании!" : 
+                    "Изменения сохранены! Объявление отправлено на модерацию."
+                );
                 closeModal('editModal');
                 loadProducts();
             }catch(error){
