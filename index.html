@@ -1291,6 +1291,46 @@
             text-align: center;
             font-weight: 600;
         }
+
+        .moderation-modal {
+            max-width: 500px !important;
+        }
+
+        .moderation-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .moderation-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 44px;
+        }
+
+        .btn-continue {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-continue:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-cancel {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border) !important;
+        }
+
+        .btn-cancel:hover {
+            background: var(--bg-tertiary);
+        }
     </style>
 </head>
 <body>
@@ -1593,6 +1633,33 @@
         </div>
     </div>
 
+    <!-- Модальное окно модерации -->
+    <div id="moderationModal" class="modal-overlay">
+        <div class="modal-box moderation-modal">
+            <div class="close-btn" onclick="closeModerationModal()"><i class="fas fa-times"></i></div>
+            <h2 style="margin-bottom:20px; text-align: center;">Проверка объявления</h2>
+            
+            <div class="auto-rejected-notice" id="moderationMessage">
+                <i class="fas fa-exclamation-triangle"></i> 
+                Обнаружены запрещенные слова: хуй, хуй
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <p style="margin-bottom: 15px;">Объявление будет отправлено на проверку модератору.</p>
+                <p style="font-size: 14px; color: var(--text-muted);">Вы можете продолжить редактирование или отправить на модерацию.</p>
+            </div>
+            
+            <div class="moderation-buttons">
+                <button class="btn-cancel" onclick="continueEditing()">
+                    Продолжить редактирование
+                </button>
+                <button class="btn-continue" onclick="sendToModeration()">
+                    Отправить на модерацию
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="editModal" class="modal-overlay">
         <div class="modal-box">
             <div class="close-btn" onclick="closeModal('editModal')"><i class="fas fa-times"></i></div>
@@ -1672,6 +1739,10 @@
         let currentStatusFilter = 'active';
         const catNames={tech:'Электроника',home:'Дом',study:'Учеба',clothes:'Одежда',other:'Разное'};
 
+        // Переменные для временного хранения данных объявления
+        let pendingProductData = null;
+        let moderationResult = null;
+
         // СИСТЕМА АВТО-МОДЕРАЦИИ - ЗАПРЕЩЕННЫЕ СЛОВА
         const forbiddenWords = [
             // Матерные слова (русские)
@@ -1707,48 +1778,12 @@
                 textElement.style.borderColor = 'var(--danger)';
                 textElement.style.boxShadow = '0 0 0 2px rgba(220, 20, 60, 0.2)';
                 
-                // Показываем предупреждение
-                showModerationWarning(foundWords, fieldType);
                 return true;
             } else {
                 // Убираем подсветку
                 textElement.style.borderColor = '';
                 textElement.style.boxShadow = '';
-                hideModerationWarning();
                 return false;
-            }
-        }
-
-        // ПОКАЗАТЬ ПРЕДУПРЕЖДЕНИЕ О МОДЕРАЦИИ
-        function showModerationWarning(words, fieldType) {
-            let warningElement = document.getElementById('moderationWarning');
-            if (!warningElement) {
-                warningElement = document.createElement('div');
-                warningElement.id = 'moderationWarning';
-                warningElement.className = 'auto-rejected-notice';
-                const addModal = document.getElementById('addModal');
-                const firstInput = addModal.querySelector('.input-field');
-                addModal.insertBefore(warningElement, firstInput);
-            }
-            
-            const fieldNames = {
-                'title': 'заголовке',
-                'description': 'описании'
-            };
-            
-            warningElement.innerHTML = `
-                <i class="fas fa-exclamation-triangle"></i> 
-                Обнаружены запрещенные слова в ${fieldNames[fieldType]}: "${words.join(', ')}". 
-                Объявление будет автоматически отклонено!
-            `;
-            warningElement.style.display = 'block';
-        }
-
-        // СКРЫТЬ ПРЕДУПРЕЖДЕНИЕ
-        function hideModerationWarning() {
-            const warningElement = document.getElementById('moderationWarning');
-            if (warningElement) {
-                warningElement.style.display = 'none';
             }
         }
 
@@ -1776,6 +1811,90 @@
                 reason: '',
                 foundWords: []
             };
+        }
+
+        // ПОКАЗАТЬ МОДАЛЬНОЕ ОКНО МОДЕРАЦИИ
+        function showModerationModal(result) {
+            moderationResult = result;
+            const modal = document.getElementById('moderationModal');
+            const messageElement = document.getElementById('moderationMessage');
+            
+            if (result.shouldReject) {
+                messageElement.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Обнаружены запрещенные слова: ${result.foundWords.join(', ')}
+                `;
+            } else {
+                messageElement.innerHTML = `
+                    <i class="fas fa-info-circle"></i> 
+                    Объявление отправляется на проверку модератору
+                `;
+                messageElement.style.background = 'var(--warning)';
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        // ЗАКРЫТЬ МОДАЛЬНОЕ ОКНО МОДЕРАЦИИ
+        function closeModerationModal() {
+            document.getElementById('moderationModal').style.display = 'none';
+            moderationResult = null;
+            pendingProductData = null;
+        }
+
+        // ПРОДОЛЖИТЬ РЕДАКТИРОВАНИЕ
+        function continueEditing() {
+            closeModerationModal();
+            // Окно добавления/редактирования остается открытым для продолжения редактирования
+        }
+
+        // ОТПРАВИТЬ НА МОДЕРАЦИЮ
+        async function sendToModeration() {
+            if (!pendingProductData) {
+                alert('Ошибка: данные объявления не найдены');
+                return;
+            }
+
+            const { title, price, desc, contact, cat, dorm } = pendingProductData;
+            
+            try {
+                let status = 'pending';
+                let message = "Объявление отправлено на модерацию!";
+                
+                // Если есть запрещенные слова - отклоняем автоматически
+                if (moderationResult && moderationResult.shouldReject) {
+                    status = 'rejected';
+                    message = `Объявление отклонено автоматически. Причина: ${moderationResult.reason}`;
+                }
+                // Если админ - сразу публикуем
+                else if (currentUser && currentUser.email === ADMIN_EMAIL) {
+                    status = 'active';
+                    message = "Объявление опубликовано!";
+                }
+
+                await addDoc(collection(db,"products"),{
+                    title,
+                    price,
+                    desc,
+                    contact,
+                    cat,
+                    dorm,
+                    imgs: photos.filter(p => p),
+                    userId: currentUser.uid,
+                    date: Date.now(),
+                    status,
+                    isPromoted: false,
+                    moderationReason: moderationResult && moderationResult.shouldReject ? moderationResult.reason : '',
+                    autoRejected: moderationResult && moderationResult.shouldReject
+                });
+                
+                alert(message);
+                closeModerationModal();
+                closeModal('addModal');
+                loadProducts();
+            } catch(e) {
+                alert("Ошибка при создании объявления: " + e.message);
+            }
         }
 
         // СИСТЕМА ЯЗЫКОВ
@@ -2118,52 +2237,22 @@
 
         window.logout=()=>{signOut(auth);toggleMenu();closeMobileProfileMenu();}
 
-        // ОБНОВЛЕННАЯ ФУНКЦИЯ СОЗДАНИЯ ПРОДУКТА С АВТО-МОДЕРАЦИЕЙ
+        // ОБНОВЛЕННАЯ ФУНКЦИЯ СОЗДАНИЯ ПРОДУКТА С СИСТЕМОЙ МОДЕРАЦИИ
         window.createProduct=async()=>{
             if(!currentUser)return openAuthModal();
             const title=document.getElementById('newTitle').value, price=document.getElementById('newPrice').value, desc=document.getElementById('newDesc').value, contact=document.getElementById('newContact').value, cat=document.getElementById('newCat').value, dorm=document.getElementById('newDorm').value;
             if(!title||!price||!contact)return alert("Заполни обязательные поля!");
             
+            // Сохраняем данные объявления во временную переменную
+            pendingProductData = {
+                title, price, desc, contact, cat, dorm
+            };
+            
             // ПРОВЕРКА НА ЗАПРЕЩЕННЫЕ СЛОВА
             const moderationResult = autoModerateProduct(title, desc);
             
-            let status, message;
-            
-            if (moderationResult.shouldReject) {
-                // АВТОМАТИЧЕСКИ ОТКЛОНЯЕМ
-                status = 'rejected';
-                message = `Объявление отклонено автоматически. Причина: ${moderationResult.reason}`;
-            } else if (currentUser.email === ADMIN_EMAIL) {
-                // АДМИН - СРАЗУ ОПУБЛИКОВЫВАЕМ
-                status = 'active';
-                message = "Объявление опубликовано!";
-            } else {
-                // ОБЫЧНЫЙ ПОЛЬЗОВАТЕЛЬ - НА МОДЕРАЦИЮ
-                status = 'pending';
-                message = "Объявление отправлено на модерацию.";
-            }
-            
-            try{
-                await addDoc(collection(db,"products"),{
-                    title,
-                    price,
-                    desc,
-                    contact,
-                    cat,
-                    dorm,
-                    imgs:photos.filter(p=>p),
-                    userId:currentUser.uid,
-                    date:Date.now(),
-                    status,
-                    isPromoted:false,
-                    moderationReason: moderationResult.shouldReject ? moderationResult.reason : '',
-                    autoRejected: moderationResult.shouldReject
-                });
-                
-                alert(message);
-                closeModal('addModal');
-                loadProducts();
-            }catch(e){alert(e.message);}
+            // ПОКАЗЫВАЕМ МОДАЛЬНОЕ ОКНО МОДЕРАЦИИ ВМЕСТО АВТОМАТИЧЕСКОГО ЗАКРЫТИЯ
+            showModerationModal(moderationResult);
         }
 
         // ОБНОВЛЕННАЯ ФУНКЦИЯ ФИЛЬТРАЦИИ
@@ -2296,9 +2385,6 @@
                 `;
             }).join('');
         }
-
-        // ОСТАЛЬНЫЕ ФУНКЦИИ БЕЗ ИЗМЕНЕНИЙ...
-        // [Все остальные функции остаются такими же как в предыдущем коде]
 
         window.openProduct=(id)=>{
             currentProduct=products.find(p=>p.id===id);
